@@ -596,7 +596,10 @@ namespace ChattyVibes
             UpdateGUI();
 
             await Task.Delay(5000);
-            await _plugClient.StopScanningAsync();
+
+            if (_plugClient.IsScanning)
+                await _plugClient.StopScanningAsync();
+
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Scanning done");
         }
 
@@ -632,7 +635,9 @@ namespace ChattyVibes
             }
 
             await Task.Delay(5000);
-            await _plugClient.StopScanningAsync();
+
+            if (_plugClient.IsScanning)
+                await _plugClient.StopScanningAsync();
         }
 
         private async void btnConnectTwitch_Click(object sender, EventArgs e)
