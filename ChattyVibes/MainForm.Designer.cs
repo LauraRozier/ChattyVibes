@@ -30,6 +30,9 @@ namespace ChattyVibes
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+            "Hush",
+            "100%"}, -1);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tpLog = new System.Windows.Forms.TabPage();
@@ -173,6 +176,10 @@ namespace ChattyVibes
             this.btnConnectBP = new System.Windows.Forms.Button();
             this.btnConnectTwitch = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.lvDevices = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnRescanDevices = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tpLog.SuspendLayout();
             this.tpConfig.SuspendLayout();
@@ -246,6 +253,7 @@ namespace ChattyVibes
             // tpLog
             // 
             this.tpLog.Controls.Add(this.tbLog);
+            this.tpLog.Controls.Add(this.lvDevices);
             this.tpLog.Location = new System.Drawing.Point(4, 22);
             this.tpLog.Name = "tpLog";
             this.tpLog.Padding = new System.Windows.Forms.Padding(3);
@@ -262,7 +270,7 @@ namespace ChattyVibes
             this.tbLog.Name = "tbLog";
             this.tbLog.ReadOnly = true;
             this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbLog.Size = new System.Drawing.Size(948, 353);
+            this.tbLog.Size = new System.Drawing.Size(744, 353);
             this.tbLog.TabIndex = 0;
             // 
             // tpConfig
@@ -2086,6 +2094,7 @@ namespace ChattyVibes
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Controls.Add(this.btnRescanDevices);
             this.panel1.Controls.Add(this.lblChatStatus);
             this.panel1.Controls.Add(this.label44);
             this.panel1.Controls.Add(this.lblBPStatus);
@@ -2102,7 +2111,7 @@ namespace ChattyVibes
             // lblChatStatus
             // 
             this.lblChatStatus.AutoSize = true;
-            this.lblChatStatus.Location = new System.Drawing.Point(651, 9);
+            this.lblChatStatus.Location = new System.Drawing.Point(808, 9);
             this.lblChatStatus.Name = "lblChatStatus";
             this.lblChatStatus.Size = new System.Drawing.Size(79, 13);
             this.lblChatStatus.TabIndex = 9;
@@ -2111,7 +2120,7 @@ namespace ChattyVibes
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(605, 9);
+            this.label44.Location = new System.Drawing.Point(762, 9);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(40, 13);
             this.label44.TabIndex = 8;
@@ -2160,7 +2169,7 @@ namespace ChattyVibes
             // btnConnectTwitch
             // 
             this.btnConnectTwitch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnConnectTwitch.Location = new System.Drawing.Point(483, 4);
+            this.btnConnectTwitch.Location = new System.Drawing.Point(640, 4);
             this.btnConnectTwitch.Name = "btnConnectTwitch";
             this.btnConnectTwitch.Size = new System.Drawing.Size(111, 23);
             this.btnConnectTwitch.TabIndex = 0;
@@ -2171,6 +2180,45 @@ namespace ChattyVibes
             // toolTip1
             // 
             this.toolTip1.AutomaticDelay = 1000;
+            // 
+            // lvDevices
+            // 
+            this.lvDevices.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.lvDevices.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lvDevices.HideSelection = false;
+            this.lvDevices.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1});
+            this.lvDevices.Location = new System.Drawing.Point(747, 3);
+            this.lvDevices.Name = "lvDevices";
+            this.lvDevices.ShowGroups = false;
+            this.lvDevices.Size = new System.Drawing.Size(204, 353);
+            this.lvDevices.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lvDevices.TabIndex = 1;
+            this.lvDevices.UseCompatibleStateImageBehavior = false;
+            this.lvDevices.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 150;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Battery";
+            this.columnHeader2.Width = 50;
+            // 
+            // btnRescanDevices
+            // 
+            this.btnRescanDevices.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRescanDevices.Location = new System.Drawing.Point(418, 4);
+            this.btnRescanDevices.Name = "btnRescanDevices";
+            this.btnRescanDevices.Size = new System.Drawing.Size(111, 23);
+            this.btnRescanDevices.TabIndex = 10;
+            this.btnRescanDevices.Text = "Rescan Devices";
+            this.btnRescanDevices.UseVisualStyleBackColor = true;
+            this.btnRescanDevices.Click += new System.EventHandler(this.btnRescanDevices_Click);
             // 
             // MainForm
             // 
@@ -2404,6 +2452,10 @@ namespace ChattyVibes
         private System.Windows.Forms.Label label45;
         private System.Windows.Forms.TextBox tbHostname;
         private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.ListView lvDevices;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.Button btnRescanDevices;
     }
 }
 
