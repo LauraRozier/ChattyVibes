@@ -617,11 +617,8 @@ namespace ChattyVibes
 
         private async void btnRescanDevices_Click(object sender, EventArgs e)
         {
-            if (_plugClient.IsScanning)
-            {
-                await _plugClient.StopScanningAsync();
-                await Task.Delay(100);
-            }
+            if (_plugClient == null || (!_plugClient.Connected) || _plugClient.IsScanning)
+                return;
 
             try
             {
@@ -630,7 +627,7 @@ namespace ChattyVibes
             }
             catch (ButtplugException ex)
             {
-                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.InnerException.Message}");
+                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.Message}");
                 return;
             }
 
