@@ -97,28 +97,50 @@
     <Reference Include="Buttplug, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Buttplug.2.0.6\lib\net47\Buttplug.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf, Version=3.19.1.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.19.1\lib\net45\Google.Protobuf.dll</HintPath>
+    <Reference Include="Google.Protobuf, Version=3.21.12.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.21.12\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.7.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.7.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.7.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.7.0.0\lib\net462\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.7.0.0\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.7.0.0\lib\net462\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.7.0.0\lib\net462\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.7.0.0\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
     <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
@@ -129,16 +151,16 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+    <Reference Include="System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.1\lib\net462\System.Runtime.dll</HintPath>
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
@@ -152,15 +174,25 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
       <Private>True</Private>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.7.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=7.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.7.0.1\lib\net462\System.Text.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -169,55 +201,210 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TwitchLib.Api, Version=3.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.3.6.1\lib\netstandard2.0\TwitchLib.Api.dll</HintPath>
+    <Reference Include="TwitchLib.Api, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Api.3.8.0\lib\netstandard2.0\TwitchLib.Api.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Api.Core, Version=3.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.3.6.1\lib\netstandard2.0\TwitchLib.Api.Core.dll</HintPath>
+    <Reference Include="TwitchLib.Api.Core, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Api.Core.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Api.Core.Enums, Version=3.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.Enums.3.6.1\lib\netstandard2.0\TwitchLib.Api.Core.Enums.dll</HintPath>
+    <Reference Include="TwitchLib.Api.Core.Enums, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Api.Core.Enums.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.Enums.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Api.Core.Interfaces, Version=3.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.Interfaces.3.6.1\lib\netstandard2.0\TwitchLib.Api.Core.Interfaces.dll</HintPath>
+    <Reference Include="TwitchLib.Api.Core.Interfaces, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Api.Core.Interfaces.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Api.Core.Models, Version=3.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.Models.3.6.1\lib\netstandard2.0\TwitchLib.Api.Core.Models.dll</HintPath>
+    <Reference Include="TwitchLib.Api.Core.Models, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Api.Core.Models.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.Models.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Api.Helix, Version=3.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Helix.3.6.1\lib\netstandard2.0\TwitchLib.Api.Helix.dll</HintPath>
+    <Reference Include="TwitchLib.Api.Helix, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Api.Helix.3.8.0\lib\netstandard2.0\TwitchLib.Api.Helix.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Api.Helix.Models, Version=3.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Helix.Models.3.6.1\lib\netstandard2.0\TwitchLib.Api.Helix.Models.dll</HintPath>
+    <Reference Include="TwitchLib.Api.Helix.Models, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Api.Helix.Models.3.8.0\lib\netstandard2.0\TwitchLib.Api.Helix.Models.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Client, Version=3.2.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Client.3.2.6\lib\netstandard2.0\TwitchLib.Client.dll</HintPath>
+    <Reference Include="TwitchLib.Client, Version=3.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Client.3.3.1\lib\netstandard2.0\TwitchLib.Client.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Client.Enums, Version=3.2.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Client.Enums.3.2.6\lib\netstandard2.0\TwitchLib.Client.Enums.dll</HintPath>
+    <Reference Include="TwitchLib.Client.Enums, Version=3.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Client.Enums.3.3.1\lib\netstandard2.0\TwitchLib.Client.Enums.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.Client.Models, Version=3.2.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Client.Models.3.2.6\lib\netstandard2.0\TwitchLib.Client.Models.dll</HintPath>
+    <Reference Include="TwitchLib.Client.Models, Version=3.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.Client.Models.3.3.1\lib\netstandard2.0\TwitchLib.Client.Models.dll</HintPath>
     </Reference>
     <Reference Include="TwitchLib.Communication, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TwitchLib.Communication.1.0.4\lib\netstandard2.0\TwitchLib.Communication.dll</HintPath>
     </Reference>
-    <Reference Include="TwitchLib.PubSub, Version=3.2.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.PubSub.3.2.5\lib\netstandard2.0\TwitchLib.PubSub.dll</HintPath>
+    <Reference Include="TwitchLib.EventSub.Core, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.EventSub.Core.2.2.0\lib\netstandard2.0\TwitchLib.EventSub.Core.dll</HintPath>
     </Reference>
+    <Reference Include="TwitchLib.EventSub.Websockets, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.EventSub.Websockets.0.2.0\lib\netstandard2.0\TwitchLib.EventSub.Websockets.dll</HintPath>
+    </Reference>
+    <Reference Include="TwitchLib.PubSub, Version=3.2.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitchLib.PubSub.3.2.6\lib\netstandard2.0\TwitchLib.PubSub.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChildForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\BaseEvent.cs" />
+    <Compile Include="Events\EventFactory.cs" />
+    <Compile Include="Events\TwitchOnWhisperMsgEvent.cs" />
+    <Compile Include="Events\TwitchOnNewSubEvent.cs" />
+    <Compile Include="Events\TwitchOnGiftSubEvent.cs" />
+    <Compile Include="Events\TwitchOnContinuedGiftSubEvent.cs" />
+    <Compile Include="Events\TwitchOnCommunitySubEvent.cs" />
+    <Compile Include="Events\TwitchOnPrimeSubEvent.cs" />
+    <Compile Include="Events\TwitchOnResubEvent.cs" />
+    <Compile Include="Events\TwitchOnJoinedChannelEvent.cs" />
+    <Compile Include="Events\TwitchOnDisconnectedEvent.cs" />
+    <Compile Include="Events\TwitchOnConnectedEvent.cs" />
+    <Compile Include="Events\TwitchOnChatMsgEvent.cs" />
+    <Compile Include="Ext.cs" />
+    <Compile Include="FrmBindingGraphs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBindingGraphs.Designer.cs">
+      <DependentUpon>FrmBindingGraphs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmHome.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmHome.Designer.cs">
+      <DependentUpon>FrmHome.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmLog.Designer.cs">
+      <DependentUpon>FrmLog.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Nodes\Actions\BaseActionNode.cs" />
+    <Compile Include="Nodes\Actions\App\FlowCountNode.cs" />
+    <Compile Include="Nodes\Actions\Buttplug\SendRotateCommandNode.cs" />
+    <Compile Include="Nodes\Actions\Buttplug\SendLinearCommandNode.cs" />
+    <Compile Include="Nodes\Actions\Buttplug\SendVibeCommandNode.cs" />
+    <Compile Include="Nodes\Bool\BoolNode.cs" />
+    <Compile Include="Nodes\Branch\FloatBranchNode.cs" />
+    <Compile Include="Nodes\Branch\StringBranchNode.cs" />
+    <Compile Include="Nodes\Branch\DateTimeBranchNode.cs" />
+    <Compile Include="Nodes\Branch\UIntBranchNode.cs" />
+    <Compile Include="Nodes\Branch\IntBranchNode.cs" />
+    <Compile Include="Nodes\Graphics\Color\ColorDisplayNode.cs" />
+    <Compile Include="Nodes\Graphics\Color\ColorOutputNode.cs" />
+    <Compile Include="Nodes\Graphics\Color\ColorInputNode.cs" />
+    <Compile Include="Nodes\Graphics\Image\BaseImageNode.cs" />
+    <Compile Include="Nodes\Graphics\Image\ImageChannelNode.cs" />
+    <Compile Include="Nodes\Graphics\Image\ImageInputNode.cs" />
+    <Compile Include="Nodes\Graphics\Image\ImageDisplayNode.cs" />
+    <Compile Include="Nodes\Graphics\Image\ImageSizeNode.cs" />
+    <Compile Include="Nodes\Graphics\Color\ColorMixNode.cs" />
+    <Compile Include="Nodes\Math\CompareNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatCompareNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatAbsNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatClampNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatMaxNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatMinNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntAbsNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatCeilingNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntCompareNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatFloorNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatRoundNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntAddNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntDivideNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntMaxNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntMinNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntMultiplyNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntSubtractNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntClampNode.cs" />
+    <Compile Include="Nodes\Math\UInt\UIntCompareNode.cs" />
+    <Compile Include="Nodes\StringNode.cs" />
+    <Compile Include="Nodes\Logic\LogicNOTNode.cs" />
+    <Compile Include="Nodes\Events\App\ManualEventTrigger.cs" />
+    <Compile Include="Nodes\FlowNode.cs" />
+    <Compile Include="Nodes\Logic\LogicNANDNode.cs" />
+    <Compile Include="Nodes\Logic\LogicNORNode.cs" />
+    <Compile Include="Nodes\Logic\LogicXNORNode.cs" />
+    <Compile Include="Nodes\Logic\LogicXORNode.cs" />
+    <Compile Include="Nodes\Logic\LogicORNode.cs" />
+    <Compile Include="Nodes\Branch\FlowBranchNode.cs" />
+    <Compile Include="Nodes\Logic\LogicANDNode.cs" />
+    <Compile Include="Nodes\Branch\BoolBranchNode.cs" />
+    <Compile Include="Nodes\Bool\BoolDisplayNode.cs" />
+    <Compile Include="Nodes\Bool\BoolInputNode.cs" />
+    <Compile Include="Nodes\Logic\LogicNode.cs" />
+    <Compile Include="Nodes\Branch\BranchNode.cs" />
+    <Compile Include="Nodes\CommentNode.cs" />
+    <Compile Include="Nodes\DescriptorForColor.cs" />
+    <Compile Include="Nodes\Events\BaseEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnChatMsgEventNode.cs" />
+    <Compile Include="Nodes\FrmEnumSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Nodes\NodeButton.cs" />
+    <Compile Include="Nodes\NodeCheckBox.cs" />
+    <Compile Include="Nodes\NodeColorButton.cs" />
+    <Compile Include="Nodes\NodeHub.cs" />
+    <Compile Include="Nodes\NodeProgress.cs" />
+    <Compile Include="Nodes\NodeSelectEnumBox.cs" />
+    <Compile Include="Nodes\Number\Float\FloatToUIntNode.cs" />
+    <Compile Include="Nodes\Number\Float\FloatDisplayNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatSubtractNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatMultiplyNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatDivideNode.cs" />
+    <Compile Include="Nodes\FloatNode.cs" />
+    <Compile Include="Nodes\Number\Float\FloatToIntNode.cs" />
+    <Compile Include="Nodes\ConvertNode.cs" />
+    <Compile Include="Nodes\Number\UInt\UIntInputNode.cs" />
+    <Compile Include="Nodes\Number\UInt\UIntDisplayNode.cs" />
+    <Compile Include="Nodes\Number\UInt\UIntToFloatNode.cs" />
+    <Compile Include="Nodes\Number\UInt\UIntToIntNode.cs" />
+    <Compile Include="Nodes\Number\Int\IntToUIntNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntMaxNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntMinNode.cs" />
+    <Compile Include="Nodes\String\StringAppendNode.cs" />
+    <Compile Include="Nodes\String\StringContainsNode.cs" />
+    <Compile Include="Nodes\String\StringDisplayNode.cs" />
+    <Compile Include="Nodes\String\StringFormatNode.cs" />
+    <Compile Include="Nodes\String\StringInputNode.cs" />
+    <Compile Include="Nodes\UIntNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntClampNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntDivideNode.cs" />
+    <Compile Include="Nodes\Number\Int\IntDisplayNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntMultiplyNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntSubtractNode.cs" />
+    <Compile Include="Nodes\Number\Int\IntToFloatNode.cs" />
+    <Compile Include="Nodes\DateTime\ClockNode.cs" />
+    <Compile Include="Nodes\Math\Float\FloatAddNode.cs" />
+    <Compile Include="Nodes\Math\Int\IntAddNode.cs" />
+    <Compile Include="Nodes\Number\Float\FloatInputNode.cs" />
+    <Compile Include="Nodes\Number\Int\IntInputNode.cs" />
+    <Compile Include="Nodes\IntNode.cs" />
+    <Compile Include="Nodes\DateTime\DateTimeDisplayNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queues\ButtplugDeviceQueue.cs" />
     <Compile Include="Structs.cs" />
+    <Compile Include="ToolStripRendererEx.cs" />
+    <EmbeddedResource Include="FrmBindingGraphs.resx">
+      <DependentUpon>FrmBindingGraphs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmHome.resx">
+      <DependentUpon>FrmHome.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmLog.resx">
+      <DependentUpon>FrmLog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -229,6 +416,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -246,6 +434,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ChattyVibesLogo.ico" />
+    <None Include="Resources\ChattyVibesLogo.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
@@ -258,6 +447,16 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Nodes\Actions\Twitch\" />
+    <Folder Include="Nodes\Events\Buttplug\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ST.Library.UI\ST.Library.UI.csproj">
+      <Project>{effcc270-4999-4077-a543-56cccce92147}</Project>
+      <Name>ST.Library.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\ButtplugRustFFI.2.0.5\build\ButtplugRustFFI.targets" Condition="Exists('..\packages\ButtplugRustFFI.2.0.5\build\ButtplugRustFFI.targets')" />

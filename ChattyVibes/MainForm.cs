@@ -1,10 +1,15 @@
 ﻿using Buttplug;
+using ChattyVibes.Events;
+using ChattyVibes.Queues;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +19,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
+using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 
 namespace ChattyVibes
@@ -26,148 +32,133 @@ namespace ChattyVibes
         private string _authToken = null;
         private readonly HttpListener _server = new HttpListener();
 
-        private readonly Config _conf = new Config();
-        private ConnectionState _plugState = ConnectionState.NotConnected;
+        internal readonly Config _conf = new Config();
+        internal volatile static ConnectionState _plugState = ConnectionState.NotConnected;
         private ButtplugClient _plugClient = null;
-        private ConnectionState _chatState = ConnectionState.NotConnected;
+        internal ButtplugClientDevice[] _plugDevices
+        {
+            get { return _plugClient.Devices; }
+        }
+        internal volatile static ConnectionState _chatState = ConnectionState.NotConnected;
         private TwitchClient _chatClient = null;
 
-        private readonly Queue<QueuedItemType> _queue = new Queue<QueuedItemType>();
+        private struct QueueItem
+        {
+            public QueuedItemType Type;
+            public object Sender;
+            public object EventArgs;
+        }
+
+        private readonly ConcurrentQueue<QueueItem> _queue = new ConcurrentQueue<QueueItem>();
         private Thread _worker;
-        private Thread _batteryWorker;
+
+        private readonly static Color IdleBtnColor = Color.FromArgb(24, 30, 54);
+        private readonly static Color SelectedBtnColor = Color.FromArgb(46, 51, 73);
+
+        internal readonly List<string> _logMessages = new List<string>();
+
+        internal readonly static EventFactory EventFactory = new EventFactory();
+        internal readonly static Dictionary<uint, ButtplugDeviceQueue> ButtplugQueues = new Dictionary<uint, ButtplugDeviceQueue>();
+
+        internal const string _graphDir = "./Graphs";
+        internal const string _graphFileExt = ".bpgraph";
+        internal readonly static string _graphFilePtrn = $"*{_graphFileExt}";
+
+        private const int WM_NCLBUTTONDOWN = 0xA1;
+        private const int HT_CAPTION = 0x2;
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [DllImport("user32.dll")]
+        private static extern bool ReleaseCapture();
+        [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
+        private static extern IntPtr CreateRoundRectRgn(
+            int nLeftRect,
+            int nTopRect,
+            int nRightRect,
+            int nBottomRect,
+            int nWidthEllipse,
+            int nHeightEllipse
+        );
 
         public MainForm()
         {
             InitializeComponent();
+            Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 25, 25));
             Config.Load(ref _conf);
             _server.Prefixes.Add($"{CTwitchRedirectUrl}/");
+
+            if (!Directory.Exists(_graphDir))
+                Directory.CreateDirectory(_graphDir);
+        }
+
+        private void UpdateNavItem(Button btn)
+        {
+            pnlNavInd.Height = btn.Height;
+            pnlNavInd.Top = btn.Top;
+            pnlNavInd.Left = btn.Left;
+            btn.BackColor = SelectedBtnColor;
+
+            if (btn != btnHome)
+                btnHome.BackColor = IdleBtnColor;
+
+            if (btn != btnBindingGraph)
+                btnBindingGraph.BackColor = IdleBtnColor;
+
+            if (btn != btnLog)
+                btnLog.BackColor = IdleBtnColor;
         }
 
         private void UpdateGUI()
         {
-            switch (_plugState)
-            {
-                case ConnectionState.NotConnected:
-                    {
-                        btnConnectBP.Enabled = true;
-                        btnDisconnectBP.Enabled = false;
-                        lblBPStatus.Text = "Not Connected";
-                        tbHostname.Enabled = true;
-                        numPort.Enabled = true;
-                        break;
-                    }
-                case ConnectionState.Connecting:
-                    {
-                        btnConnectBP.Enabled = false;
-                        btnDisconnectBP.Enabled = false;
-                        lblBPStatus.Text = "Connecting";
-                        tbHostname.Enabled = false;
-                        numPort.Enabled = false;
-                        break;
-                    }
-                case ConnectionState.Connected:
-                    {
-                        btnConnectBP.Enabled = false;
-                        btnDisconnectBP.Enabled = true;
-                        lblBPStatus.Text = "Connected";
-                        tbHostname.Enabled = false;
-                        numPort.Enabled = false;
-                        break;
-                    }
-                case ConnectionState.Disconnecting:
-                    {
-                        btnConnectBP.Enabled = false;
-                        btnDisconnectBP.Enabled = false;
-                        lblBPStatus.Text = "Disconnecting";
-                        tbHostname.Enabled = false;
-                        numPort.Enabled = false;
-                        break;
-                    }
-                case ConnectionState.Error:
-                    {
-                        btnConnectBP.Enabled = true;
-                        btnDisconnectBP.Enabled = false;
-                        lblBPStatus.Text = "Connection Error";
-                        tbHostname.Enabled = true;
-                        numPort.Enabled = true;
-                        break;
-                    }
-            }
-
             switch (_chatState)
             {
                 case ConnectionState.NotConnected:
                     {
-                        btnConnectTwitch.Enabled = true;
-                        lblChatStatus.Text = "Not Connected";
-                        tbUsername.Enabled = true;
+                        btnBindingGraph.Enabled = true;
                         break;
                     }
                 case ConnectionState.Connecting:
                     {
-                        btnConnectTwitch.Enabled = false;
-                        lblChatStatus.Text = "Connecting";
-                        tbUsername.Enabled = false;
+                        //btnBindingGraph.Enabled = false;
+                        btnBindingGraph.Enabled = true;
                         break;
                     }
                 case ConnectionState.Connected:
                     {
-                        btnConnectTwitch.Enabled = false;
-                        lblChatStatus.Text = "Connected";
-                        tbUsername.Enabled = false;
+                        //btnBindingGraph.Enabled = false;
+                        btnBindingGraph.Enabled = true;
                         break;
                     }
                 case ConnectionState.Disconnecting:
                     {
-                        btnConnectTwitch.Enabled = false;
-                        lblChatStatus.Text = "Disconnecting";
-                        tbUsername.Enabled = false;
+                        //btnBindingGraph.Enabled = false;
+                        btnBindingGraph.Enabled = true;
                         break;
                     }
                 case ConnectionState.Error:
                     {
-                        btnConnectTwitch.Enabled = true;
-                        lblChatStatus.Text = "Connection Error";
-                        tbUsername.Enabled = true;
+                        btnBindingGraph.Enabled = true;
                         break;
                     }
             }
+
+            if (pnlForm.Controls.Count > 0 && pnlForm.Controls[0] is FrmHome home)
+                home.UpdateGUI();
         }
 
         private void HandleQueue()
         {
-            int sleepTime;
-
             while (true)
             {
                 try
                 {
-                    sleepTime = Math.Max(
-                        _conf.BindReSubDuration, Math.Max(
-                            _conf.BindPrimeSubDuration, Math.Max(
-                                _conf.BindComSubDuration, Math.Max(
-                                    _conf.BindContGiftSubDuration, Math.Max(
-                                        _conf.BindGiftSubDuration, Math.Max(
-                                            _conf.BindNewSubDuration, Math.Max(
-                                                _conf.BindWhisperDuration, _conf.BindMsgDuration
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    );
-
                     if (_queue.Count > 0)
                     {
-                        LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Dequeueing message of type \"{_queue.Peek()}\"").Wait();
-                        HandleToys(_queue.Dequeue());
-                        Thread.Sleep(sleepTime);
+                        if (_queue.TryDequeue(out QueueItem item))
+                            HandleEvent(item);
                     }
-                    else
-                    {
-                        Thread.Sleep(100);
-                    }
+
+                    Thread.Sleep(10);
                 }
                 catch (ThreadAbortException)
                 {
@@ -176,224 +167,81 @@ namespace ChattyVibes
             }
         }
 
-        private void HandleBatteries()
+        private void HandleEvent(QueueItem info)
         {
-            while (true)
-            {
-                try
-                {
-                    if (_plugClient == null || (!_plugClient.Connected) || _plugClient.Devices.Length <= 0)
-                    {
-                        Thread.Sleep(1000);
-                        continue;
-                    }
+            if (!(_chatClient?.IsConnected ?? false))
+                return;
 
-                    var results = new List<DeviceBattery>();
-
-                    foreach (var toy in _plugClient.Devices)
-                    {
-                        try
-                        {
-                            results.Add(SendBatteryLevelCommand(toy).GetAwaiter().GetResult());
-                        }
-                        catch (ButtplugDeviceException)
-                        {
-                            LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Tried to talk to a disconnected device.").Wait();
-                        }
-                    }
-
-                    lvDevices.Invoke((MethodInvoker)delegate {
-                        lvDevices.BeginUpdate();
-                        lvDevices.Items.Clear();
-
-                        foreach (var item in results)
-                        {
-                            var newEntry = new ListViewItem { Text = item.Name };
-                            newEntry.SubItems.Add(item.Level);
-                            lvDevices.Items.Add(newEntry);
-                        }
-
-                        lvDevices.EndUpdate();
-                    });
-
-                    for (int i = 0; i < 30; i++)
-                        Thread.Sleep(1000); // Every 30 seconds is plenty fast enough
-                }
-                catch (ThreadAbortException)
-                {
-                    return;
-                }
-            }
-        }
-
-        private async void HandleToys(QueuedItemType aType)
-        {
-            bool vibeEna = false;
-            float vibeLvl = 0;
-            bool rotEna = false;
-            float rotLvl = 0;
-            bool rotClock = false;
-            bool strEna = false;
-            float strMin = 0;
-            float strMax = 0;
-            int duration = 0;
-
-            switch (aType)
+            switch (info.Type)
             {
                 case QueuedItemType.Message:
                     {
-                        vibeEna = _conf.BindMsgVibeEna;
-                        vibeLvl = _conf.BindMsgVibeLvl;
-                        rotEna = _conf.BindMsgRotEna;
-                        rotLvl = _conf.BindMsgRotLvl;
-                        rotClock = _conf.BindMsgRotClock;
-                        strEna = _conf.BindMsgStrEna;
-                        strMin = _conf.BindMsgStrMin;
-                        strMax = _conf.BindMsgStrMax;
-                        duration = _conf.BindMsgDuration;
-                        break;
+                        ((TwitchOnChatMsgEvent)EventFactory.GetEvent(EventType.TwitchOnChatMsg)).OnEvent(
+                            info.Sender,
+                            (OnMessageReceivedArgs)info.EventArgs
+                        );
+                        return;
                     }
                 case QueuedItemType.Whisper:
                     {
-                        vibeEna = _conf.BindWhisperVibeEna;
-                        vibeLvl = _conf.BindWhisperVibeLvl;
-                        rotEna = _conf.BindWhisperRotEna;
-                        rotLvl = _conf.BindWhisperRotLvl;
-                        rotClock = _conf.BindWhisperRotClock;
-                        strEna = _conf.BindWhisperStrEna;
-                        strMin = _conf.BindWhisperStrMin;
-                        strMax = _conf.BindWhisperStrMax;
-                        duration = _conf.BindWhisperDuration;
-                        break;
+                        ((TwitchOnWhisperMsgEvent)EventFactory.GetEvent(EventType.TwitchOnWhisperMsg)).OnEvent(
+                            info.Sender,
+                            (OnWhisperReceivedArgs)info.EventArgs
+                        );
+                        return;
                     }
                 case QueuedItemType.NewSub:
                     {
-                        vibeEna = _conf.BindNewSubVibeEna;
-                        vibeLvl = _conf.BindNewSubVibeLvl;
-                        rotEna = _conf.BindNewSubRotEna;
-                        rotLvl = _conf.BindNewSubRotLvl;
-                        rotClock = _conf.BindNewSubRotClock;
-                        strEna = _conf.BindNewSubStrEna;
-                        strMin = _conf.BindNewSubStrMin;
-                        strMax = _conf.BindNewSubStrMax;
-                        duration = _conf.BindNewSubDuration;
-                        break;
+                        ((TwitchOnNewSubEvent)EventFactory.GetEvent(EventType.TwitchOnNewSub)).OnEvent(
+                            info.Sender,
+                            (OnNewSubscriberArgs)info.EventArgs
+                        );
+                        return;
                     }
                 case QueuedItemType.GiftSub:
                     {
-                        vibeEna = _conf.BindGiftSubVibeEna;
-                        vibeLvl = _conf.BindGiftSubVibeLvl;
-                        rotEna = _conf.BindGiftSubRotEna;
-                        rotLvl = _conf.BindGiftSubRotLvl;
-                        rotClock = _conf.BindGiftSubRotClock;
-                        strEna = _conf.BindGiftSubStrEna;
-                        strMin = _conf.BindGiftSubStrMin;
-                        strMax = _conf.BindGiftSubStrMax;
-                        duration = _conf.BindGiftSubDuration;
+                        ((TwitchOnGiftSubEvent)EventFactory.GetEvent(EventType.TwitchOnGiftSub)).OnEvent(
+                            info.Sender,
+                            (OnGiftedSubscriptionArgs)info.EventArgs
+                        );
                         break;
                     }
                 case QueuedItemType.ContGiftSub:
                     {
-                        vibeEna = _conf.BindContGiftSubVibeEna;
-                        vibeLvl = _conf.BindContGiftSubVibeLvl;
-                        rotEna = _conf.BindContGiftSubRotEna;
-                        rotLvl = _conf.BindContGiftSubRotLvl;
-                        rotClock = _conf.BindContGiftSubRotClock;
-                        strEna = _conf.BindContGiftSubStrEna;
-                        strMin = _conf.BindContGiftSubStrMin;
-                        strMax = _conf.BindContGiftSubStrMax;
-                        duration = _conf.BindContGiftSubDuration;
-                        break;
+                        ((TwitchOnContinuedGiftSubEvent)EventFactory.GetEvent(EventType.TwitchOnContinuedGiftSub)).OnEvent(
+                            info.Sender,
+                            (OnContinuedGiftedSubscriptionArgs)info.EventArgs
+                        );
+                        return;
                     }
                 case QueuedItemType.ComSub:
                     {
-                        vibeEna = _conf.BindComSubVibeEna;
-                        vibeLvl = _conf.BindComSubVibeLvl;
-                        rotEna = _conf.BindComSubRotEna;
-                        rotLvl = _conf.BindComSubRotLvl;
-                        rotClock = _conf.BindComSubRotClock;
-                        strEna = _conf.BindComSubStrEna;
-                        strMin = _conf.BindComSubStrMin;
-                        strMax = _conf.BindComSubStrMax;
-                        duration = _conf.BindComSubDuration;
-                        break;
+                        ((TwitchOnCommunitySubEvent)EventFactory.GetEvent(EventType.TwitchOnCommunitySub)).OnEvent(
+                            info.Sender,
+                            (OnCommunitySubscriptionArgs)info.EventArgs
+                        );
+                        return;
                     }
                 case QueuedItemType.PrimeSub:
                     {
-                        vibeEna = _conf.BindPrimeSubVibeEna;
-                        vibeLvl = _conf.BindPrimeSubVibeLvl;
-                        rotEna = _conf.BindPrimeSubRotEna;
-                        rotLvl = _conf.BindPrimeSubRotLvl;
-                        rotClock = _conf.BindPrimeSubRotClock;
-                        strEna = _conf.BindPrimeSubStrEna;
-                        strMin = _conf.BindPrimeSubStrMin;
-                        strMax = _conf.BindPrimeSubStrMax;
-                        duration = _conf.BindPrimeSubDuration;
-                        break;
+                        ((TwitchOnPrimeSubEvent)EventFactory.GetEvent(EventType.TwitchOnPrimeSub)).OnEvent(
+                            info.Sender,
+                            (OnPrimePaidSubscriberArgs)info.EventArgs
+                        );
+                        return;
                     }
                 case QueuedItemType.ReSub:
                     {
-                        vibeEna = _conf.BindReSubVibeEna;
-                        vibeLvl = _conf.BindReSubVibeLvl;
-                        rotEna = _conf.BindReSubRotEna;
-                        rotLvl = _conf.BindReSubRotLvl;
-                        rotClock = _conf.BindReSubRotClock;
-                        strEna = _conf.BindReSubStrEna;
-                        strMin = _conf.BindReSubStrMin;
-                        strMax = _conf.BindReSubStrMax;
-                        duration = _conf.BindReSubDuration;
-                        break;
+                        ((TwitchOnResubEvent)EventFactory.GetEvent(EventType.TwitchOnResub)).OnEvent(
+                            info.Sender,
+                            (OnReSubscriberArgs)info.EventArgs
+                        );
+                        return;
                     }
             }
-
-            foreach (var toy in _plugClient.Devices)
-            {
-                try
-                {
-                    if (vibeEna && toy.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.VibrateCmd))
-                        SendVibeCommand(toy, vibeLvl, duration);
-
-                    if (rotEna && toy.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.RotateCmd))
-                        SendRotateCommand(toy, rotLvl, rotClock, duration);
-
-                    if (strEna && toy.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.LinearCmd))
-                        SendStrokeCommand(toy, strMin, strMax, duration);
-                }
-                catch (ButtplugDeviceException)
-                {
-                    await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Device \"{toy.Name}\" (idx {toy.Index}) disconnected. Please try another device.");
-                }
-            }
         }
 
-        private async void SendVibeCommand(ButtplugClientDevice aToy, float aLevel, int aDuration)
-        {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Sending vibrations");
-            await aToy.SendVibrateCmd(aLevel);
-            await Task.Delay(aDuration);
-            await aToy.SendVibrateCmd(0);
-        }
-
-        private async void SendRotateCommand(ButtplugClientDevice aToy, float aLevel, bool aClockwise, int aDuration)
-        {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Sending rotations");
-            await aToy.SendRotateCmd(aLevel, aClockwise);
-            await Task.Delay(aDuration);
-            await aToy.SendRotateCmd(0, aClockwise);
-        }
-
-        private async void SendStrokeCommand(ButtplugClientDevice aToy, float aMin, float aMax, int aDuration)
-        {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Sending strokes");
-            int durationSplit = aDuration / 2;
-            int delay = durationSplit + 100;
-            await aToy.SendLinearCmd((uint)durationSplit, aMin);
-            await Task.Delay(delay);
-            await aToy.SendLinearCmd((uint)durationSplit, aMax);
-            await Task.Delay(delay);
-        }
-
-        private async Task<DeviceBattery> SendBatteryLevelCommand(ButtplugClientDevice aToy)
+        internal async Task<DeviceBattery> SendBatteryLevelCommand(ButtplugClientDevice aToy)
         {
             var result = new DeviceBattery { Name = $"{aToy.Index} - {aToy.Name}" };
 
@@ -419,15 +267,8 @@ namespace ChattyVibes
          * Form actions
          */
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object sender, EventArgs e)
         {
-            tabControl1.SelectedIndex = 0;
-            UpdateGUI();
-
-            lvDevices.BeginUpdate();
-            lvDevices.Items.Clear();
-            lvDevices.EndUpdate();
-
             ButtplugFFILog.LogMessage += ButtplugFFILog_LogMessage;
             ButtplugFFILog.SetLogOptions(ButtplugLogLevel.Info, false);
             _plugClient = new ButtplugClient("ChattyVibes v" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
@@ -437,98 +278,12 @@ namespace ChattyVibes
             _plugClient.DeviceAdded += _plugClient_DeviceAdded;
             _plugClient.DeviceRemoved += _plugClient_DeviceRemoved;
 
-            // Buttplug.IO / Intiface config
-            tbHostname.Text = _conf.ButtplugHostname;
-            numPort.Value = _conf.ButtplugPort;
-
-            // Twitch config
-            tbUsername.Text = _conf.TwitchUsername;
-
-            cbChatVibe.Checked = _conf.BindMsgVibeEna;
-            numChatVibe.Value = (decimal)_conf.BindMsgVibeLvl;
-            cbChatRot.Checked = _conf.BindMsgRotEna;
-            numChatRot.Value = (decimal)_conf.BindMsgRotLvl;
-            cbChatRotClock.Checked = _conf.BindMsgRotClock;
-            cbChatStroke.Checked = _conf.BindMsgStrEna;
-            numChatStrokeMin.Value = (decimal)_conf.BindMsgStrMin;
-            numChatStrokeMax.Value = (decimal)_conf.BindMsgStrMax;
-            numChatDuration.Value = _conf.BindMsgDuration;
-
-            cbWhisperVibe.Checked = _conf.BindWhisperVibeEna;
-            numWhisperVibe.Value = (decimal)_conf.BindWhisperVibeLvl;
-            cbWhisperRot.Checked = _conf.BindWhisperRotEna;
-            numWhisperRot.Value = (decimal)_conf.BindWhisperRotLvl;
-            cbWhisperRotClock.Checked = _conf.BindWhisperRotClock;
-            cbWhisperStroke.Checked = _conf.BindWhisperStrEna;
-            numWhisperStrokeMin.Value = (decimal)_conf.BindWhisperStrMin;
-            numWhisperStrokeMax.Value = (decimal)_conf.BindWhisperStrMax;
-            numWhisperDuration.Value = _conf.BindWhisperDuration;
-
-            cbSubVibe.Checked = _conf.BindNewSubVibeEna;
-            numSubVibe.Value = (decimal)_conf.BindNewSubVibeLvl;
-            cbSubRot.Checked = _conf.BindNewSubRotEna;
-            numSubRot.Value = (decimal)_conf.BindNewSubRotLvl;
-            cbSubRotClock.Checked = _conf.BindNewSubRotClock;
-            cbSubStroke.Checked = _conf.BindNewSubStrEna;
-            numSubStrokeMin.Value = (decimal)_conf.BindNewSubStrMin;
-            numSubStrokeMax.Value = (decimal)_conf.BindNewSubStrMax;
-            numSubDuration.Value = _conf.BindNewSubDuration;
-
-            cbGiftVibe.Checked = _conf.BindGiftSubVibeEna;
-            numGiftVibe.Value = (decimal)_conf.BindGiftSubVibeLvl;
-            cbGiftRot.Checked = _conf.BindGiftSubRotEna;
-            numGiftRot.Value = (decimal)_conf.BindGiftSubRotLvl;
-            cbGiftRotClock.Checked = _conf.BindGiftSubRotClock;
-            cbGiftStroke.Checked = _conf.BindGiftSubStrEna;
-            numGiftStrokeMin.Value = (decimal)_conf.BindGiftSubStrMin;
-            numGiftStrokeMax.Value = (decimal)_conf.BindGiftSubStrMax;
-            numGiftDuration.Value = _conf.BindGiftSubDuration;
-
-            cbContGiftVibe.Checked = _conf.BindContGiftSubVibeEna;
-            numContGiftVibe.Value = (decimal)_conf.BindContGiftSubVibeLvl;
-            cbContGiftRot.Checked = _conf.BindContGiftSubRotEna;
-            numContGiftRot.Value = (decimal)_conf.BindContGiftSubRotLvl;
-            cbContGiftRotClock.Checked = _conf.BindContGiftSubRotClock;
-            cbContGiftStroke.Checked = _conf.BindContGiftSubStrEna;
-            numContGiftStrokeMin.Value = (decimal)_conf.BindContGiftSubStrMin;
-            numContGiftStrokeMax.Value = (decimal)_conf.BindContGiftSubStrMax;
-            numContGiftDuration.Value = _conf.BindContGiftSubDuration;
-
-            cbComSubVibe.Checked = _conf.BindComSubVibeEna;
-            numComSubVibe.Value = (decimal)_conf.BindComSubVibeLvl;
-            cbComSubRot.Checked = _conf.BindComSubRotEna;
-            numComSubRot.Value = (decimal)_conf.BindComSubRotLvl;
-            cbComSubRotClock.Checked = _conf.BindComSubRotClock;
-            cbComSubStroke.Checked = _conf.BindComSubStrEna;
-            numComSubStrokeMin.Value = (decimal)_conf.BindComSubStrMin;
-            numComSubStrokeMax.Value = (decimal)_conf.BindComSubStrMax;
-            numComSubDuration.Value = _conf.BindComSubDuration;
-
-            cbPrimeVibe.Checked = _conf.BindPrimeSubVibeEna;
-            numPrimeVibe.Value = (decimal)_conf.BindPrimeSubVibeLvl;
-            cbPrimeRot.Checked = _conf.BindPrimeSubRotEna;
-            numPrimeRot.Value = (decimal)_conf.BindPrimeSubRotLvl;
-            cbPrimeRotClock.Checked = _conf.BindPrimeSubRotClock;
-            cbPrimeStroke.Checked = _conf.BindPrimeSubStrEna;
-            numPrimeStrokeMin.Value = (decimal)_conf.BindPrimeSubStrMin;
-            numPrimeStrokeMax.Value = (decimal)_conf.BindPrimeSubStrMax;
-            numPrimeDuration.Value = _conf.BindPrimeSubDuration;
-
-            cbReSubVibe.Checked = _conf.BindReSubVibeEna;
-            numReSubVibe.Value = (decimal)_conf.BindReSubVibeLvl;
-            cbReSubRot.Checked = _conf.BindReSubRotEna;
-            numReSubRot.Value = (decimal)_conf.BindReSubRotLvl;
-            cbReSubRotClock.Checked = _conf.BindReSubRotClock;
-            cbReSubStroke.Checked = _conf.BindReSubStrEna;
-            numReSubStrokeMin.Value = (decimal)_conf.BindReSubStrMin;
-            numReSubStrokeMax.Value = (decimal)_conf.BindReSubStrMax;
-            numReSubDuration.Value = _conf.BindReSubDuration;
-
             _worker = new Thread(new ThreadStart(HandleQueue)) { IsBackground = true };
             _worker.Start();
 
-            _batteryWorker = new Thread(new ThreadStart(HandleBatteries)) { IsBackground = true };
-            _batteryWorker.Start();
+            btnHome.PerformClick();
+            UpdateGUI();
+            await LogMsg("Setup and ready to start.");
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -536,8 +291,13 @@ namespace ChattyVibes
             _worker.Abort();
             _worker.Join(5000);
 
-            _batteryWorker.Abort();
-            _batteryWorker.Join(5000);
+            foreach (var item in ButtplugQueues)
+                item.Value.Cleanup();
+
+            ButtplugQueues.Clear();
+
+            while (!_queue.IsEmpty)
+                _queue.TryDequeue(out _);
 
             if (_chatClient != null && _chatClient.IsConnected)
             {
@@ -550,11 +310,9 @@ namespace ChattyVibes
                 _plugClient.DisconnectAsync().Wait();
                 _plugClient = null;
             }
-
-            Config.Save(_conf);
         }
 
-        private async void btnConnectBP_Click(object sender, EventArgs e)
+        internal async Task ConnectButtplug()
         {
             _plugState = ConnectionState.Connecting;
             UpdateGUI();
@@ -603,7 +361,7 @@ namespace ChattyVibes
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Scanning done");
         }
 
-        private async void btnDisconnectBP_Click(object sender, EventArgs e)
+        internal async Task DisconnectButtplug()
         {
             _plugState = ConnectionState.Disconnecting;
             UpdateGUI();
@@ -615,7 +373,7 @@ namespace ChattyVibes
             UpdateGUI();
         }
 
-        private async void btnRescanDevices_Click(object sender, EventArgs e)
+        internal async Task RescanDevices()
         {
             if (_plugClient == null || (!_plugClient.Connected) || _plugClient.IsScanning)
                 return;
@@ -637,7 +395,7 @@ namespace ChattyVibes
                 await _plugClient.StopScanningAsync();
         }
 
-        private async void btnConnectTwitch_Click(object sender, EventArgs e)
+        internal async Task ConnectTwitch()
         {
             _chatState = ConnectionState.Connecting;
             UpdateGUI();
@@ -653,13 +411,11 @@ namespace ChattyVibes
             _chatClient = new TwitchClient(new WebSocketClient(twitchOptions));
             _chatClient.OnLog += _chatClient_OnLog;
             _chatClient.OnConnected += _chatClient_OnConnected;
+            _chatClient.OnDisconnected += _chatClient_OnDisconnected;
             _chatClient.OnJoinedChannel += _chatClient_OnJoinedChannel;
 
-            // MVP goal, vibe on received msg
             _chatClient.OnMessageReceived += _chatClient_OnMessageReceived;
             _chatClient.OnWhisperReceived += _chatClient_OnWhisperReceived;
-
-            // Additional goals
             _chatClient.OnNewSubscriber += _chatClient_OnNewSubscriber;
             _chatClient.OnGiftedSubscription += _chatClient_OnGiftedSubscription;
             _chatClient.OnContinuedGiftedSubscription += _chatClient_OnContinuedGiftedSubscription;
@@ -689,7 +445,7 @@ namespace ChattyVibes
             var twitchCreds = new ConnectionCredentials(_conf.TwitchUsername, _authToken);
             _chatClient.Initialize(
                 credentials: twitchCreds,
-                channel: _conf.TwitchUsername,
+                channel: _conf.ChannelName,
                 autoReListenOnExceptions: true
             );
 
@@ -702,6 +458,105 @@ namespace ChattyVibes
 
             _chatState = ConnectionState.Connected;
             UpdateGUI();
+        }
+
+        internal async Task DisconnectTwitch()
+        {
+            _chatState = ConnectionState.Disconnecting;
+            UpdateGUI();
+
+            if (_chatClient != null && _chatClient.IsConnected)
+            {
+                _chatClient.AutoReListenOnException = false;
+                _chatClient.LeaveChannel(_conf.ChannelName);
+                _chatClient.DisableAutoPong = true;
+                _chatClient.Disconnect();
+                _chatClient = null;
+            }
+
+            await Task.Delay(100);
+            _chatState = ConnectionState.NotConnected;
+            UpdateGUI();
+        }
+
+        private void MoveMainForm(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            if (pnlForm.Controls.Count > 0)
+                ((ChildForm)pnlForm.Controls[0]).Close();
+
+            Close();
+        }
+
+        private void btnHome_Click(object sender, EventArgs e)
+        {
+            if (pnlForm.Controls.Count > 0)
+                ((ChildForm)pnlForm.Controls[0]).Close();
+
+            lblTitle.Text = "HOME";
+            UpdateNavItem((Button)sender);
+
+            FrmHome frm = new FrmHome()
+            {
+                MainFrm = this,
+                Dock = DockStyle.Fill,
+                TopLevel = false,
+                TopMost = true,
+                FormBorderStyle = FormBorderStyle.None
+            };
+            pnlForm.Controls.Clear();
+            pnlForm.Controls.Add(frm);
+            frm.Show();
+        }
+
+        private void btnBindingGraph_Click(object sender, EventArgs e)
+        {
+            if (pnlForm.Controls.Count > 0)
+                ((ChildForm)pnlForm.Controls[0]).Close();
+
+            lblTitle.Text = "BINDING GRAPH";
+            UpdateNavItem((Button)sender);
+
+            FrmBindingGraphs frm = new FrmBindingGraphs()
+            {
+                MainFrm = this,
+                Dock = DockStyle.Fill,
+                TopLevel = false,
+                TopMost = true,
+                FormBorderStyle = FormBorderStyle.None
+            };
+            pnlForm.Controls.Clear();
+            pnlForm.Controls.Add(frm);
+            frm.Show();
+        }
+
+        private void btnLog_Click(object sender, EventArgs e)
+        {
+            if (pnlForm.Controls.Count > 0)
+                ((ChildForm)pnlForm.Controls[0]).Close();
+
+            lblTitle.Text = "LOG";
+            UpdateNavItem((Button)sender);
+
+            FrmLog frm = new FrmLog()
+            {
+                MainFrm = this,
+                Dock = DockStyle.Fill,
+                TopLevel = false,
+                TopMost = true,
+                FormBorderStyle = FormBorderStyle.None
+            };
+            pnlForm.Controls.Clear();
+            pnlForm.Controls.Add(frm);
+            frm.Show();
         }
 
         private void IncomingHttpRequest(IAsyncResult result)
@@ -765,119 +620,13 @@ namespace ChattyVibes
             httpListener.Stop();
         }
 
-        private void CheckedChanged(object sender, EventArgs e)
+        internal async Task LogMsg(string aMsg)
         {
-            var tSender = sender as CheckBox;
+            Invoke((MethodInvoker)delegate {
+                _logMessages.Add(aMsg);
 
-            if (tSender == cbChatVibe) { _conf.BindMsgVibeEna = tSender.Checked; return; }
-            if (tSender == cbChatRot) { _conf.BindMsgRotEna = tSender.Checked; return; }
-            if (tSender == cbChatRotClock) { _conf.BindMsgRotClock = tSender.Checked; return; }
-            if (tSender == cbChatStroke) { _conf.BindMsgStrEna = tSender.Checked; return; }
-
-            if (tSender == cbWhisperVibe) { _conf.BindWhisperVibeEna = tSender.Checked; return; }
-            if (tSender == cbWhisperRot) { _conf.BindWhisperRotEna = tSender.Checked; return; }
-            if (tSender == cbWhisperRotClock) { _conf.BindWhisperRotClock = tSender.Checked; return; }
-            if (tSender == cbWhisperStroke) { _conf.BindWhisperStrEna = tSender.Checked; return; }
-
-            if (tSender == cbSubVibe) { _conf.BindNewSubVibeEna = tSender.Checked; return; }
-            if (tSender == cbSubRot) { _conf.BindNewSubRotEna = tSender.Checked; return; }
-            if (tSender == cbSubRotClock) { _conf.BindNewSubRotClock = tSender.Checked; return; }
-            if (tSender == cbSubStroke) { _conf.BindNewSubStrEna = tSender.Checked; return; }
-
-            if (tSender == cbGiftVibe) { _conf.BindGiftSubVibeEna = tSender.Checked; return; }
-            if (tSender == cbGiftRot) { _conf.BindGiftSubRotEna = tSender.Checked; return; }
-            if (tSender == cbGiftRotClock) { _conf.BindGiftSubRotClock = tSender.Checked; return; }
-            if (tSender == cbGiftStroke) { _conf.BindGiftSubStrEna = tSender.Checked; return; }
-
-            if (tSender == cbContGiftVibe) { _conf.BindContGiftSubVibeEna = tSender.Checked; return; }
-            if (tSender == cbContGiftRot) { _conf.BindContGiftSubRotEna = tSender.Checked; return; }
-            if (tSender == cbContGiftRotClock) { _conf.BindContGiftSubRotClock = tSender.Checked; return; }
-            if (tSender == cbContGiftStroke) { _conf.BindContGiftSubStrEna = tSender.Checked; return; }
-
-            if (tSender == cbComSubVibe) { _conf.BindMsgVibeEna = tSender.Checked; return; }
-            if (tSender == cbComSubRot) { _conf.BindMsgRotEna = tSender.Checked; return; }
-            if (tSender == cbComSubRotClock) { _conf.BindMsgRotClock = tSender.Checked; return; }
-            if (tSender == cbComSubStroke) { _conf.BindMsgStrEna = tSender.Checked; return; }
-
-            if (tSender == cbPrimeVibe) { _conf.BindPrimeSubVibeEna = tSender.Checked; return; }
-            if (tSender == cbPrimeRot) { _conf.BindPrimeSubRotEna = tSender.Checked; return; }
-            if (tSender == cbPrimeRotClock) { _conf.BindPrimeSubRotClock = tSender.Checked; return; }
-            if (tSender == cbPrimeStroke) { _conf.BindPrimeSubStrEna = tSender.Checked; return; }
-
-            if (tSender == cbReSubVibe) { _conf.BindReSubVibeEna = tSender.Checked; return; }
-            if (tSender == cbReSubRot) { _conf.BindReSubRotEna = tSender.Checked; return; }
-            if (tSender == cbReSubRotClock) { _conf.BindReSubRotClock = tSender.Checked; return; }
-            if (tSender == cbReSubStroke) { _conf.BindReSubStrEna = tSender.Checked; return; }
-        }
-
-        private void NumValueChanged(object sender, EventArgs e)
-        {
-            var tSender = sender as NumericUpDown;
-
-            if (tSender == numPort) { _conf.ButtplugPort = (uint)tSender.Value; return; }
-
-            if (tSender == numChatVibe) { _conf.BindMsgVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numChatRot) { _conf.BindMsgRotLvl = (float)tSender.Value; return; }
-            if (tSender == numChatStrokeMin) { _conf.BindMsgStrMin = (float)tSender.Value; return; }
-            if (tSender == numChatStrokeMax) { _conf.BindMsgStrMax = (float)tSender.Value; return; }
-            if (tSender == numChatDuration) { _conf.BindMsgDuration = (int)tSender.Value; return; }
-
-            if (tSender == numWhisperVibe) { _conf.BindWhisperVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numWhisperRot) { _conf.BindWhisperRotLvl = (float)tSender.Value; return; }
-            if (tSender == numWhisperStrokeMin) { _conf.BindWhisperStrMin = (float)tSender.Value; return; }
-            if (tSender == numWhisperStrokeMax) { _conf.BindWhisperStrMax = (float)tSender.Value; return; }
-            if (tSender == numWhisperDuration) { _conf.BindWhisperDuration = (int)tSender.Value; return; }
-
-            if (tSender == numSubVibe) { _conf.BindNewSubVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numSubRot) { _conf.BindNewSubRotLvl = (float)tSender.Value; return; }
-            if (tSender == numSubStrokeMin) { _conf.BindNewSubStrMin = (float)tSender.Value; return; }
-            if (tSender == numSubStrokeMax) { _conf.BindNewSubStrMax = (float)tSender.Value; return; }
-            if (tSender == numSubDuration) { _conf.BindNewSubDuration = (int)tSender.Value; return; }
-
-            if (tSender == numGiftVibe) { _conf.BindGiftSubVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numGiftRot) { _conf.BindGiftSubRotLvl = (float)tSender.Value; return; }
-            if (tSender == numGiftStrokeMin) { _conf.BindGiftSubStrMin = (float)tSender.Value; return; }
-            if (tSender == numGiftStrokeMax) { _conf.BindGiftSubStrMax = (float)tSender.Value; return; }
-            if (tSender == numGiftDuration) { _conf.BindGiftSubDuration = (int)tSender.Value; return; }
-
-            if (tSender == numContGiftVibe) { _conf.BindContGiftSubVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numContGiftRot) { _conf.BindContGiftSubRotLvl = (float)tSender.Value; return; }
-            if (tSender == numContGiftStrokeMin) { _conf.BindContGiftSubStrMin = (float)tSender.Value; return; }
-            if (tSender == numContGiftStrokeMax) { _conf.BindContGiftSubStrMax = (float)tSender.Value; return; }
-            if (tSender == numContGiftDuration) { _conf.BindContGiftSubDuration = (int)tSender.Value; return; }
-
-            if (tSender == numComSubVibe) { _conf.BindComSubVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numComSubRot) { _conf.BindComSubRotLvl = (float)tSender.Value; return; }
-            if (tSender == numComSubStrokeMin) { _conf.BindComSubStrMin = (float)tSender.Value; return; }
-            if (tSender == numComSubStrokeMax) { _conf.BindComSubStrMax = (float)tSender.Value; return; }
-            if (tSender == numComSubDuration) { _conf.BindComSubDuration = (int)tSender.Value; return; }
-
-            if (tSender == numPrimeVibe) { _conf.BindPrimeSubVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numPrimeRot) { _conf.BindPrimeSubRotLvl = (float)tSender.Value; return; }
-            if (tSender == numPrimeStrokeMin) { _conf.BindPrimeSubStrMin = (float)tSender.Value; return; }
-            if (tSender == numPrimeStrokeMax) { _conf.BindPrimeSubStrMax = (float)tSender.Value; return; }
-            if (tSender == numPrimeDuration) { _conf.BindPrimeSubDuration = (int)tSender.Value; return; }
-
-            if (tSender == numReSubVibe) { _conf.BindReSubVibeLvl = (float)tSender.Value; return; }
-            if (tSender == numReSubRot) { _conf.BindReSubRotLvl = (float)tSender.Value; return; }
-            if (tSender == numReSubStrokeMin) { _conf.BindReSubStrMin = (float)tSender.Value; return; }
-            if (tSender == numReSubStrokeMax) { _conf.BindReSubStrMax = (float)tSender.Value; return; }
-            if (tSender == numReSubDuration) { _conf.BindReSubDuration = (int)tSender.Value; return; }
-        }
-
-        private void TbTextChanged(object sender, EventArgs e)
-        {
-            var tSender = sender as TextBox;
-
-            if (tSender == tbHostname) { _conf.ButtplugHostname = tSender.Text; return; }
-
-            if (tSender == tbUsername) { _conf.TwitchUsername = tSender.Text; return; }
-        }
-
-        private async Task LogMsg(string aMsg)
-        {
-            tbLog.Invoke((MethodInvoker)delegate {
-                tbLog.AppendText(aMsg);
+                if (pnlForm.Controls.Count > 0 && pnlForm.Controls[0] is FrmLog log)
+                    log.AddLogMsg(aMsg);
             });
             await Task.Delay(1);
         }
@@ -885,37 +634,25 @@ namespace ChattyVibes
         /*
          * Twitch actions
          */
-
         private async void _chatClient_OnLog(object sender, OnLogArgs e) =>
             await LogMsg($"\r\n{e.DateTime} - Twitch: {e.BotUsername} - {e.Data}");
 
-        private async void _chatClient_OnConnected(object sender, OnConnectedArgs e) =>
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Connected to {e.AutoJoinChannel}");
+        private async void _chatClient_OnConnected(object sender, OnConnectedArgs e)
+        {
+            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Connected to Twitch");
+            ((TwitchOnConnectedEvent)EventFactory.GetEvent(EventType.TwitchOnConnected)).OnEvent(sender, e);
+        }
+
+        private async void _chatClient_OnDisconnected(object sender, OnDisconnectedEventArgs e)
+        {
+            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: Disconnected from Twitch");
+            ((TwitchOnDisconnectedEvent)EventFactory.GetEvent(EventType.TwitchOnDisconnected)).OnEvent(sender, e);
+        }
 
         private async void _chatClient_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            _chatClient.SendMessage(e.Channel, "ChattyVibes joined the channel, ready for work");
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Sent message \"ChattyVibes joined the channel, ready for work\"");
-
-            if (!_plugClient.Connected)
-                return;
-
-            foreach (var toy in _plugClient.Devices)
-            {
-                if (toy.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.VibrateCmd))
-                {
-                    try
-                    {
-                        await toy.SendVibrateCmd(.25);
-                        await Task.Delay(1000);
-                        await toy.SendVibrateCmd(.0);
-                    }
-                    catch (ButtplugDeviceException)
-                    {
-                        await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Device \"{toy.Name}\" (idx {toy.Index}) disconnected. Please try another device.");
-                    }
-                }
-            }
+            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Joined channel {e.Channel}");
+            ((TwitchOnJoinedChannelEvent)EventFactory.GetEvent(EventType.TwitchOnJoinedChannel)).OnEvent(sender, e);
         }
 
         // MVP goal, vibe on received msg
@@ -923,21 +660,23 @@ namespace ChattyVibes
         private async void _chatClient_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.ChatMessage.DisplayName} - Sent Message \"{e.ChatMessage.Message}\"");
-
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.Message);
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.Message,
+                Sender = sender,
+                EventArgs = e
+            });
         }
 
         private async void _chatClient_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.WhisperMessage.DisplayName} - Sent Whisper \"{e.WhisperMessage.Message}\"");
-
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.Whisper);
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.Whisper,
+                Sender = sender,
+                EventArgs = e
+            });
         }
 
         // Additional goals
@@ -945,61 +684,78 @@ namespace ChattyVibes
         private async void _chatClient_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.Subscriber.DisplayName} - New Sub tier {e.Subscriber.SubscriptionPlanName}");
-
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.NewSub);
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.NewSub,
+                Sender = sender,
+                EventArgs = e
+            });
         }
 
         private async void _chatClient_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - New Gift Sub \"{e.GiftedSubscription.MsgParamRecipientDisplayName}\" Tier {e.GiftedSubscription.MsgParamSubPlanName} Length {e.GiftedSubscription.MsgParamMonths}");
-
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.NewSub);
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.GiftSub,
+                Sender = sender,
+                EventArgs = e
+            });
         }
 
         private async void _chatClient_OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.ReSubscriber.DisplayName} - Re-Sub tier {e.ReSubscriber.SubscriptionPlanName} Message \"{e.ReSubscriber.ResubMessage}\"");
-
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.NewSub);
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.ReSub,
+                Sender = sender,
+                EventArgs = e
+            });
         }
 
         private async void _chatClient_OnPrimePaidSubscriber(object sender, OnPrimePaidSubscriberArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.PrimePaidSubscriber.DisplayName} - Prime Subscriber");
-
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.NewSub);
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.PrimeSub,
+                Sender = sender,
+                EventArgs = e
+            });
         }
 
         private async void _chatClient_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - Community Subscriber tier {e.GiftedSubscription.MsgParamSubPlan}");
-
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.NewSub);
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.ComSub,
+                Sender = sender,
+                EventArgs = e
+            });
         }
 
         private async void _chatClient_OnContinuedGiftedSubscription(object sender, OnContinuedGiftedSubscriptionArgs e)
         {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.ContinuedGiftedSubscription.DisplayName} - Continued Gifted Subscriber");
+            _queue.Enqueue(new QueueItem
+            {
+                Type = QueuedItemType.ContGiftSub,
+                Sender = sender,
+                EventArgs = e
+            });
+        }
 
-            if (!_plugClient.Connected)
-                return;
-
-            _queue.Enqueue(QueuedItemType.NewSub);
+        private void panel3_Paint(object sender, PaintEventArgs e)
+        {
+            ControlPaint.DrawBorder(
+                e.Graphics, panel3.ClientRectangle,
+                Color.Empty, 0, ButtonBorderStyle.None,
+                Color.Empty, 0, ButtonBorderStyle.None,
+                Color.Empty, 0, ButtonBorderStyle.None,
+                Color.FromArgb(24, 30, 54), 2, ButtonBorderStyle.Solid
+            );
         }
 
         /*
@@ -1018,6 +774,10 @@ namespace ChattyVibes
             _plugState = ConnectionState.NotConnected;
 
             Invoke((MethodInvoker)delegate {
+                foreach (var item in ButtplugQueues)
+                    item.Value.Cleanup();
+
+                ButtplugQueues.Clear();
                 UpdateGUI();
             });
         }
@@ -1036,10 +796,20 @@ namespace ChattyVibes
                 if (msgInfo.Value.FeatureCount != 0)
                     logMsg += $"\r\n    - Features: {msgInfo.Value.FeatureCount}";
             }
+
             await LogMsg(logMsg);
+            ButtplugQueues.Add(e.Device.Index, new ButtplugDeviceQueue(e.Device));
         }
 
-        private async void _plugClient_DeviceRemoved(object sender, DeviceRemovedEventArgs e) =>
+        private async void _plugClient_DeviceRemoved(object sender, DeviceRemovedEventArgs e)
+        {
             await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Device \"{e.Device.Name}\" (idx {e.Device.Index}) disconnected");
+
+            if (ButtplugQueues.ContainsKey(e.Device.Index))
+            {
+                ButtplugQueues[e.Device.Index].Cleanup();
+                ButtplugQueues.Remove(e.Device.Index);
+            }
+        }
     }
 }
