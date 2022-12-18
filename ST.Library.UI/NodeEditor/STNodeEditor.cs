@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.IO.Compression;
 using System.Drawing.Text;
+using System.Data.SqlTypes;
 /*
 MIT License
 
@@ -2345,13 +2346,34 @@ namespace ST.Library.UI.NodeEditor
                 dic.Add(strKey, byValue);
             }
 
-            if (!m_dic_type.ContainsKey(strGUID))
-                throw new TypeLoadException("Could not find type {" + strModel.Split('|')[1] + "} In the assembly Make sure the assembly {" + strModel.Split('|')[0] + "} Has been correctly loaded by the editor The assembly can be loaded by calling LoadAssembly()");
+            string[] modelSplit = strModel.Split('|');
+            strGUID = PatchOldData(strGUID, modelSplit[1]);
 
-            Type t = m_dic_type[strGUID]; ;
+            if (!m_dic_type.ContainsKey(strGUID))
+                throw new TypeLoadException("Could not find type {" + modelSplit[1] + "} In the assembly Make sure the assembly {" + modelSplit[0] + "} Has been correctly loaded by the editor The assembly can be loaded by calling LoadAssembly()");
+
+            Type t = m_dic_type[strGUID];
             STNode node = (STNode)Activator.CreateInstance(t);
             node.OnLoadNode(dic);
             return node;
+        }
+
+        /// <summary>
+        /// Patch outdated node GUIDs with their new GUID
+        /// </summary>
+        /// <param name="guid">The old GUID</param>
+        /// <param name="name">The FullName of the node</param>
+        /// <returns>The proper GUID</returns>
+        private string PatchOldData(string guid, string name)
+        {
+            if (!m_dic_type.ContainsKey(guid))
+            {
+                foreach (var t in m_dic_type)
+                    if (t.Value.FullName.Equals(name))
+                        return t.Key;
+            }
+
+            return guid;
         }
 
         /// <summary>
