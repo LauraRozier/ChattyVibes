@@ -201,27 +201,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="TwitchLib.Api, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.3.8.0\lib\netstandard2.0\TwitchLib.Api.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.Api.Core, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.Api.Core.Enums, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.Enums.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.Enums.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.Api.Core.Interfaces, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.Interfaces.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.Api.Core.Models, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Core.Models.3.8.0\lib\netstandard2.0\TwitchLib.Api.Core.Models.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.Api.Helix, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Helix.3.8.0\lib\netstandard2.0\TwitchLib.Api.Helix.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.Api.Helix.Models, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.Api.Helix.Models.3.8.0\lib\netstandard2.0\TwitchLib.Api.Helix.Models.dll</HintPath>
-    </Reference>
     <Reference Include="TwitchLib.Client, Version=3.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TwitchLib.Client.3.3.1\lib\netstandard2.0\TwitchLib.Client.dll</HintPath>
     </Reference>
@@ -233,15 +212,6 @@
     </Reference>
     <Reference Include="TwitchLib.Communication, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TwitchLib.Communication.1.0.4\lib\netstandard2.0\TwitchLib.Communication.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.EventSub.Core, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.EventSub.Core.2.2.0\lib\netstandard2.0\TwitchLib.EventSub.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.EventSub.Websockets, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.EventSub.Websockets.0.2.0\lib\netstandard2.0\TwitchLib.EventSub.Websockets.dll</HintPath>
-    </Reference>
-    <Reference Include="TwitchLib.PubSub, Version=3.2.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TwitchLib.PubSub.3.2.6\lib\netstandard2.0\TwitchLib.PubSub.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -300,6 +270,16 @@
     <Compile Include="Nodes\Branch\DateTimeBranchNode.cs" />
     <Compile Include="Nodes\Branch\UIntBranchNode.cs" />
     <Compile Include="Nodes\Branch\IntBranchNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnResubEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnPrimeSubEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnNewSubEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnWhisperMsgEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnJoinedChannelEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnGiftSubEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnDisconnectedEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnContinuedGiftSubEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnConnectedEventNode.cs" />
+    <Compile Include="Nodes\Events\Twitch\OnCommunitySubEventNode.cs" />
     <Compile Include="Nodes\Graphics\Color\ColorDisplayNode.cs" />
     <Compile Include="Nodes\Graphics\Color\ColorOutputNode.cs" />
     <Compile Include="Nodes\Graphics\Color\ColorInputNode.cs" />

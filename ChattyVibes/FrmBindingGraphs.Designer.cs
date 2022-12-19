@@ -43,7 +43,6 @@
             this.nodeEditorPanel = new ST.Library.UI.NodeEditor.STNodeEditorPannel();
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lockLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lockConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panel5.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -178,32 +177,24 @@
             // removeToolStripMenuItem
             // 
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.removeToolStripMenuItem.Text = "&Remove";
             this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
             // lockLocationToolStripMenuItem
             // 
             this.lockLocationToolStripMenuItem.Name = "lockLocationToolStripMenuItem";
-            this.lockLocationToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.lockLocationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.lockLocationToolStripMenuItem.Text = "U/Lock &Location";
             this.lockLocationToolStripMenuItem.Click += new System.EventHandler(this.lockLocationToolStripMenuItem_Click);
-            // 
-            // lockConnectionToolStripMenuItem
-            // 
-            this.lockConnectionToolStripMenuItem.Name = "lockConnectionToolStripMenuItem";
-            this.lockConnectionToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.lockConnectionToolStripMenuItem.Text = "U/Lock &Connection";
-            this.lockConnectionToolStripMenuItem.Click += new System.EventHandler(this.lockConnectionToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeToolStripMenuItem,
-            this.lockLocationToolStripMenuItem,
-            this.lockConnectionToolStripMenuItem});
+            this.lockLocationToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(178, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
             // 
             // FrmBindingGraphs
             // 
@@ -243,7 +234,6 @@
         private ST.Library.UI.NodeEditor.STNodeEditorPannel nodeEditorPanel;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lockLocationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem lockConnectionToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }

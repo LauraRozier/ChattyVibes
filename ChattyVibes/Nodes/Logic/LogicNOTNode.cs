@@ -11,20 +11,11 @@ namespace ChattyVibes.Nodes.Bool
         private STNodeOption m_op_in;
         private STNodeOption m_op_out;
 
-        private StringFormat _sf = new StringFormat
-        {
-            LineAlignment = StringAlignment.Center,
-            Alignment = StringAlignment.Center
-        };
-
         protected override void OnCreate()
         {
             base.OnCreate();
             TitleColor = Color.FromArgb(200, FrmBindingGraphs.C_COLOR_LOGIC);
             Title = "Logic NOT";
-            AutoSize = false;
-            Width = 80;
-            Height = 40;
 
             m_op_in = InputOptions.Add("", typeof(bool), true);
             m_op_out = OutputOptions.Add("", typeof(bool), false);
@@ -40,25 +31,9 @@ namespace ChattyVibes.Nodes.Bool
             else
                 _value = true;
 
+            SetOptionText(m_op_out, _value ? "True" : "False");
             m_op_out.TransferData(_value);
             Invalidate();
-        }
-
-        protected override void OnDrawOptionText(DrawingTools dt, STNodeOption op)
-        {
-            base.OnDrawOptionText(dt, op);
-
-            if (op == m_op_out)
-            {
-                Rectangle rect = new Rectangle
-                {
-                    X = op.TextRectangle.X,
-                    Y = op.TextRectangle.Y,
-                    Width = op.TextRectangle.Width,
-                    Height = op.TextRectangle.Height
-                };
-                dt.Graphics.DrawString(_value ? "True" : "False", Font, Brushes.White, rect, _sf);
-            }
         }
     }
 }

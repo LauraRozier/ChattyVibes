@@ -16,10 +16,12 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using TwitchLib.Client;
+using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Events;
+using TwitchLib.Communication.Interfaces;
 using TwitchLib.Communication.Models;
 
 namespace ChattyVibes
@@ -40,6 +42,7 @@ namespace ChattyVibes
             get { return _plugClient.Devices; }
         }
         internal volatile static ConnectionState _chatState = ConnectionState.NotConnected;
+        private WebSocketClient _socketClient = null;
         private TwitchClient _chatClient = null;
 
         private struct QueueItem
@@ -110,6 +113,7 @@ namespace ChattyVibes
 
         private void UpdateGUI()
         {
+            /*
             switch (_chatState)
             {
                 case ConnectionState.NotConnected:
@@ -119,20 +123,17 @@ namespace ChattyVibes
                     }
                 case ConnectionState.Connecting:
                     {
-                        //btnBindingGraph.Enabled = false;
-                        btnBindingGraph.Enabled = true;
+                        btnBindingGraph.Enabled = false;
                         break;
                     }
                 case ConnectionState.Connected:
                     {
-                        //btnBindingGraph.Enabled = false;
-                        btnBindingGraph.Enabled = true;
+                        btnBindingGraph.Enabled = false;
                         break;
                     }
                 case ConnectionState.Disconnecting:
                     {
-                        //btnBindingGraph.Enabled = false;
-                        btnBindingGraph.Enabled = true;
+                        btnBindingGraph.Enabled = false;
                         break;
                     }
                 case ConnectionState.Error:
@@ -141,6 +142,7 @@ namespace ChattyVibes
                         break;
                     }
             }
+            */
 
             if (pnlForm.Controls.Count > 0 && pnlForm.Controls[0] is FrmHome home)
                 home.UpdateGUI();
@@ -299,10 +301,29 @@ namespace ChattyVibes
             while (!_queue.IsEmpty)
                 _queue.TryDequeue(out _);
 
-            if (_chatClient != null && _chatClient.IsConnected)
+            if (_chatClient != null)
             {
-                _chatClient.Disconnect();
+                _chatClient.AutoReListenOnException = false;
+                _chatClient.DisableAutoPong = true;
+
+                if (_chatClient.IsConnected)
+                {
+                    foreach (var channel in _chatClient.JoinedChannels)
+                        _chatClient.LeaveChannel(channel.Channel);
+
+                    _chatClient.Disconnect();
+                }
+
                 _chatClient = null;
+            }
+
+            if (_socketClient != null)
+            {
+                if (_socketClient.IsConnected)
+                    _socketClient.Close();
+
+                _socketClient.Dispose();
+                _socketClient = null;
             }
 
             if (_plugClient != null && _plugClient.Connected)
@@ -401,14 +422,14 @@ namespace ChattyVibes
             UpdateGUI();
             Config.Save(_conf);
 
-            var twitchOptions = new ClientOptions
+            _socketClient = new WebSocketClient(new ClientOptions
             {
                 ThrottlingPeriod = TimeSpan.FromSeconds(30),
                 MessagesAllowedInPeriod = 750,
                 WhisperThrottlingPeriod = TimeSpan.FromSeconds(30),
                 WhispersAllowedInPeriod = 50
-            };
-            _chatClient = new TwitchClient(new WebSocketClient(twitchOptions));
+            });
+            _chatClient = new TwitchClient(_socketClient, ClientProtocol.WebSocket);
             _chatClient.OnLog += _chatClient_OnLog;
             _chatClient.OnConnected += _chatClient_OnConnected;
             _chatClient.OnDisconnected += _chatClient_OnDisconnected;
@@ -468,10 +489,22 @@ namespace ChattyVibes
             if (_chatClient != null && _chatClient.IsConnected)
             {
                 _chatClient.AutoReListenOnException = false;
-                _chatClient.LeaveChannel(_conf.ChannelName);
                 _chatClient.DisableAutoPong = true;
+
+                foreach (var channel in _chatClient.JoinedChannels)
+                    _chatClient.LeaveChannel(channel.Channel);
+
                 _chatClient.Disconnect();
                 _chatClient = null;
+            }
+
+            if (_socketClient != null)
+            {
+                if (_socketClient.IsConnected)
+                    _socketClient.Close();
+
+                _socketClient.Dispose();
+                _socketClient = null;
             }
 
             await Task.Delay(100);

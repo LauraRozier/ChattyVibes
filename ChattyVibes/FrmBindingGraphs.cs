@@ -2,13 +2,45 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using static ChattyVibes.FrmBindingGraphs;
 
 namespace ChattyVibes
 {
     public partial class FrmBindingGraphs : ChildForm
     {
+        public static class Keyboard
+        {
+            private static readonly HashSet<Keys> _keys = new HashSet<Keys>();
+
+            public static void OnKeyDown(Keys key)
+            {
+                if (!_keys.Contains(key))
+                    _keys.Add(key);
+            }
+
+            public static void OnKeyUp(Keys key)
+            {
+                if (_keys.Contains(key))
+                    _keys.Remove(key);
+            }
+
+            public static bool IsKeyDown(Keys key) =>
+                _keys.Contains(key);
+
+            public static bool IsAnyKeyDown
+            {
+                get { return _keys.Count > 0; }
+            }
+        }
+
+        private readonly Timer _timer = new Timer();
+        private int _timerDelayTick = 0;
+        private const int C_TIMER_DELAY_THRESHOLD = 50;
+
         private readonly List<string> _graphFiles = new List<string>();
         private string _currentGraph = string.Empty;
 
@@ -28,21 +60,148 @@ namespace ChattyVibes
         internal readonly static Color C_COLOR_COMMENT = Color.FromArgb(255, 0, 170, 0);
         internal readonly static Color C_COLOR_HUB = Color.FromArgb(255, 128, 128, 128);
 
-        public FrmBindingGraphs()
+        public FrmBindingGraphs() : base()
         {
+            KeyPreview = true;
             InitializeComponent();
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            base.OnLoad(e);
+            if (Keyboard.IsKeyDown(keyData & ~Keys.Shift))
+                return true;
+
+            bool InitMove()
+            {
+                if (!Keyboard.IsAnyKeyDown)
+                {
+                    _timerDelayTick = 0;
+                    _timer.Start();
+                }
+
+                Keyboard.OnKeyDown(keyData & ~Keys.Shift);
+                return true;
+            }
+
+            switch (keyData)
+            {
+                case Keys.Up:
+                case Keys.Shift | Keys.Up:
+                    {
+                        foreach (var node in nodeEditorPanel.Editor.GetSelectedNode())
+                            node.Top -= 1;
+
+                        return InitMove();
+                    }
+                case Keys.Down:
+                case Keys.Shift | Keys.Down:
+                    {
+                        foreach (var node in nodeEditorPanel.Editor.GetSelectedNode())
+                            node.Top += 1;
+
+                        return InitMove();
+                    }
+                case Keys.Left:
+                case Keys.Shift | Keys.Left:
+                    {
+                        foreach (var node in nodeEditorPanel.Editor.GetSelectedNode())
+                            node.Left -= 1;
+
+                        return InitMove();
+                    }
+                case Keys.Right:
+                case Keys.Shift | Keys.Right:
+                    {
+                        foreach (var node in nodeEditorPanel.Editor.GetSelectedNode())
+                            node.Left += 1;
+
+                        return InitMove();
+                    }
+                default: return base.ProcessCmdKey(ref msg, keyData);
+            }
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.A:
+                    {
+                        if ((e.Modifiers & Keys.Control) == Keys.Control)
+                        {
+                            foreach (STNode node in nodeEditorPanel.Editor.Nodes)
+                                node.SetSelected(true, true);
+
+                            e.Handled = true;
+                        }
+
+                        return;
+                    }
+                case Keys.S:
+                    {
+                        if ((e.Modifiers & Keys.Control) == Keys.Control && !string.IsNullOrWhiteSpace(_currentGraph))
+                        {
+                            nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
+                            nodeEditorPanel.Editor.ShowAlert("Saved Canvas", Color.White, Color.FromArgb(125, Color.Green));
+                            e.Handled = true;
+                        }
+
+                        return;
+                    }
+                case Keys.R:
+                    {
+                        if ((e.Modifiers & Keys.Control) == Keys.Control && !string.IsNullOrWhiteSpace(_currentGraph))
+                        {
+                            nodeEditorPanel.Editor.Nodes.Clear();
+                            nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
+                            nodeEditorPanel.Editor.ShowAlert("Reloaded Canvas", Color.White, Color.FromArgb(125, Color.Green));
+                            e.Handled = true;
+                        }
+
+                        return;
+                    }
+                case Keys.Delete:
+                    {
+                        var nodes = nodeEditorPanel.Editor.GetSelectedNode();
+
+                        foreach (STNode node in nodes)
+                            nodeEditorPanel.Editor.Nodes.Remove(node);
+
+                        e.Handled = true;
+                        return;
+                    }
+                case Keys.Up:
+                case Keys.Shift | Keys.Up:
+                case Keys.Down:
+                case Keys.Shift | Keys.Down:
+                case Keys.Left:
+                case Keys.Shift | Keys.Left:
+                case Keys.Right:
+                case Keys.Shift | Keys.Right:
+                    {
+                        Keyboard.OnKeyUp(e.KeyCode & ~Keys.Shift);
+                        _timer.Stop();
+                        e.Handled = true;
+                        return;
+                    }
+                default:
+                    {
+                        base.OnKeyUp(e);
+                        return;
+                    }
+            }
+        }
+
+        protected override void OnLoad(EventArgs ea)
+        {
+            base.OnLoad(ea);
             nodeEditorPanel.LoadAssembly(Application.ExecutablePath);
             nodeEditorPanel.Y = Height - 100;
-            nodeEditorPanel.Editor.OptionConnected += (s, ea) =>
+            nodeEditorPanel.Editor.OptionConnected += new STNodeEditorOptionEventHandler((s, e) =>
             {
                 string msg = "";
 
-                switch (ea.Status)
+                switch (e.Status)
                 {
                     case ConnectionStatus.NoOwner: msg = "No Owner"; break;
                     case ConnectionStatus.SameOwner: msg = "Same Owner"; break;
@@ -62,52 +221,17 @@ namespace ChattyVibes
                 }
                 nodeEditorPanel.Editor.ShowAlert(
                     msg, Color.White,
-                    ea.Status == ConnectionStatus.Connected ? Color.FromArgb(125, Color.Green) : Color.FromArgb(125, Color.Red)
+                    e.Status == ConnectionStatus.Connected ? Color.FromArgb(125, Color.Green) : Color.FromArgb(125, Color.Red)
                 );
-            };
-            nodeEditorPanel.Editor.CanvasScaled += (s, ea) =>
-                nodeEditorPanel.Editor.ShowAlert(nodeEditorPanel.Editor.CanvasScale.ToString("F2"), Color.White, Color.FromArgb(125, Color.Yellow));
-            nodeEditorPanel.Editor.NodeAdded += (s, ea) =>
-                ea.Node.ContextMenuStrip = contextMenuStrip1;
-            nodeEditorPanel.Editor.KeyUp += (s, ea) =>
+            });
+            nodeEditorPanel.Editor.CanvasScaled += new EventHandler((s, e) =>
             {
-                switch (ea.KeyCode)
-                {
-                    case Keys.A:
-                        {
-                            if ((ea.Modifiers & Keys.Control) == Keys.Control)
-                            {
-                                foreach (STNode node in nodeEditorPanel.Editor.Nodes)
-                                    node.SetSelected(true, true);
-
-                                ea.Handled = true;
-                            }
-
-                            break;
-                        }
-                    case Keys.S:
-                        {
-                            if ((ea.Modifiers & Keys.Shift) == Keys.Shift && !string.IsNullOrWhiteSpace(_currentGraph))
-                            {
-                                nodeEditorPanel.Editor.SaveCanvas(_currentGraph);
-                                ea.Handled = true;
-                            }
-
-                            break;
-                        }
-                    case Keys.Delete:
-                        {
-                            var nodes = nodeEditorPanel.Editor.GetSelectedNode();
-
-                            foreach (STNode node in nodes)
-                                nodeEditorPanel.Editor.Nodes.Remove(node);
-
-                            ea.Handled = true;
-                            break;
-                        }
-                    default: break;
-                }
-            };
+                nodeEditorPanel.Editor.ShowAlert(
+                    nodeEditorPanel.Editor.CanvasScale.ToString("F2"),
+                    Color.White, Color.FromArgb(125, Color.Yellow)
+                );
+            });
+            nodeEditorPanel.Editor.NodeAdded += new STNodeEditorEventHandler((s, e) => e.Node.ContextMenuStrip = contextMenuStrip1);
 
             nodeEditorPanel.PropertyGrid.SetInfoKey("Author", "Mail", "Link", "Show Help");
             nodeEditorPanel.Editor.SetTypeColor(typeof(bool), C_COLOR_BOOL);
@@ -137,15 +261,47 @@ namespace ChattyVibes
                 _graphFiles.Add(file);
                 lbGraphs.Items.Add(Path.GetFileName(file));
             }
+
+            _timer.Interval = 10;
+            _timer.Tick += new EventHandler(Timer_Tick);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            _timer.Stop();
+            _timer.Dispose();
+
             if (!string.IsNullOrEmpty(_currentGraph))
                 nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
 
             nodeEditorPanel.Editor.Nodes.Clear();
             base.OnFormClosing(e);
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (!Keyboard.IsAnyKeyDown)
+                return;
+
+            // We wait (_timer.Interval * C_TIMER_DELAY_THRESHOLD) ms before we process button hold scroll
+            if (_timerDelayTick < C_TIMER_DELAY_THRESHOLD)
+            {
+                _timerDelayTick++;
+                return;
+            }
+
+            foreach (var node in nodeEditorPanel.Editor.GetSelectedNode())
+            {
+                if (Keyboard.IsKeyDown(Keys.Up))
+                    node.Top -= 2;
+                else if (Keyboard.IsKeyDown(Keys.Down))
+                    node.Top += 2;
+
+                if (Keyboard.IsKeyDown(Keys.Left))
+                    node.Left -= 2;
+                else if (Keyboard.IsKeyDown(Keys.Right))
+                    node.Left += 2;
+            }
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -217,14 +373,6 @@ namespace ChattyVibes
                 return;
 
             nodeEditorPanel.Editor.ActiveNode.LockLocation = !nodeEditorPanel.Editor.ActiveNode.LockLocation;
-        }
-
-        private void lockConnectionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (nodeEditorPanel.Editor.ActiveNode == null)
-                return;
-
-            nodeEditorPanel.Editor.ActiveNode.LockOption = !nodeEditorPanel.Editor.ActiveNode.LockOption;
         }
 
         private static DialogResult ShowInputDialogBox(ref string input, string prompt, string title = "Title", int width = 300, int height = 200)

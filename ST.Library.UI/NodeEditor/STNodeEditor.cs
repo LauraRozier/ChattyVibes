@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
@@ -12,7 +11,6 @@ using System.ComponentModel;
 using System.Reflection;
 using System.IO.Compression;
 using System.Drawing.Text;
-using System.Data.SqlTypes;
 /*
 MIT License
 
@@ -657,13 +655,19 @@ namespace ST.Library.UI.NodeEditor
         protected override void WndProc(ref Message m) {
             base.WndProc(ref m);
 
+            ushort LOWORD(IntPtr dwValue) =>
+                (ushort)(((long)dwValue) & 0x0000FFFF);
+
+            ushort HIWORD(IntPtr dwValue) =>
+                (ushort)(((long)dwValue) >> 16);
+
             try {
                 Point pt = new Point(((int)m.LParam) >> 16, (ushort)m.LParam);
                 pt = PointToClient(pt);
 
                 if (m.Msg == WM_MOUSEHWHEEL) { //get horizontal scroll message
                     MouseButtons mb = MouseButtons.None;
-                    int n = (ushort)m.WParam;
+                    int n = (short)LOWORD(m.WParam);
 
                     if ((n & 0x0001) == 0x0001)
                         mb |= MouseButtons.Left;
@@ -680,7 +684,8 @@ namespace ST.Library.UI.NodeEditor
                     if ((n & 0x0040) == 0x0040)
                         mb |= MouseButtons.XButton2;
 
-                    OnMouseHWheel(new MouseEventArgs(mb, 0, pt.X, pt.Y, ((int)m.WParam) >> 16));
+                    int shiftedWParam = (short)HIWORD(m.WParam);
+                    OnMouseHWheel(new MouseEventArgs(mb, 0, pt.X, pt.Y, shiftedWParam));
                 }
             } catch { /*add code*/ }
         }
@@ -2230,7 +2235,7 @@ namespace ST.Library.UI.NodeEditor
         /// <param name="strFileName">file path</param>
         public void LoadCanvas(string strFileName) {
             using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(strFileName)))
-                this.LoadCanvas(ms);
+                LoadCanvas(ms);
         }
 
         /// <summary>
@@ -2240,7 +2245,7 @@ namespace ST.Library.UI.NodeEditor
         /// <param name="byData">binary data</param>
         public void LoadCanvas(byte[] byData) {
             using (MemoryStream ms = new MemoryStream(byData))
-                this.LoadCanvas(ms);
+                LoadCanvas(ms);
         }
 
         /// <summary>

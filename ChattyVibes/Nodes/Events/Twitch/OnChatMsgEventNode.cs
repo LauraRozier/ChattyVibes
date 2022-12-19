@@ -30,13 +30,13 @@ namespace ChattyVibes.Nodes.Events.Twitch
         protected override void BindEvent()
         {
             ((TwitchOnChatMsgEvent)MainForm.EventFactory.GetEvent(EventType.TwitchOnChatMsg)).RaiseEvent +=
-                OnChatMsgEventNode_RaiseEvent;
+                OnEventNode_RaiseEvent;
         }
 
         protected override void UnbindEvent()
         {
             ((TwitchOnChatMsgEvent)MainForm.EventFactory.GetEvent(EventType.TwitchOnChatMsg)).RaiseEvent -=
-                OnChatMsgEventNode_RaiseEvent;
+                OnEventNode_RaiseEvent;
         }
 
         protected override void OnCreate()
@@ -64,7 +64,7 @@ namespace ChattyVibes.Nodes.Events.Twitch
             m_op_TmiSentTs_out = OutputOptions.Add("Timestamp", typeof(DateTime), false);
         }
 
-        private void OnChatMsgEventNode_RaiseEvent(object sender, OnMessageReceivedArgs e)
+        private void OnEventNode_RaiseEvent(object sender, OnMessageReceivedArgs e)
         {
             m_op_Bits_out.TransferData(e.ChatMessage.Bits);
             m_op_Channel_out.TransferData(e.ChatMessage.Channel);
@@ -83,8 +83,9 @@ namespace ChattyVibes.Nodes.Events.Twitch
             m_op_IsVip_out.TransferData(e.ChatMessage.IsVip);
             m_op_Message_out.TransferData(e.ChatMessage.Message);
             m_op_SubscribedMonthCount_out.TransferData(e.ChatMessage.SubscribedMonthCount);
+
             long timestamp = long.Parse(e.ChatMessage.TmiSentTs);
-            DateTime dt = DateTime.FromFileTime(timestamp);
+            DateTime dt = DateTimeOffset.FromUnixTimeMilliseconds(timestamp).LocalDateTime;
             m_op_TmiSentTs_out.TransferData(dt);
 
             Trigger();

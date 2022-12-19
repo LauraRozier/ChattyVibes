@@ -582,7 +582,7 @@ namespace ST.Library.UI.NodeEditor
             if (_Mark != null)
                 dic.Add("Mark", Encoding.UTF8.GetBytes(_Mark));
 
-            dic.Add("LockOption", new byte[] { (byte)(_LockLocation ? 1 : 0) });
+            dic.Add("LockOption", new byte[] { (byte)(_LockOption ? 1 : 0) });
             dic.Add("LockLocation", new byte[] { (byte)(_LockLocation ? 1 : 0) });
             Type t = GetType();
 
