@@ -233,10 +233,12 @@ namespace ST.Library.UI.NodeEditor
                 if (!IsInput)
                     return ConnectionStatus.Connected;
 
+                /*
                 foreach (STNodeOption owner_input in Owner.InputOptions)
                     foreach (STNodeOption o in owner_input.ConnectedOption)
                         if (o == op)
                             return ConnectionStatus.Exists;
+                */
 
                 return ConnectionStatus.Connected; ;
             }

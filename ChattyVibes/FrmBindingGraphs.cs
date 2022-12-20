@@ -2,11 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using static ChattyVibes.FrmBindingGraphs;
 
 namespace ChattyVibes
 {
@@ -38,10 +36,12 @@ namespace ChattyVibes
         }
 
         private readonly Timer _timer = new Timer();
-        private int _timerDelayTick = 0;
         private const int C_TIMER_DELAY_THRESHOLD = 50;
+        private readonly static Color C_ALERT_ERR = Color.FromArgb(125, Color.Red);
+        private readonly static Color C_ALERT_WARN = Color.FromArgb(125, Color.Yellow);
+        private readonly static Color C_ALERT_OK = Color.FromArgb(125, Color.Green);
 
-        private readonly List<string> _graphFiles = new List<string>();
+        private int _timerDelayTick = 0;
         private string _currentGraph = string.Empty;
 
         public FrmBindingGraphs()
@@ -123,10 +123,9 @@ namespace ChattyVibes
                     }
                 case Keys.S:
                     {
-                        if ((e.Modifiers & Keys.Control) == Keys.Control && !string.IsNullOrWhiteSpace(_currentGraph))
+                        if ((e.Modifiers & Keys.Control) == Keys.Control)
                         {
-                            nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
-                            nodeEditorPanel.Editor.ShowAlert("Saved Canvas", Color.White, Color.FromArgb(125, Color.Green));
+                            SaveGraph();
                             e.Handled = true;
                         }
 
@@ -134,11 +133,24 @@ namespace ChattyVibes
                     }
                 case Keys.R:
                     {
-                        if ((e.Modifiers & Keys.Control) == Keys.Control && !string.IsNullOrWhiteSpace(_currentGraph))
+                        if ((e.Modifiers & Keys.Control) == Keys.Control)
                         {
                             nodeEditorPanel.Editor.Nodes.Clear();
-                            nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
-                            nodeEditorPanel.Editor.ShowAlert("Reloaded Canvas", Color.White, Color.FromArgb(125, Color.Yellow));
+                            nodeEditorPanel.Editor.Modified = false;
+
+                            if (!string.IsNullOrEmpty(_currentGraph))
+                            {
+                                try
+                                {
+                                    nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, $"{_currentGraph}{MainForm._graphFileExt}"));
+                                    nodeEditorPanel.Editor.ShowAlert($"Reloaded `{_currentGraph}` successfully", Color.White, C_ALERT_OK);
+                                }
+                                catch
+                                {
+                                    nodeEditorPanel.Editor.ShowAlert($"Unable to reload `{_currentGraph}`", Color.White, C_ALERT_ERR);
+                                }
+                            }
+
                             e.Handled = true;
                         }
 
@@ -151,7 +163,8 @@ namespace ChattyVibes
                             foreach (STNode node in nodeEditorPanel.Editor.GetSelectedNode())
                                 node.LockLocation = true;
 
-                            nodeEditorPanel.Editor.ShowAlert("Locked selected node(s)", Color.White, Color.FromArgb(125, Color.Yellow));
+                            nodeEditorPanel.Editor.Modified = true;
+                            nodeEditorPanel.Editor.ShowAlert("Locked selected node(s)", Color.White, C_ALERT_WARN);
                             e.Handled = true;
                         }
 
@@ -164,7 +177,8 @@ namespace ChattyVibes
                             foreach (STNode node in nodeEditorPanel.Editor.GetSelectedNode())
                                 node.LockLocation = false;
 
-                            nodeEditorPanel.Editor.ShowAlert("Unlocked selected node(s)", Color.White, Color.FromArgb(125, Color.Yellow));
+                            nodeEditorPanel.Editor.Modified = true;
+                            nodeEditorPanel.Editor.ShowAlert("Unlocked selected node(s)", Color.White, C_ALERT_WARN);
                             e.Handled = true;
                         }
                         return;
@@ -176,7 +190,7 @@ namespace ChattyVibes
                         foreach (STNode node in nodes)
                             nodeEditorPanel.Editor.Nodes.Remove(node);
 
-                        nodeEditorPanel.Editor.ShowAlert("Deleted selected node(s)", Color.White, Color.FromArgb(125, Color.Yellow));
+                        nodeEditorPanel.Editor.ShowAlert("Deleted selected node(s)", Color.White, C_ALERT_WARN);
                         e.Handled = true;
                         return;
                     }
@@ -234,14 +248,14 @@ namespace ChattyVibes
                 }
                 nodeEditorPanel.Editor.ShowAlert(
                     msg, Color.White,
-                    e.Status == ConnectionStatus.Connected ? Color.FromArgb(125, Color.Green) : Color.FromArgb(125, Color.Red)
+                    e.Status == ConnectionStatus.Connected ? C_ALERT_OK : C_ALERT_ERR
                 );
             });
             nodeEditorPanel.Editor.CanvasScaled += new EventHandler((s, e) =>
             {
                 nodeEditorPanel.Editor.ShowAlert(
                     nodeEditorPanel.Editor.CanvasScale.ToString("F2"),
-                    Color.White, Color.FromArgb(125, Color.Yellow)
+                    Color.White, C_ALERT_WARN
                 );
             });
             nodeEditorPanel.Editor.NodeAdded += new STNodeEditorEventHandler((s, e) => e.Node.ContextMenuStrip = contextMenuStrip1);
@@ -270,10 +284,7 @@ namespace ChattyVibes
             contextMenuStrip1.Renderer = new ToolStripRendererEx();
 
             foreach (var file in Directory.GetFiles(MainForm._graphDir, MainForm._graphFilePtrn, SearchOption.TopDirectoryOnly))
-            {
-                _graphFiles.Add(file);
-                lbGraphs.Items.Add(Path.GetFileName(file));
-            }
+                lbGraphs.Items.Add(Path.GetFileNameWithoutExtension(file));
 
             _timer.Interval = 10;
             _timer.Tick += new EventHandler(Timer_Tick);
@@ -283,10 +294,7 @@ namespace ChattyVibes
         {
             _timer.Stop();
             _timer.Dispose();
-
-            if (!string.IsNullOrWhiteSpace(_currentGraph))
-                nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
-
+            SaveGraph();
             nodeEditorPanel.Editor.Nodes.Clear();
             base.OnFormClosing(e);
         }
@@ -317,39 +325,119 @@ namespace ChattyVibes
             }
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private string AskNewGraphName()
         {
-            string name = "";
+            string name = string.Empty;
             var result = ShowInputDialogBox(ref name, "Enter the new graph's name", "New Graph");
 
             if (result == DialogResult.OK)
             {
-                if (!string.IsNullOrWhiteSpace(_currentGraph))
-                    nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
+                if (name.EndsWith(MainForm._graphFileExt))
+                    name = Path.GetFileNameWithoutExtension(name);
 
-                if (!name.EndsWith(MainForm._graphFileExt))
-                    name += MainForm._graphFileExt;
+                if (File.Exists(Path.Combine(MainForm._graphDir, $"{name}{MainForm._graphFileExt}")))
+                {
+                    MessageBox.Show(
+                        "Error - This graph already exists!",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error
+                    );
+                    return AskNewGraphName();
+                }
+                else
+                {
+                    return name;
+                }
+            }
 
-                var path = Path.Combine(MainForm._graphDir, name);
+            return string.Empty;
+        }
 
+        private void SaveGraph()
+        {
+            if (nodeEditorPanel.Editor.Modified)
+            {
+                var result = MessageBox.Show(
+                    $"Do you wish to save your changes?",
+                    "Confirm Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question
+                );
+
+                if (result == DialogResult.Yes)
+                {
+                    if (string.IsNullOrEmpty(_currentGraph))
+                    {
+                        string name = AskNewGraphName();
+
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            _currentGraph = name;
+                            lbGraphs.Items.Add(name);
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(_currentGraph))
+                    {
+                        try
+                        {
+                            nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, $"{_currentGraph}{MainForm._graphFileExt}"));
+                            nodeEditorPanel.Editor.ShowAlert($"Saved `{_currentGraph}` successfully", Color.White, C_ALERT_OK);
+                        }
+                        catch
+                        {
+                            nodeEditorPanel.Editor.ShowAlert($"Unable to save `{_currentGraph}`", Color.White, C_ALERT_ERR);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            
+            string name = AskNewGraphName();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                SaveGraph();
                 _currentGraph = name;
                 lbGraphs.SelectedIndex = lbGraphs.Items.Add(name);
-                _graphFiles.Add(path);
                 nodeEditorPanel.Editor.Nodes.Clear();
-                nodeEditorPanel.Editor.SaveCanvas(path);
+                nodeEditorPanel.Editor.Modified = false;
+
+                try
+                {
+                    var path = Path.Combine(MainForm._graphDir, $"{name}{MainForm._graphFileExt}");
+                    nodeEditorPanel.Editor.SaveCanvas(path);
+                    nodeEditorPanel.Editor.ShowAlert($"Created `{name}` successfully", Color.White, C_ALERT_OK);
+                }
+                catch
+                {
+                    nodeEditorPanel.Editor.ShowAlert($"Unable to create `{name}`", Color.White, C_ALERT_ERR);
+                }
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show($"Are you sure you wish to delete {_currentGraph}?", "Confirm Deletion", MessageBoxButtons.YesNo);
+            if (string.IsNullOrEmpty(_currentGraph))
+                return;
+
+            string path = Path.Combine(MainForm._graphDir, $"{_currentGraph}{MainForm._graphFileExt}");
+
+            if (!File.Exists(path))
+                return;
+
+            var result = MessageBox.Show(
+                $"Are you sure you wish to delete `{_currentGraph}`?",
+                "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Question
+            );
 
             if (result == DialogResult.No)
                 return;
 
-            File.Delete(Path.Combine(MainForm._graphDir, _currentGraph));
+            File.Delete(path);
             _currentGraph = string.Empty;
             nodeEditorPanel.Editor.Nodes.Clear();
+            nodeEditorPanel.Editor.Modified = false;
             lbGraphs.Items.RemoveAt(lbGraphs.SelectedIndex);
             lbGraphs.SelectedIndex = -1;
         }
@@ -357,16 +445,23 @@ namespace ChattyVibes
         private void lbGraphs_SelectedIndexChanged(object sender, EventArgs e)
         {
             string curItem = (string)lbGraphs.SelectedItem;
-
-            if (!string.IsNullOrWhiteSpace(_currentGraph))
-                nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
-
+            SaveGraph();
             nodeEditorPanel.Editor.Nodes.Clear();
+            nodeEditorPanel.Editor.Modified = false;
 
-            if (!string.IsNullOrWhiteSpace(curItem))
+            if (!string.IsNullOrEmpty(curItem))
             {
                 _currentGraph = curItem;
-                nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, curItem));
+
+                try
+                {
+                    nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, $"{curItem}{MainForm._graphFileExt}"));
+                    nodeEditorPanel.Editor.ShowAlert($"Loaded `{_currentGraph}` successfully", Color.White, C_ALERT_OK);
+                }
+                catch
+                {
+                    nodeEditorPanel.Editor.ShowAlert($"Unable to load `{_currentGraph}`", Color.White, C_ALERT_ERR);
+                }
             }
         }
 
@@ -384,9 +479,10 @@ namespace ChattyVibes
                 return;
 
             nodeEditorPanel.Editor.ActiveNode.LockLocation = !nodeEditorPanel.Editor.ActiveNode.LockLocation;
+            nodeEditorPanel.Editor.Modified = true;
         }
 
-        private static DialogResult ShowInputDialogBox(ref string input, string prompt, string title = "Title", int width = 300, int height = 200)
+        private static DialogResult ShowInputDialogBox(ref string input, string prompt, string title = "Title", int width = 300, int height = 80)
         {
             Size size = new Size(width, height);
 
@@ -403,26 +499,24 @@ namespace ChattyVibes
                 Location = new Point(5, 5),
                 Width = size.Width - 10
             };
-            inputBox.Controls.Add(label);
-
             TextBox textBox = new TextBox
             {
                 Size = new Size(size.Width - 10, 23),
                 Location = new Point(5, label.Location.Y + 20),
-                Text = input
+                Text = input,
+                ForeColor = Color.White,
+                BackColor = Color.Red,
+                MaxLength = 250
             };
-            inputBox.Controls.Add(textBox);
-
             Button okButton = new Button
             {
                 DialogResult = DialogResult.OK,
                 Name = "okButton",
                 Size = new Size(75, 23),
                 Text = "&OK",
-                Location = new Point(size.Width - 80 - 80, size.Height - 30)
+                Location = new Point(size.Width - 80 - 80, size.Height - 30),
+                Enabled = false
             };
-            inputBox.Controls.Add(okButton);
-
             Button cancelButton = new Button
             {
                 DialogResult = DialogResult.Cancel,
@@ -431,6 +525,26 @@ namespace ChattyVibes
                 Text = "&Cancel",
                 Location = new Point(size.Width - 80, size.Height - 30)
             };
+
+            textBox.TextChanged += new EventHandler((s, e) =>
+            {
+                if (textBox.Text.Length <= 0 || textBox.Text.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                {
+                    textBox.ForeColor = Color.White;
+                    textBox.BackColor = Color.Red;
+                    okButton.Enabled = false;
+                }
+                else
+                {
+                    textBox.ResetForeColor();
+                    textBox.ResetBackColor();
+                    okButton.Enabled = true;
+                }
+            });
+
+            inputBox.Controls.Add(label);
+            inputBox.Controls.Add(textBox);
+            inputBox.Controls.Add(okButton);
             inputBox.Controls.Add(cancelButton);
 
             inputBox.AcceptButton = okButton;

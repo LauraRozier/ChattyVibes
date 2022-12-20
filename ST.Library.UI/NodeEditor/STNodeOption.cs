@@ -218,7 +218,7 @@ namespace ST.Library.UI.NodeEditor
         /// <summary>
         /// Occurs when a connection starts to occur
         /// </summary>
-        public event STNodeOptionEventHandler Connecting;
+        public event STNodeOptionConnectionEventHandler Connecting;
         /// <summary>
         /// Occurs when the connection is disconnected
         /// </summary>
@@ -226,7 +226,7 @@ namespace ST.Library.UI.NodeEditor
         /// <summary>
         /// Occurs when the connection starts to drop
         /// </summary>
-        public event STNodeOptionEventHandler DisConnecting;
+        public event STNodeOptionConnectionEventHandler DisConnecting;
         /// <summary>
         /// Occurs when data is passed
         /// </summary>
@@ -251,27 +251,22 @@ namespace ST.Library.UI.NodeEditor
          * Just in case, the code here is commented, and it is not very problematic.
          * The output option does not register the event, and the effect is the same.
          */
-        protected internal virtual void OnConnected(STNodeOptionEventArgs e) {
+        protected internal virtual void OnConnected(STNodeOptionEventArgs e) =>
             Connected?.Invoke(this, e);
-        }
 
-        protected internal virtual void OnConnecting(STNodeOptionEventArgs e) {
-            Connecting?.Invoke(this, e);
-        }
+        protected internal virtual bool OnConnecting(STNodeOptionEventArgs e) =>
+            Connecting?.Invoke(this, e) ?? true;
 
-        protected internal virtual void OnDisConnected(STNodeOptionEventArgs e) {
+        protected internal virtual void OnDisConnected(STNodeOptionEventArgs e) =>
             DisConnected?.Invoke(this, e);
-        }
 
-        protected internal virtual void OnDisConnecting(STNodeOptionEventArgs e) {
-            DisConnecting?.Invoke(this, e);
-        }
+        protected internal virtual bool OnDisConnecting(STNodeOptionEventArgs e) =>
+            DisConnecting?.Invoke(this, e) ?? true;
 
-        protected internal virtual void OnDataTransfer(STNodeOptionEventArgs e) {
+        protected internal virtual void OnDataTransfer(STNodeOptionEventArgs e) =>
             DataTransfer?.Invoke(this, e);
-        }
 
-        protected void STNodeEidtorConnected(STNodeEditorOptionEventArgs e) {
+        protected void STNodeEditorConnected(STNodeEditorOptionEventArgs e) {
             if (_Owner == null)
                 return;
 
@@ -305,9 +300,9 @@ namespace ST.Library.UI.NodeEditor
 
             STNodeEditorOptionEventArgs e = new STNodeEditorOptionEventArgs(op, this, ConnectionStatus.Connecting);
             _Owner.Owner.OnOptionConnecting(e);
-            OnConnecting(new STNodeOptionEventArgs(true, op, ConnectionStatus.Connecting));
-            op.OnConnecting(new STNodeOptionEventArgs(false, this, ConnectionStatus.Connecting));
-            return e.Continue;
+            return e.Continue
+                && OnConnecting(new STNodeOptionEventArgs(true, op, ConnectionStatus.Connecting))
+                && op.OnConnecting(new STNodeOptionEventArgs(false, this, ConnectionStatus.Connecting));
         }
 
         /// <summary>
@@ -324,9 +319,9 @@ namespace ST.Library.UI.NodeEditor
 
             STNodeEditorOptionEventArgs e = new STNodeEditorOptionEventArgs(op, this, ConnectionStatus.DisConnecting);
             _Owner.Owner.OnOptionDisConnecting(e);
-            OnDisConnecting(new STNodeOptionEventArgs(true, op, ConnectionStatus.DisConnecting));
-            op.OnDisConnecting(new STNodeOptionEventArgs(false, this, ConnectionStatus.DisConnecting));
-            return e.Continue;
+            return e.Continue
+                && OnDisConnecting(new STNodeOptionEventArgs(true, op, ConnectionStatus.DisConnecting))
+                && op.OnDisConnecting(new STNodeOptionEventArgs(false, this, ConnectionStatus.DisConnecting));
         }
 
         #endregion protected
@@ -339,21 +334,21 @@ namespace ST.Library.UI.NodeEditor
         /// <returns>connection result</returns>
         public virtual ConnectionStatus ConnectOption(STNodeOption op) {
             if (!ConnectingOption(op)) {
-                STNodeEidtorConnected(new STNodeEditorOptionEventArgs(op, this, ConnectionStatus.Reject));
+                STNodeEditorConnected(new STNodeEditorOptionEventArgs(op, this, ConnectionStatus.Reject));
                 return ConnectionStatus.Reject;
             }
 
             var v = CanConnect(op);
 
             if (v != ConnectionStatus.Connected) {
-                STNodeEidtorConnected(new STNodeEditorOptionEventArgs(op, this, v));
+                STNodeEditorConnected(new STNodeEditorOptionEventArgs(op, this, v));
                 return v;
             }
 
             v = op.CanConnect(this);
 
             if (v != ConnectionStatus.Connected) {
-                STNodeEidtorConnected(new STNodeEditorOptionEventArgs(op, this, v));
+                STNodeEditorConnected(new STNodeEditorOptionEventArgs(op, this, v));
                 return v;
             }
 
@@ -361,7 +356,7 @@ namespace ST.Library.UI.NodeEditor
             AddConnection(op, true);
             ControlBuildLinePath();
 
-            STNodeEidtorConnected(new STNodeEditorOptionEventArgs(op, this, v));
+            STNodeEditorConnected(new STNodeEditorOptionEventArgs(op, this, v));
             return v;
         }
 

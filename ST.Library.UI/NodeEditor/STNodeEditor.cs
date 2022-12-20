@@ -193,7 +193,7 @@ namespace ST.Library.UI.NodeEditor
             }
         }
 
-        private STNodeCollection _Nodes;
+        private readonly STNodeCollection _Nodes;
         /// <summary>
         /// Get the Node collection in the canvas
         /// </summary>
@@ -310,9 +310,9 @@ namespace ST.Library.UI.NodeEditor
         /// </summary>
         [Description("Gets or sets the foreground color used by the canvas to draw Node mark details"), DefaultValue(typeof(Color), "White")]
         public Color MarkForeColor {
-            get { return _MarkBackColor; }
+            get { return _MarkForeColor; }
             set {
-                _MarkBackColor = value;
+                _MarkForeColor = value;
                 Invalidate();
             }
         }
@@ -399,13 +399,21 @@ namespace ST.Library.UI.NodeEditor
             }
         }
 
-        private Dictionary<Type, Color> _TypeColor = new Dictionary<Type, Color>();
+        private readonly Dictionary<Type, Color> _TypeColor = new Dictionary<Type, Color>();
         /// <summary>
         /// Get or set the preset color of the Option data type in Node in the canvas
         /// </summary>
         [Browsable(false)]
         public Dictionary<Type, Color> TypeColor {
             get { return _TypeColor; }
+        }
+
+        private bool _modified = false;
+        [Browsable(false)]
+        public bool Modified
+        {
+            get { return _modified; }
+            set { _modified = value; }
         }
 
         #endregion
@@ -584,49 +592,61 @@ namespace ST.Library.UI.NodeEditor
         [Description("Occurs while disconnecting node options")]
         public event STNodeEditorOptionEventHandler OptionDisConnecting;
 
-        protected virtual internal void OnSelectedChanged(EventArgs e) {
+        protected virtual internal void OnSelectedChanged(EventArgs e)
+        {
+            _modified = true;
             SelectedChanged?.Invoke(this, e);
         }
 
-        protected virtual void OnActiveChanged(EventArgs e) {
+        protected virtual void OnActiveChanged(EventArgs e)
+        {
+            _modified = true;
             ActiveChanged?.Invoke(this, e);
         }
 
-        protected virtual void OnHoverChanged(EventArgs e) {
+        protected virtual void OnHoverChanged(EventArgs e) =>
             HoverChanged?.Invoke(this, e);
-        }
 
         protected internal virtual void OnNodeAdded(STNodeEditorEventArgs e) {
+            _modified = true;
             NodeAdded?.Invoke(this, e);
         }
 
-        protected internal virtual void OnNodeRemoved(STNodeEditorEventArgs e) {
+        protected internal virtual void OnNodeRemoved(STNodeEditorEventArgs e)
+        {
+            _modified = true;
             NodeRemoved?.Invoke(this, e);
         }
 
-        protected virtual void OnCanvasMoved(EventArgs e) {
+        protected virtual void OnCanvasMoved(EventArgs e)
+        {
+            _modified = true;
             CanvasMoved?.Invoke(this, e);
         }
 
-        protected virtual void OnCanvasScaled(EventArgs e) {
+        protected virtual void OnCanvasScaled(EventArgs e)
+        {
+            _modified = true;
             CanvasScaled?.Invoke(this, e);
         }
 
-        protected internal virtual void OnOptionConnected(STNodeEditorOptionEventArgs e) {
+        protected internal virtual void OnOptionConnected(STNodeEditorOptionEventArgs e)
+        {
+            _modified = true;
             OptionConnected?.Invoke(this, e);
         }
 
-        protected internal virtual void OnOptionDisConnected(STNodeEditorOptionEventArgs e) {
+        protected internal virtual void OnOptionDisConnected(STNodeEditorOptionEventArgs e)
+        {
+            _modified = true;
             OptionDisConnected?.Invoke(this, e);
         }
 
-        protected internal virtual void OnOptionConnecting(STNodeEditorOptionEventArgs e) {
+        protected internal virtual void OnOptionConnecting(STNodeEditorOptionEventArgs e) =>
             OptionConnecting?.Invoke(this, e);
-        }
 
-        protected internal virtual void OnOptionDisConnecting(STNodeEditorOptionEventArgs e) {
+        protected internal virtual void OnOptionDisConnecting(STNodeEditorOptionEventArgs e) =>
             OptionDisConnecting?.Invoke(this, e);
-        }
 
         #endregion event
 
@@ -690,13 +710,26 @@ namespace ST.Library.UI.NodeEditor
             } catch { /*add code*/ }
         }
 
+        protected override void OnInvalidated(InvalidateEventArgs e)
+        {
+            base.OnInvalidated(e);
+
+            if (Parent != null)
+            {
+                foreach (var item in Parent.Controls)
+                {
+                    if (item is STNodePropertyGrid)
+                        (item as STNodePropertyGrid).Invalidate();
+                }
+            }
+        }
+
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
             Graphics g = e.Graphics;
             g.Clear(BackColor);
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             m_drawing_tools.Graphics = g;
-            SolidBrush brush = m_drawing_tools.SolidBrush;
 
             if (_ShowGrid)
                 OnDrawGrid(m_drawing_tools, Width, Height);
@@ -962,7 +995,7 @@ namespace ST.Library.UI.NodeEditor
                 if (!m_mouse_in_control)
                     return;
 
-                var nfi = FindNodeFromPoint(m_pt_in_canvas);
+                _ = FindNodeFromPoint(m_pt_in_canvas);
 
                 if (_HoverNode != null) {
                     _HoverNode.OnMouseWheel(new MouseEventArgs(e.Button, e.Clicks,
@@ -1146,7 +1179,7 @@ namespace ST.Library.UI.NodeEditor
         /// <param name="dt">drawing tool</param>
         /// <param name="node">target node</param>
         protected virtual void OnDrawNodeBorder(DrawingTools dt, STNode node) {
-            Image img_border = null;
+            Image img_border;
 
             if (_ActiveNode == node)
                 img_border = m_img_border_active;
@@ -1206,7 +1239,7 @@ namespace ST.Library.UI.NodeEditor
             m_p_line_hover.Color = _HighLineColor;
 
             if (m_gp_hover != null) //If there is currently a hovered connection path, it will be highlighted
-                g.DrawPath(m_p_line_hover, m_gp_hover);
+                try { g.DrawPath(m_p_line_hover, m_gp_hover); } catch { }
 
             m_is_buildpath = false; //Reset the flag, the next time you draw, the path cache will not be rebuilt
         }
@@ -1269,12 +1302,14 @@ namespace ST.Library.UI.NodeEditor
             pen.Color = _MagnetColor;
             brush.Color = Color.FromArgb(_MagnetColor.A / 3, _MagnetColor);
             g.SmoothingMode = SmoothingMode.None;
+            /*
             int nL = _ActiveNode.Left,
                 nMX = _ActiveNode.Left + _ActiveNode.Width / 2,
                 nR = _ActiveNode.Right;
             int nT = _ActiveNode.Top,
                 nMY = _ActiveNode.Top + _ActiveNode.Height / 2,
                 nB = _ActiveNode.Bottom;
+            */
 
             if (mi.XMatched)
                 g.DrawLine(pen, CanvasToControl(mi.X, true), 0, CanvasToControl(mi.X, true), Height);
@@ -1286,22 +1321,16 @@ namespace ST.Library.UI.NodeEditor
             g.ScaleTransform(_CanvasScale, _CanvasScale); //Scale the drawing surface
 
             if (mi.XMatched) {
-                //g.DrawLine(pen, CanvasToControl(mi.X, true), 0, CanvasToControl(mi.X, true), Height);
                 foreach (STNode n in _Nodes) {
-                    if (n.Left == mi.X || n.Right == mi.X || n.Left + n.Width / 2 == mi.X) {
-                        //g.DrawRectangle(pen, n.Left, n.Top, n.Width - 1, n.Height - 1);
+                    if (n.Left == mi.X || n.Right == mi.X || n.Left + n.Width / 2 == mi.X)
                         g.FillRectangle(brush, n.Rectangle);
-                    }
                 }
             }
 
             if (mi.YMatched) {
-                //g.DrawLine(pen, 0, CanvasToControl(mi.Y, false), Width, CanvasToControl(mi.Y, false));
                 foreach (STNode n in _Nodes) {
-                    if (n.Top == mi.Y || n.Bottom == mi.Y || n.Top + n.Height / 2 == mi.Y) {
-                        //g.DrawRectangle(pen, n.Left, n.Top, n.Width - 1, n.Height - 1);
+                    if (n.Top == mi.Y || n.Bottom == mi.Y || n.Top + n.Height / 2 == mi.Y) 
                         g.FillRectangle(brush, n.Rectangle);
-                    }
                 }
             }
 
@@ -2121,6 +2150,8 @@ namespace ST.Library.UI.NodeEditor
             using (FileStream fs = new FileStream(strFileName, FileMode.Create, FileAccess.Write)) {
                 SaveCanvas(fs);
             }
+
+            _modified = false;
         }
 
         /// <summary>
@@ -2236,6 +2267,8 @@ namespace ST.Library.UI.NodeEditor
         public void LoadCanvas(string strFileName) {
             using (MemoryStream ms = new MemoryStream(File.ReadAllBytes(strFileName)))
                 LoadCanvas(ms);
+
+            _modified = false;
         }
 
         /// <summary>
@@ -2254,7 +2287,6 @@ namespace ST.Library.UI.NodeEditor
         /// </summary>
         /// <param name="s">data stream object</param>
         public void LoadCanvas(Stream s) {
-            int nLen = 0;
             byte[] byLen = new byte[4];
             s.Read(byLen, 0, 4);
 
@@ -2279,7 +2311,7 @@ namespace ST.Library.UI.NodeEditor
 
                 for (int i = 0; i < nCount; i++) {
                     gs.Read(byLen, 0, byLen.Length);
-                    nLen = BitConverter.ToInt32(byLen, 0);
+                    int nLen = BitConverter.ToInt32(byLen, 0);
                     byData = new byte[nLen];
                     gs.Read(byData, 0, byData.Length);
                     STNode node = null;
@@ -2333,13 +2365,10 @@ namespace ST.Library.UI.NodeEditor
             nIndex += byData[nIndex] + 1;
             string strGUID = Encoding.UTF8.GetString(byData, nIndex + 1, byData[nIndex]);
             nIndex += byData[nIndex] + 1;
-
-            int nLen = 0;
-
             Dictionary<string, byte[]> dic = new Dictionary<string, byte[]>();
 
             while (nIndex < byData.Length) {
-                nLen = BitConverter.ToInt32(byData, nIndex);
+                int nLen = BitConverter.ToInt32(byData, nIndex);
                 nIndex += 4;
                 string strKey = Encoding.UTF8.GetString(byData, nIndex, nLen);
                 nIndex += nLen;
@@ -2423,31 +2452,10 @@ namespace ST.Library.UI.NodeEditor
         /// <param name="strText">information to display</param>
         /// <param name="foreColor">information foreground color</param>
         /// <param name="backColor">information background color</param>
-        public void ShowAlert(string strText, Color foreColor, Color backColor) {
-            ShowAlert(strText, foreColor, backColor, 1000, AlertLocation.RightBottom, true);
-        }
-
-        /// <summary>
-        /// Show tooltip in canvas
-        /// </summary>
-        /// <param name="strText">information to display</param>
-        /// <param name="foreColor">information foreground color</param>
-        /// <param name="backColor">information background color</param>
-        /// <param name="al">where the information should be displayed</param>
-        public void ShowAlert(string strText, Color foreColor, Color backColor, AlertLocation al) {
-            ShowAlert(strText, foreColor, backColor, 1000, al, true);
-        }
-
-        /// <summary>
-        /// Show tooltip in canvas
-        /// </summary>
-        /// <param name="strText">information to display</param>
-        /// <param name="foreColor">information foreground color</param>
-        /// <param name="backColor">information background color</param>
         /// <param name="nTime">message duration</param>
         /// <param name="al">where the information should be displayed</param>
         /// <param name="bRedraw">Whether to redraw immediately</param>
-        public void ShowAlert(string strText, Color foreColor, Color backColor, int nTime, AlertLocation al, bool bRedraw) {
+        public void ShowAlert(string strText, Color foreColor, Color backColor, int nTime = 1000, AlertLocation al = AlertLocation.RightBottom, bool bRedraw = true) {
             m_str_alert = strText;
             m_forecolor_alert = foreColor;
             m_backcolor_alert = backColor;
@@ -2502,6 +2510,7 @@ namespace ST.Library.UI.NodeEditor
             if (!_Nodes.Contains(node))
                 return false;
 
+            _modified = true;
             bool b = !node.IsSelected;
             node.IsSelected = true;
 
@@ -2518,6 +2527,7 @@ namespace ST.Library.UI.NodeEditor
             if (!_Nodes.Contains(node))
                 return false;
 
+            _modified = true;
             bool b = node.IsSelected;
             node.IsSelected = false;
 
@@ -2530,19 +2540,9 @@ namespace ST.Library.UI.NodeEditor
         /// </summary>
         /// <param name="t">type of data</param>
         /// <param name="clr">corresponding color</param>
-        /// <returns>The color after being set</returns>
-        public Color SetTypeColor(Type t, Color clr) {
-            return SetTypeColor(t, clr, false);
-        }
-
-        /// <summary>
-        /// Add default datatype colors to editor
-        /// </summary>
-        /// <param name="t">type of data</param>
-        /// <param name="clr">corresponding color</param>
         /// <param name="bReplace">Whether to replace the color if it already exists</param>
         /// <returns>The color after being set</returns>
-        public Color SetTypeColor(Type t, Color clr, bool bReplace) {
+        public Color SetTypeColor(Type t, Color clr, bool bReplace = false) {
             if (_TypeColor.ContainsKey(t)) {
                 if (bReplace)
                     _TypeColor[t] = clr;

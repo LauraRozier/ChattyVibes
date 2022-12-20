@@ -322,6 +322,7 @@
     <Compile Include="Nodes\MathNode\UIntNode\UIntSubtractNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntClampNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntCompareNode.cs" />
+    <Compile Include="Nodes\PassthroughNode.cs" />
     <Compile Include="Nodes\StringNode\StringNode.cs" />
     <Compile Include="Nodes\LogicNode\LogicNOTNode.cs" />
     <Compile Include="Nodes\EventNode\AppNode\ManualEventTrigger.cs" />

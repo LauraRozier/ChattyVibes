@@ -126,6 +126,8 @@ namespace ST.Library.UI.NodeEditor
 
     public delegate void STNodeOptionEventHandler(object sender, STNodeOptionEventArgs e);
 
+    public delegate bool STNodeOptionConnectionEventHandler(object sender, STNodeOptionEventArgs e);
+
     public class STNodeOptionEventArgs : EventArgs
     {
         private STNodeOption _TargetOption;

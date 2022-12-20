@@ -81,7 +81,7 @@ namespace ChattyVibes.Nodes.StringNode
             if (Owner == null)
                 return;
 
-            using (System.Drawing.Graphics g = Owner.CreateGraphics())
+            using (Graphics g = Owner.CreateGraphics())
             {
                 Width = base.GetDefaultNodeSize(g).Width;
             }
@@ -95,29 +95,6 @@ namespace ChattyVibes.Nodes.StringNode
             input.DataTransfer += new STNodeOptionEventHandler(input_DataTransfer);
             input.DisConnected += new STNodeOptionEventHandler(input_DisConnected);
             Height = TitleHeight + (InputOptions.Count * 20);
-        }
-
-        private void input_DisConnected(object sender, STNodeOptionEventArgs e)
-        {
-            STNodeOption op = sender as STNodeOption;
-
-            if (op.ConnectionCount != 0)
-                return;
-
-            InputOptions.RemoveAt(InputOptions.IndexOf(op));
-
-            if (Owner != null)
-                Owner.BuildLinePath();
-
-            Height -= 20;
-            SendFormattedData();
-        }
-
-        private void input_DataTransfer(object sender, STNodeOptionEventArgs e)
-        {
-            STNodeOption op = sender as STNodeOption;
-            op.Data = e.TargetOption.Data;
-            SendFormattedData();
         }
 
         private void input_Connected(object sender, STNodeOptionEventArgs e)
@@ -141,6 +118,26 @@ namespace ChattyVibes.Nodes.StringNode
             {
                 SendFormattedData();
             }
+        }
+
+        private void input_DataTransfer(object sender, STNodeOptionEventArgs e)
+        {
+            STNodeOption op = sender as STNodeOption;
+            op.Data = e.TargetOption.Data;
+            SendFormattedData();
+        }
+
+        private void input_DisConnected(object sender, STNodeOptionEventArgs e)
+        {
+            STNodeOption op = sender as STNodeOption;
+
+            if (op.ConnectionCount != 0)
+                return;
+
+            InputOptions.RemoveAt(InputOptions.IndexOf(op));
+            Owner?.BuildLinePath();
+            Height -= 20;
+            SendFormattedData();
         }
 
         protected override void OnSaveNode(Dictionary<string, byte[]> dic) =>
@@ -216,7 +213,7 @@ namespace ChattyVibes.Nodes.StringNode
 
                 if (op.IsInput && STNodeEditor.CanFindNodePath(op.Owner, Owner))
                     return ConnectionStatus.Loop;
-
+                
                 if (m_hs_connected.Contains(op))
                     return ConnectionStatus.Exists;
 
@@ -225,15 +222,6 @@ namespace ChattyVibes.Nodes.StringNode
 
                 if (!IsInput)
                     return ConnectionStatus.Connected;
-
-                foreach (STNodeOption owner_input in Owner.InputOptions)
-                {
-                    foreach (STNodeOption o in owner_input.ConnectedOption)
-                    {
-                        if (o == op)
-                            return ConnectionStatus.Exists;
-                    }
-                }
 
                 return ConnectionStatus.Connected;
             }

@@ -790,6 +790,7 @@ namespace ST.Library.UI.NodeEditor
                 return 0;
 
             items.IsLibraryRoot = true;
+            items.IsOpen = true;
             m_items_source[items.Name] = items;
             return items.STNodeCount;
         }
