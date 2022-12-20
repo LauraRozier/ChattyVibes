@@ -8,7 +8,7 @@ namespace ChattyVibes
 {
     public partial class FrmHome : ChildForm
     {
-        private Thread _batteryWorker;
+        //private Thread _batteryWorker;
 
         public FrmHome()
         {
@@ -156,7 +156,7 @@ namespace ChattyVibes
                         }
                         catch (ButtplugDeviceException)
                         {
-                            MainFrm.LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Tried to talk to a disconnected device.").GetAwaiter();
+                            MainFrm.LogMsg($"{DateTime.UtcNow:o} - Buttplug: Tried to talk to a disconnected device.").GetAwaiter();
                         }
                     }
 

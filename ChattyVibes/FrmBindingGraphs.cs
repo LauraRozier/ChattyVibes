@@ -44,22 +44,6 @@ namespace ChattyVibes
         private readonly List<string> _graphFiles = new List<string>();
         private string _currentGraph = string.Empty;
 
-        internal readonly static Color C_COLOR_BOOL = Color.FromArgb(255, 255, 109, 41);
-        internal readonly static Color C_COLOR_FLOAT = Color.FromArgb(255, 103, 31, 211);
-        internal readonly static Color C_COLOR_INT = Color.FromArgb(255, 32, 108, 255);
-        internal readonly static Color C_COLOR_UINT = Color.FromArgb(255, 0, 0, 255);
-        internal readonly static Color C_COLOR_STRING = Color.FromArgb(255, 128, 255, 128);
-        internal readonly static Color C_COLOR_DATETIME = Color.FromArgb(255, 128, 255, 0);
-        internal readonly static Color C_COLOR_COLOR = Color.FromArgb(255, 255, 238, 0);
-        internal readonly static Color C_COLOR_IMAGE = Color.FromArgb(255, 0, 255, 238);
-
-        internal readonly static Color C_COLOR_EVENT = Color.FromArgb(255, 255, 0, 255);
-        internal readonly static Color C_COLOR_ACTION = Color.FromArgb(255, 255, 0, 0);
-        internal readonly static Color C_COLOR_LOGIC = Color.FromArgb(255, 91, 127, 0);
-        internal readonly static Color C_COLOR_BRANCH = Color.FromArgb(255, 147, 196, 13);
-        internal readonly static Color C_COLOR_COMMENT = Color.FromArgb(255, 0, 170, 0);
-        internal readonly static Color C_COLOR_HUB = Color.FromArgb(255, 128, 128, 128);
-
         public FrmBindingGraphs() : base()
         {
             KeyPreview = true;
@@ -154,10 +138,35 @@ namespace ChattyVibes
                         {
                             nodeEditorPanel.Editor.Nodes.Clear();
                             nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
-                            nodeEditorPanel.Editor.ShowAlert("Reloaded Canvas", Color.White, Color.FromArgb(125, Color.Green));
+                            nodeEditorPanel.Editor.ShowAlert("Reloaded Canvas", Color.White, Color.FromArgb(125, Color.Yellow));
                             e.Handled = true;
                         }
 
+                        return;
+                    }
+                case Keys.L:
+                    {
+                        if ((e.Modifiers & Keys.Control) == Keys.Control)
+                        {
+                            foreach (STNode node in nodeEditorPanel.Editor.GetSelectedNode())
+                                node.LockLocation = true;
+
+                            nodeEditorPanel.Editor.ShowAlert("Locked selected node(s)", Color.White, Color.FromArgb(125, Color.Yellow));
+                            e.Handled = true;
+                        }
+
+                        return;
+                    }
+                case Keys.U:
+                    {
+                        if ((e.Modifiers & Keys.Control) == Keys.Control)
+                        {
+                            foreach (STNode node in nodeEditorPanel.Editor.GetSelectedNode())
+                                node.LockLocation = false;
+
+                            nodeEditorPanel.Editor.ShowAlert("Unlocked selected node(s)", Color.White, Color.FromArgb(125, Color.Yellow));
+                            e.Handled = true;
+                        }
                         return;
                     }
                 case Keys.Delete:
@@ -167,6 +176,7 @@ namespace ChattyVibes
                         foreach (STNode node in nodes)
                             nodeEditorPanel.Editor.Nodes.Remove(node);
 
+                        nodeEditorPanel.Editor.ShowAlert("Deleted selected node(s)", Color.White, Color.FromArgb(125, Color.Yellow));
                         e.Handled = true;
                         return;
                     }
@@ -234,24 +244,24 @@ namespace ChattyVibes
             nodeEditorPanel.Editor.NodeAdded += new STNodeEditorEventHandler((s, e) => e.Node.ContextMenuStrip = contextMenuStrip1);
 
             nodeEditorPanel.PropertyGrid.SetInfoKey("Author", "Mail", "Link", "Show Help");
-            nodeEditorPanel.Editor.SetTypeColor(typeof(bool), C_COLOR_BOOL);
-            nodeEditorPanel.Editor.SetTypeColor(typeof(float), C_COLOR_FLOAT);
-            nodeEditorPanel.Editor.SetTypeColor(typeof(int), C_COLOR_INT);
-            nodeEditorPanel.Editor.SetTypeColor(typeof(uint), C_COLOR_UINT);
-            nodeEditorPanel.Editor.SetTypeColor(typeof(string), C_COLOR_STRING);
-            nodeEditorPanel.Editor.SetTypeColor(typeof(DateTime), C_COLOR_DATETIME);
-            nodeEditorPanel.Editor.SetTypeColor(typeof(Color), C_COLOR_COLOR);
-            nodeEditorPanel.Editor.SetTypeColor(typeof(Image), C_COLOR_IMAGE);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(bool), Constants.C_COLOR_BOOL);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(float), Constants.C_COLOR_FLOAT);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(int), Constants.C_COLOR_INT);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(uint), Constants.C_COLOR_UINT);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(char), Constants.C_COLOR_CHAR);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(string), Constants.C_COLOR_STRING);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(DateTime), Constants.C_COLOR_DATETIME);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(Enum), Constants.C_COLOR_ENUM);
 
             nodeEditorPanel.TreeView.PropertyGrid.SetInfoKey("Author", "Mail", "Link", "Show Help");
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(bool), C_COLOR_BOOL);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(float), C_COLOR_FLOAT);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(int), C_COLOR_INT);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(uint), C_COLOR_UINT);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(string), C_COLOR_STRING);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(DateTime), C_COLOR_DATETIME);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(Color), C_COLOR_COLOR);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(Image), C_COLOR_IMAGE);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(bool), Constants.C_COLOR_BOOL);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(float), Constants.C_COLOR_FLOAT);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(int), Constants.C_COLOR_INT);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(uint), Constants.C_COLOR_UINT);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(char), Constants.C_COLOR_CHAR);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(string), Constants.C_COLOR_STRING);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(DateTime), Constants.C_COLOR_DATETIME);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(Enum), Constants.C_COLOR_ENUM);
 
             contextMenuStrip1.ShowImageMargin = false;
             contextMenuStrip1.Renderer = new ToolStripRendererEx();
@@ -271,7 +281,7 @@ namespace ChattyVibes
             _timer.Stop();
             _timer.Dispose();
 
-            if (!string.IsNullOrEmpty(_currentGraph))
+            if (!string.IsNullOrWhiteSpace(_currentGraph))
                 nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
 
             nodeEditorPanel.Editor.Nodes.Clear();
@@ -307,25 +317,23 @@ namespace ChattyVibes
         private void btnAdd_Click(object sender, EventArgs e)
         {
             string name = "";
-            var result = ShowInputDialogBox(ref name, "Enter the grap's name", "New Graph Name");
+            var result = ShowInputDialogBox(ref name, "Enter the new graph's name", "New Graph");
 
             if (result == DialogResult.OK)
             {
-                if (!string.IsNullOrEmpty(_currentGraph))
+                if (!string.IsNullOrWhiteSpace(_currentGraph))
                     nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
-
-                nodeEditorPanel.Editor.Nodes.Clear();
 
                 if (!name.EndsWith(MainForm._graphFileExt))
                     name += MainForm._graphFileExt;
 
                 var path = Path.Combine(MainForm._graphDir, name);
-                nodeEditorPanel.Editor.SaveCanvas(path);
 
-                _graphFiles.Add(path);
-
-                //_currentGraph = name;
+                _currentGraph = name;
                 lbGraphs.SelectedIndex = lbGraphs.Items.Add(name);
+                _graphFiles.Add(path);
+                nodeEditorPanel.Editor.Nodes.Clear();
+                nodeEditorPanel.Editor.SaveCanvas(path);
             }
         }
 
@@ -347,12 +355,12 @@ namespace ChattyVibes
         {
             string curItem = (string)lbGraphs.SelectedItem;
 
-            if (!string.IsNullOrEmpty(_currentGraph))
+            if (!string.IsNullOrWhiteSpace(_currentGraph))
                 nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, _currentGraph));
 
             nodeEditorPanel.Editor.Nodes.Clear();
 
-            if (!string.IsNullOrEmpty(curItem))
+            if (!string.IsNullOrWhiteSpace(curItem))
             {
                 _currentGraph = curItem;
                 nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, curItem));

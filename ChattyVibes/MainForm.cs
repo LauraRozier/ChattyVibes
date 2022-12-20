@@ -113,37 +113,6 @@ namespace ChattyVibes
 
         private void UpdateGUI()
         {
-            /*
-            switch (_chatState)
-            {
-                case ConnectionState.NotConnected:
-                    {
-                        btnBindingGraph.Enabled = true;
-                        break;
-                    }
-                case ConnectionState.Connecting:
-                    {
-                        btnBindingGraph.Enabled = false;
-                        break;
-                    }
-                case ConnectionState.Connected:
-                    {
-                        btnBindingGraph.Enabled = false;
-                        break;
-                    }
-                case ConnectionState.Disconnecting:
-                    {
-                        btnBindingGraph.Enabled = false;
-                        break;
-                    }
-                case ConnectionState.Error:
-                    {
-                        btnBindingGraph.Enabled = true;
-                        break;
-                    }
-            }
-            */
-
             if (pnlForm.Controls.Count > 0 && pnlForm.Controls[0] is FrmHome home)
                 home.UpdateGUI();
         }
@@ -154,18 +123,12 @@ namespace ChattyVibes
             {
                 try
                 {
-                    if (_queue.Count > 0)
-                    {
-                        if (_queue.TryDequeue(out QueueItem item))
-                            HandleEvent(item);
-                    }
+                    if (_queue.Count > 0 && _queue.TryDequeue(out QueueItem item))
+                        HandleEvent(item);
 
                     Thread.Sleep(10);
                 }
-                catch (ThreadAbortException)
-                {
-                    return;
-                }
+                catch (ThreadAbortException) { return; }
             }
         }
 
@@ -345,14 +308,14 @@ namespace ChattyVibes
             }
             catch (ButtplugConnectorException ex)
             {
-                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Can't connect to Buttplug Server, exiting! - Message: {ex.InnerException.Message}");
+                await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Can't connect to Buttplug Server, exiting! - Message: {ex.InnerException.Message}");
                 _plugState = ConnectionState.Error;
                 UpdateGUI();
                 return;
             }
             catch (ButtplugHandshakeException ex)
             {
-                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Handshake with Buttplug Server, exiting! - Message: {ex.InnerException.Message}");
+                await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Handshake with Buttplug Server, exiting! - Message: {ex.InnerException.Message}");
                 _plugState = ConnectionState.Error;
                 UpdateGUI();
                 return;
@@ -360,12 +323,12 @@ namespace ChattyVibes
 
             try
             {
-                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Connected, scanning for devices");
+                await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Connected, scanning for devices");
                 await _plugClient.StartScanningAsync();
             }
             catch (ButtplugException ex)
             {
-                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.InnerException.Message}");
+                await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.InnerException.Message}");
                 _plugState = ConnectionState.Error;
                 await _plugClient.DisconnectAsync();
                 return;
@@ -379,7 +342,7 @@ namespace ChattyVibes
             if (_plugClient.IsScanning)
                 await _plugClient.StopScanningAsync();
 
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Scanning done");
+            await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning done");
         }
 
         internal async Task DisconnectButtplug()
@@ -401,12 +364,12 @@ namespace ChattyVibes
 
             try
             {
-                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Rescanning devices");
+                await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Rescanning devices");
                 await _plugClient.StartScanningAsync();
             }
             catch (ButtplugException ex)
             {
-                await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.Message}");
+                await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.Message}");
                 return;
             }
 
@@ -537,7 +500,7 @@ namespace ChattyVibes
             lblTitle.Text = "HOME";
             UpdateNavItem((Button)sender);
 
-            FrmHome frm = new FrmHome()
+            FrmHome frm = new FrmHome
             {
                 MainFrm = this,
                 Dock = DockStyle.Fill,
@@ -558,7 +521,7 @@ namespace ChattyVibes
             lblTitle.Text = "BINDING GRAPH";
             UpdateNavItem((Button)sender);
 
-            FrmBindingGraphs frm = new FrmBindingGraphs()
+            FrmBindingGraphs frm = new FrmBindingGraphs
             {
                 MainFrm = this,
                 Dock = DockStyle.Fill,
@@ -579,7 +542,7 @@ namespace ChattyVibes
             lblTitle.Text = "LOG";
             UpdateNavItem((Button)sender);
 
-            FrmLog frm = new FrmLog()
+            FrmLog frm = new FrmLog
             {
                 MainFrm = this,
                 Dock = DockStyle.Fill,
@@ -655,12 +618,15 @@ namespace ChattyVibes
 
         internal async Task LogMsg(string aMsg)
         {
-            Invoke((MethodInvoker)delegate {
+            Invoke(new MethodInvoker(() => {
+                if (_logMessages.Count >= 1024)
+                    _logMessages.RemoveRange(0, (_logMessages.Count - 1024) + 1);
+
                 _logMessages.Add(aMsg);
 
                 if (pnlForm.Controls.Count > 0 && pnlForm.Controls[0] is FrmLog log)
                     log.AddLogMsg(aMsg);
-            });
+            }));
             await Task.Delay(1);
         }
 
@@ -668,31 +634,29 @@ namespace ChattyVibes
          * Twitch actions
          */
         private async void _chatClient_OnLog(object sender, OnLogArgs e) =>
-            await LogMsg($"\r\n{e.DateTime} - Twitch: {e.BotUsername} - {e.Data}");
+            await LogMsg($"{e.DateTime} - Twitch: {e.BotUsername} - {e.Data}");
 
         private async void _chatClient_OnConnected(object sender, OnConnectedArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Connected to Twitch");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Connected to Twitch");
             ((TwitchOnConnectedEvent)EventFactory.GetEvent(EventType.TwitchOnConnected)).OnEvent(sender, e);
         }
 
         private async void _chatClient_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: Disconnected from Twitch");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: Disconnected from Twitch");
             ((TwitchOnDisconnectedEvent)EventFactory.GetEvent(EventType.TwitchOnDisconnected)).OnEvent(sender, e);
         }
 
         private async void _chatClient_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Joined channel {e.Channel}");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Joined channel {e.Channel}");
             ((TwitchOnJoinedChannelEvent)EventFactory.GetEvent(EventType.TwitchOnJoinedChannel)).OnEvent(sender, e);
         }
 
-        // MVP goal, vibe on received msg
-
         private async void _chatClient_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.ChatMessage.DisplayName} - Sent Message \"{e.ChatMessage.Message}\"");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.ChatMessage.DisplayName} - Sent Message \"{e.ChatMessage.Message}\"");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.Message,
@@ -703,7 +667,7 @@ namespace ChattyVibes
 
         private async void _chatClient_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.WhisperMessage.DisplayName} - Sent Whisper \"{e.WhisperMessage.Message}\"");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.WhisperMessage.DisplayName} - Sent Whisper \"{e.WhisperMessage.Message}\"");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.Whisper,
@@ -712,11 +676,9 @@ namespace ChattyVibes
             });
         }
 
-        // Additional goals
-
         private async void _chatClient_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.Subscriber.DisplayName} - New Sub tier {e.Subscriber.SubscriptionPlanName}");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.Subscriber.DisplayName} - New Sub tier {e.Subscriber.SubscriptionPlanName}");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.NewSub,
@@ -727,7 +689,7 @@ namespace ChattyVibes
 
         private async void _chatClient_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - New Gift Sub \"{e.GiftedSubscription.MsgParamRecipientDisplayName}\" Tier {e.GiftedSubscription.MsgParamSubPlanName} Length {e.GiftedSubscription.MsgParamMonths}");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - New Gift Sub \"{e.GiftedSubscription.MsgParamRecipientDisplayName}\" Tier {e.GiftedSubscription.MsgParamSubPlanName} Length {e.GiftedSubscription.MsgParamMonths}");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.GiftSub,
@@ -738,7 +700,7 @@ namespace ChattyVibes
 
         private async void _chatClient_OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.ReSubscriber.DisplayName} - Re-Sub tier {e.ReSubscriber.SubscriptionPlanName} Message \"{e.ReSubscriber.ResubMessage}\"");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.ReSubscriber.DisplayName} - Re-Sub tier {e.ReSubscriber.SubscriptionPlanName} Message \"{e.ReSubscriber.ResubMessage}\"");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.ReSub,
@@ -749,7 +711,7 @@ namespace ChattyVibes
 
         private async void _chatClient_OnPrimePaidSubscriber(object sender, OnPrimePaidSubscriberArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.PrimePaidSubscriber.DisplayName} - Prime Subscriber");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.PrimePaidSubscriber.DisplayName} - Prime Subscriber");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.PrimeSub,
@@ -760,7 +722,7 @@ namespace ChattyVibes
 
         private async void _chatClient_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - Community Subscriber tier {e.GiftedSubscription.MsgParamSubPlan}");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - Community Subscriber tier {e.GiftedSubscription.MsgParamSubPlan}");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.ComSub,
@@ -771,7 +733,7 @@ namespace ChattyVibes
 
         private async void _chatClient_OnContinuedGiftedSubscription(object sender, OnContinuedGiftedSubscriptionArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Twitch: {e.ContinuedGiftedSubscription.DisplayName} - Continued Gifted Subscriber");
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.ContinuedGiftedSubscription.DisplayName} - Continued Gifted Subscriber");
             _queue.Enqueue(new QueueItem
             {
                 Type = QueuedItemType.ContGiftSub,
@@ -796,14 +758,14 @@ namespace ChattyVibes
          */
 
         private async void ButtplugFFILog_LogMessage(object sender, string e) =>
-            await LogMsg($"\r\n{e}");
+            await LogMsg($"{e}");
 
         private async void _plugClient_ErrorReceived(object sender, ButtplugExceptionEventArgs e) =>
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Error received from the server.  Message: {e.Exception.Message}");
+            await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Error received from the server.  Message: {e.Exception.Message}");
 
         private async void _plugClient_ServerDisconnect(object sender, EventArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Disconnected from the server");
+            await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Disconnected from the server");
             _plugState = ConnectionState.NotConnected;
 
             Invoke((MethodInvoker)delegate {
@@ -816,7 +778,7 @@ namespace ChattyVibes
         }
 
         private async void _plugClient_ScanningFinished(object sender, EventArgs e) =>
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Finished scanning for devices");
+            await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Finished scanning for devices");
 
         private async void _plugClient_DeviceAdded(object sender, DeviceAddedEventArgs e)
         {
@@ -836,7 +798,7 @@ namespace ChattyVibes
 
         private async void _plugClient_DeviceRemoved(object sender, DeviceRemovedEventArgs e)
         {
-            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: Device \"{e.Device.Name}\" (idx {e.Device.Index}) disconnected");
+            await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Device \"{e.Device.Name}\" (idx {e.Device.Index}) disconnected");
 
             if (ButtplugQueues.ContainsKey(e.Device.Index))
             {

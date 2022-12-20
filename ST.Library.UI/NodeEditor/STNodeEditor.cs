@@ -2373,8 +2373,43 @@ namespace ST.Library.UI.NodeEditor
         {
             if (!m_dic_type.ContainsKey(guid))
             {
+                StringBuilder sb = new StringBuilder(name);
+
+                // Fix a bad path
+                if (name.EndsWith(".StringAppendNode"))
+                    sb.Replace(".Number.Int.", ".StringNode.");
+                if (name.EndsWith(".StringContainsNode"))
+                    sb.Replace(".Number.Int.", ".StringNode.");
+                if (name.EndsWith(".StringDisplayNode"))
+                    sb.Replace(".Number.Int.", ".StringNode.");
+                if (name.EndsWith(".LogicNOTNode"))
+                    sb.Replace(".Bool.", ".LogicNode.");
+
+                // Replace node root-paths
+                sb.Replace(".Actions.", ".ActionNode.");
+                sb.Replace(".Bool.", ".BoolNode.");
+                sb.Replace(".Branch.", ".BranchNode.");
+                sb.Replace(".Time.", ".DateTimeNode.");
+                sb.Replace(".Events.", ".EventNode.");
+                sb.Replace(".Logic.", ".LogicNode.");
+                sb.Replace(".Math.", ".MathNode.");
+                sb.Replace(".Number.", ".NumberNode.");
+                sb.Replace(".String.", ".StringNode.");
+                sb.Replace(".Graphics.", "GraphicsNode");
+                // Replace node sub-paths
+                sb.Replace(".App.", ".AppNode.");
+                sb.Replace(".Buttplug.", ".ButtplugNode.");
+                sb.Replace(".Twitch.", ".TwitchNode.");
+                sb.Replace(".Color.", ".ColorNode.");
+                sb.Replace(".Image.", ".ImageNode.");
+                sb.Replace(".Float.", ".FloatNode.");
+                sb.Replace(".Int.", ".IntNode.");
+                sb.Replace(".UInt.", ".UIntNode.");
+
+                string patchedName = sb.ToString();
+
                 foreach (var t in m_dic_type)
-                    if (t.Value.FullName.Equals(name))
+                    if (t.Value.FullName.Equals(patchedName))
                         return t.Key;
             }
 

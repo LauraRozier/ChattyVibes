@@ -9,7 +9,7 @@ namespace ChattyVibes.Nodes
         public STNodeHubSingle() : base(true)
         {
             Title = "HUB - One To Many";
-            TitleColor = Color.FromArgb(200, FrmBindingGraphs.C_COLOR_HUB);
+            TitleColor = Color.FromArgb(200, Constants.C_COLOR_HUB);
         }
     }
 
@@ -20,7 +20,7 @@ namespace ChattyVibes.Nodes
         public STNodeHubMulti() : base(false)
         {
             Title = "HUB - Many To Many";
-            TitleColor = Color.FromArgb(200, FrmBindingGraphs.C_COLOR_HUB);
+            TitleColor = Color.FromArgb(200, Constants.C_COLOR_HUB);
         }
     }
     */

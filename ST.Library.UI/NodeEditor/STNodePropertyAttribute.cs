@@ -94,6 +94,7 @@ namespace ST.Library.UI.NodeEditor
         private static Type m_t_uint = typeof(uint);
         private static Type m_t_float = typeof(float);
         private static Type m_t_double = typeof(double);
+        private static Type m_t_char = typeof(char);
         private static Type m_t_string = typeof(string);
         private static Type m_t_bool = typeof(bool);
 
@@ -136,6 +137,9 @@ namespace ST.Library.UI.NodeEditor
 
             if (t == m_t_double)
                 return double.Parse(strText);
+
+            if (t == m_t_char)
+                return strText[0];
 
             if (t == m_t_string)
                 return strText;
@@ -187,6 +191,15 @@ namespace ST.Library.UI.NodeEditor
 
                     for (int i = 0; i < strs.Length; i++)
                         arr[i] = double.Parse(strs[i].Trim());
+
+                    return arr;
+                }
+
+                if (t_1 == m_t_char) {
+                    char[] arr = new char[strs.Length];
+
+                    for (int i = 0; i < strs.Length; i++)
+                        arr[i] = char.Parse(strs[i].Trim());
 
                     return arr;
                 }

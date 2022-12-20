@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace ChattyVibes.Nodes
 {
     [STNode("/", "LauraRozier", "", "", "This is a comment node")]
-    internal class CommentNode : STNode
+    internal sealed class CommentNode : STNode
     {
         private string _string = "";
         [STNodeProperty("String", "The comment to show")]
@@ -25,7 +25,7 @@ namespace ChattyVibes.Nodes
         {
             base.OnCreate();
             Title = "Comment";
-            TitleColor = Color.FromArgb(200, FrmBindingGraphs.C_COLOR_COMMENT);
+            TitleColor = Color.FromArgb(200, Constants.C_COLOR_COMMENT);
             AutoSize = false;
             Size = DefaultSize;
             m_sf = new StringFormat { LineAlignment = StringAlignment.Near };
