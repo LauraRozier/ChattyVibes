@@ -2398,13 +2398,14 @@ namespace ST.Library.UI.NodeEditor
                 sb.Replace(".Graphics.", "GraphicsNode");
                 // Replace node sub-paths
                 sb.Replace(".App.", ".AppNode.");
-                sb.Replace(".Buttplug.", ".ButtplugNode.");
+                sb.Replace(".Buttplug.", ".IntifaceNode.");
                 sb.Replace(".Twitch.", ".TwitchNode.");
                 sb.Replace(".Color.", ".ColorNode.");
                 sb.Replace(".Image.", ".ImageNode.");
                 sb.Replace(".Float.", ".FloatNode.");
                 sb.Replace(".Int.", ".IntNode.");
                 sb.Replace(".UInt.", ".UIntNode.");
+                sb.Replace(".ButtplugNode.", ".IntifaceNode."); 
 
                 string patchedName = sb.ToString();
 

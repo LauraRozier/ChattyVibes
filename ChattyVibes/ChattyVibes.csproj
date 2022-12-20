@@ -12,6 +12,9 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,11 +27,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -92,6 +92,10 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Buttplug, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
@@ -263,9 +267,9 @@
     <Compile Include="Nodes\ActionNode\ActionNode.cs" />
     <Compile Include="Nodes\ActionNode\BaseActionNode.cs" />
     <Compile Include="Nodes\ActionNode\AppNode\FlowCountNode.cs" />
-    <Compile Include="Nodes\ActionNode\ButtplugNode\SendRotateCommandNode.cs" />
-    <Compile Include="Nodes\ActionNode\ButtplugNode\SendLinearCommandNode.cs" />
-    <Compile Include="Nodes\ActionNode\ButtplugNode\SendVibeCommandNode.cs" />
+    <Compile Include="Nodes\ActionNode\IntifaceNode\SendRotateCommandNode.cs" />
+    <Compile Include="Nodes\ActionNode\IntifaceNode\SendLinearCommandNode.cs" />
+    <Compile Include="Nodes\ActionNode\IntifaceNode\SendVibeCommandNode.cs" />
     <Compile Include="Nodes\BoolNode\BoolNode.cs" />
     <Compile Include="Nodes\BranchNode\EnumBranchNode.cs" />
     <Compile Include="Nodes\BranchNode\FloatBranchNode.cs" />
@@ -408,6 +412,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -440,7 +445,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Nodes\ActionNode\TwitchNode\" />
-    <Folder Include="Nodes\EventNode\ButtplugNode\" />
+    <Folder Include="Nodes\EventNode\IntifaceNode\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ST.Library.UI\ST.Library.UI.csproj">

@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tbChannel = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.tbClientId = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -58,8 +60,6 @@
             this.tbHostname = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tbPort = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.tbChannel = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -88,6 +88,28 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Twitch Settings";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 101);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(141, 17);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "Auto-Join Channel";
+            // 
+            // tbChannel
+            // 
+            this.tbChannel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbChannel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(30)))), ((int)(((byte)(54)))));
+            this.tbChannel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbChannel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(126)))), ((int)(((byte)(249)))));
+            this.tbChannel.Location = new System.Drawing.Point(153, 99);
+            this.tbChannel.Name = "tbChannel";
+            this.tbChannel.Size = new System.Drawing.Size(288, 23);
+            this.tbChannel.TabIndex = 8;
+            this.tbChannel.TextChanged += new System.EventHandler(this.tbChannel_TextChanged);
             // 
             // label4
             // 
@@ -435,32 +457,10 @@
             0});
             this.tbPort.ValueChanged += new System.EventHandler(this.tbPort_ValueChanged);
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 101);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(141, 17);
-            this.label7.TabIndex = 9;
-            this.label7.Text = "Auto-Join Channel";
-            // 
-            // tbChannel
-            // 
-            this.tbChannel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbChannel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(30)))), ((int)(((byte)(54)))));
-            this.tbChannel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbChannel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(126)))), ((int)(((byte)(249)))));
-            this.tbChannel.Location = new System.Drawing.Point(153, 99);
-            this.tbChannel.Name = "tbChannel";
-            this.tbChannel.Size = new System.Drawing.Size(288, 23);
-            this.tbChannel.TabIndex = 8;
-            this.tbChannel.TextChanged += new System.EventHandler(this.tbChannel_TextChanged);
-            // 
             // FrmHome
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(800, 493);
             this.Controls.Add(this.panel5);

@@ -44,7 +44,7 @@ namespace ChattyVibes
         private readonly List<string> _graphFiles = new List<string>();
         private string _currentGraph = string.Empty;
 
-        public FrmBindingGraphs() : base()
+        public FrmBindingGraphs()
         {
             KeyPreview = true;
             InitializeComponent();
@@ -190,7 +190,10 @@ namespace ChattyVibes
                 case Keys.Shift | Keys.Right:
                     {
                         Keyboard.OnKeyUp(e.KeyCode & ~Keys.Shift);
-                        _timer.Stop();
+
+                        if (!Keyboard.IsAnyKeyDown)
+                            _timer.Stop();
+
                         e.Handled = true;
                         return;
                     }

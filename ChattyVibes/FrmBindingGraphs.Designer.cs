@@ -177,14 +177,14 @@
             // removeToolStripMenuItem
             // 
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.removeToolStripMenuItem.Text = "&Remove";
             this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
             // lockLocationToolStripMenuItem
             // 
             this.lockLocationToolStripMenuItem.Name = "lockLocationToolStripMenuItem";
-            this.lockLocationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.lockLocationToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.lockLocationToolStripMenuItem.Text = "U/Lock &Location";
             this.lockLocationToolStripMenuItem.Click += new System.EventHandler(this.lockLocationToolStripMenuItem_Click);
             // 
@@ -194,12 +194,12 @@
             this.removeToolStripMenuItem,
             this.lockLocationToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(162, 48);
             // 
             // FrmBindingGraphs
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(1000, 600);
             this.Controls.Add(this.nodeEditorPanel);

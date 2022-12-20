@@ -2,9 +2,9 @@
 using ST.Library.UI.NodeEditor;
 using System.Threading.Tasks;
 
-namespace ChattyVibes.Nodes.ActionNode.ButtplugNode
+namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
 {
-    [STNode("/Actions/Buttplug", "LauraRozier", "", "", "Buttplug.IO SendLinearCommand node")]
+    [STNode("/Actions/Intiface", "LauraRozier", "", "", "Intiface SendLinearCommand node")]
     internal sealed class SendLinearCommandNode : BaseActionNode
     {
         private const int C_DIR_CHANGE_DELAY = 50;

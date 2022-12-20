@@ -1,6 +1,7 @@
 ﻿using ST.Library.UI.NodeEditor;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace ChattyVibes.Nodes.StringNode
@@ -55,10 +56,22 @@ namespace ChattyVibes.Nodes.StringNode
             int closeCount = _format.Count((c) =>  c == '}');
             int reqItemCount = Math.Min(openCount, closeCount);
 
+            /*
             if (optCount >= reqItemCount)
-                m_op_out.TransferData(string.Format(_format, args));
+                m_op_out.TransferData(tring.Format(_format, args));
             else
                 m_op_out.TransferData("");
+            */
+            try
+            {
+                string result = string.Format(_format, args);
+                m_op_out.TransferData(result);
+            }
+            catch (Exception ex)
+            {
+                Owner.ShowAlert(ex.Message, Color.White, Color.FromArgb(125, Color.Red));
+                m_op_out.TransferData(_format);
+            }
         }
 
         protected override void OnOwnerChanged()
