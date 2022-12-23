@@ -24,7 +24,7 @@ namespace ChattyVibes.Nodes
             if (_direction == FlowDirection.In || _direction == FlowDirection.Both)
             {
                 m_op_flow_in = InputOptions.Add(">", typeof(object), false);
-                m_op_flow_in.DataTransfer += m_op_flow_DataTransfer;
+                m_op_flow_in.DataTransfer += new STNodeOptionEventHandler(m_op_flow_DataTransfer);
             }
 
             if (_direction == FlowDirection.Out || _direction == FlowDirection.Both)
