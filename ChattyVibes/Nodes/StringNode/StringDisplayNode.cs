@@ -29,7 +29,7 @@ namespace ChattyVibes.Nodes.StringNode
             else
                 _value = "";
 
-            SetOptionText(m_op_in, _value.ToString());
+            SetOptionText(m_op_in, _value);
             m_op_out.TransferData(_value);
         }
     }

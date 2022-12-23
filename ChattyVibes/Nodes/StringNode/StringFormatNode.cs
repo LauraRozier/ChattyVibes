@@ -56,12 +56,6 @@ namespace ChattyVibes.Nodes.StringNode
             int closeCount = _format.Count((c) =>  c == '}');
             int reqItemCount = Math.Min(openCount, closeCount);
 
-            /*
-            if (optCount >= reqItemCount)
-                m_op_out.TransferData(tring.Format(_format, args));
-            else
-                m_op_out.TransferData("");
-            */
             try
             {
                 string result = string.Format(_format, args);
