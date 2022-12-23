@@ -270,6 +270,10 @@
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendRotateCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendLinearCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendVibeCommandNode.cs" />
+    <Compile Include="Nodes\ArrayNode\FloatArrayNode.cs" />
+    <Compile Include="Nodes\ArrayNode\UIntArrayNode.cs" />
+    <Compile Include="Nodes\ArrayNode\IntArrayNode.cs" />
+    <Compile Include="Nodes\ArrayNode\ArrayNode.cs" />
     <Compile Include="Nodes\ArrayNode\FloatArrayForEachNode.cs" />
     <Compile Include="Nodes\ArrayNode\UIntArrayForEachNode.cs" />
     <Compile Include="Nodes\ArrayNode\IntArrayForEachNode.cs" />
