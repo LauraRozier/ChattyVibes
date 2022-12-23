@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace ChattyVibes.Nodes.DictNode
 {
-    [STNode("/Dict", "LauraRozier", "", "", "Dict<String,Int> ForEach node")]
+    //[STNode("/Dict", "LauraRozier", "", "", "Dict<String,Int> ForEach node")]
     internal class IntDictForEachNode : DictForEachNode<string, int>
     {
         protected override void OnCreate()

@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace ChattyVibes.Nodes.ListNode
 {
-    [STNode("/List", "LauraRozier", "", "", "List<Int> ForEach node")]
+    //[STNode("/List", "LauraRozier", "", "", "List<Int> ForEach node")]
     internal class IntListForEachNode : ListForEachNode<int>
     {
         protected override void OnCreate()
