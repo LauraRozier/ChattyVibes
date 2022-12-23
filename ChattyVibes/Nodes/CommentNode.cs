@@ -34,7 +34,8 @@ namespace ChattyVibes.Nodes
 
         protected override void OnDrawBody(DrawingTools dt)
         {
-            Size textSize = TextRenderer.MeasureText(_string, Font, MaxSize, TextFormatFlags.WordBreak);
+            string replacedText = _string.Replace("\\r", "\r").Replace("\\n", "\n");
+            Size textSize = TextRenderer.MeasureText(replacedText, Font, MaxSize, TextFormatFlags.WordBreak);
             Rectangle textRect = new Rectangle(
                 Location.X,
                 Location.Y + 22,
@@ -43,7 +44,7 @@ namespace ChattyVibes.Nodes
             );
             Width = textRect.Width;
             Height = textRect.Height + 20;
-            dt.Graphics.DrawString(_string, Font, Brushes.White, textRect, m_sf);
+            dt.Graphics.DrawString(replacedText, Font, Brushes.White, textRect, m_sf);
             base.OnDrawBody(dt);
         }
     }
