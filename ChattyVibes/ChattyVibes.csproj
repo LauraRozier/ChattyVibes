@@ -270,6 +270,18 @@
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendRotateCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendLinearCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendVibeCommandNode.cs" />
+    <Compile Include="Nodes\ArrayNode\FloatArrayForEachNode.cs" />
+    <Compile Include="Nodes\ArrayNode\UIntArrayForEachNode.cs" />
+    <Compile Include="Nodes\ArrayNode\IntArrayForEachNode.cs" />
+    <Compile Include="Nodes\DictNode\DictForEachNode.cs" />
+    <Compile Include="Nodes\DictNode\FloatDictForEachNode.cs" />
+    <Compile Include="Nodes\DictNode\UIntDictForEachNode.cs" />
+    <Compile Include="Nodes\DictNode\IntDictForEachNode.cs" />
+    <Compile Include="Nodes\ListNode\FloatListForEachNode.cs" />
+    <Compile Include="Nodes\ListNode\UIntListForEachNode.cs" />
+    <Compile Include="Nodes\ListNode\IntListForEachNode.cs" />
+    <Compile Include="Nodes\ListNode\ListForEachNode.cs" />
+    <Compile Include="Nodes\ArrayNode\ArrayForEachNode.cs" />
     <Compile Include="Nodes\BoolNode\BoolNode.cs" />
     <Compile Include="Nodes\BranchNode\EnumBranchNode.cs" />
     <Compile Include="Nodes\BranchNode\FloatBranchNode.cs" />
@@ -323,6 +335,8 @@
     <Compile Include="Nodes\MathNode\UIntNode\UIntClampNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntCompareNode.cs" />
     <Compile Include="Nodes\PassthroughNode.cs" />
+    <Compile Include="Nodes\StringNode\StringToLowerNode.cs" />
+    <Compile Include="Nodes\StringNode\StringToUpperNode.cs" />
     <Compile Include="Nodes\StringNode\StringLengthNode.cs" />
     <Compile Include="Nodes\StringNode\StringNode.cs" />
     <Compile Include="Nodes\LogicNode\LogicNOTNode.cs" />
