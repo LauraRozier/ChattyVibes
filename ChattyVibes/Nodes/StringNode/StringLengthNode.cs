@@ -19,7 +19,7 @@ namespace ChattyVibes.Nodes.StringNode
             m_op_out = OutputOptions.Add("0", typeof(int), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
-            m_op_out.TransferData(_value);
+            m_op_out.TransferData(_value.Length);
         }
 
         private void m_in_DataTransfer(object sender, STNodeOptionEventArgs e)
