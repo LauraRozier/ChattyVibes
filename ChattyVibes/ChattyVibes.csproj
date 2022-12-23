@@ -339,6 +339,9 @@
     <Compile Include="Nodes\MathNode\UIntNode\UIntClampNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntCompareNode.cs" />
     <Compile Include="Nodes\PassthroughNode.cs" />
+    <Compile Include="Nodes\StringNode\StringTrimEndNode.cs" />
+    <Compile Include="Nodes\StringNode\StringTrimStartNode.cs" />
+    <Compile Include="Nodes\StringNode\StringTrimNode.cs" />
     <Compile Include="Nodes\StringNode\StringToLowerNode.cs" />
     <Compile Include="Nodes\StringNode\StringToUpperNode.cs" />
     <Compile Include="Nodes\StringNode\StringLengthNode.cs" />
