@@ -5,7 +5,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.MathNode.FloatNode
 {
     [STNode("/Math/Float", "LauraRozier", "", "", "Returns the larger of two numbers.")]
-    internal class FloatMaxNode : BaseFloatNode
+    internal class FloatMaxNode : Nodes.FloatNode
     {
         private float _aVal = 0.0f;
         [STNodeProperty("A", "A value")]

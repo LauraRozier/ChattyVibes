@@ -3,10 +3,9 @@ using System.Drawing;
 
 namespace ChattyVibes.Nodes
 {
-    internal abstract class BaseFloatNode : STNode
+    internal abstract class IntNode : STNode
     {
-        protected readonly StringFormat _sf = new StringFormat
-        {
+        protected readonly StringFormat _sf = new StringFormat {
             LineAlignment = StringAlignment.Center,
             Alignment = StringAlignment.Center,
         };
@@ -14,7 +13,7 @@ namespace ChattyVibes.Nodes
         protected override void OnCreate()
         {
             base.OnCreate();
-            TitleColor = Color.FromArgb(200, Constants.C_COLOR_FLOAT);
+            TitleColor = Color.FromArgb(200, Constants.C_COLOR_INT);
         }
     }
 }

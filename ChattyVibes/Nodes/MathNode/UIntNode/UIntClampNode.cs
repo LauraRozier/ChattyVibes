@@ -3,7 +3,7 @@
 namespace ChattyVibes.Nodes.MathNode.UIntNode
 {
     [STNode("/Math/UInt", "LauraRozier", "", "", "This node clamps the number within set values")]
-    internal class UIntClampNode : BaseUIntNode
+    internal class UIntClampNode : Nodes.UIntNode
     {
         private uint m_nNum = 0u;
         private uint m_nMin = 0u;

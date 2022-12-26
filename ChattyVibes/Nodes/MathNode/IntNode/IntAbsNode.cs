@@ -4,7 +4,7 @@ using System;
 namespace ChattyVibes.Nodes.MathNode.IntNode
 {
     [STNode("/Math/Int", "LauraRozier", "", "", "Returns the absolute value of a specified number.")]
-    internal class IntAbsNode : BaseIntNode
+    internal class IntAbsNode : Nodes.IntNode
     {
         private int _val = 0;
 

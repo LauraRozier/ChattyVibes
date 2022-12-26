@@ -338,7 +338,7 @@
     <Compile Include="Nodes\MathNode\UIntNode\UIntSubtractNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntClampNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntCompareNode.cs" />
-    <Compile Include="Nodes\PassthroughNode.cs" />
+    <Compile Include="Nodes\UtilNode\PassthroughNode.cs" />
     <Compile Include="Nodes\StringNode\StringRemoveNode.cs" />
     <Compile Include="Nodes\StringNode\StringReplaceNode.cs" />
     <Compile Include="Nodes\StringNode\StringLastIndexOfNode.cs" />
@@ -352,7 +352,7 @@
     <Compile Include="Nodes\StringNode\StringNode.cs" />
     <Compile Include="Nodes\LogicNode\LogicNOTNode.cs" />
     <Compile Include="Nodes\EventNode\AppNode\ManualEventTrigger.cs" />
-    <Compile Include="Nodes\BaseFlowNode.cs" />
+    <Compile Include="Nodes\FlowNode.cs" />
     <Compile Include="Nodes\LogicNode\LogicNANDNode.cs" />
     <Compile Include="Nodes\LogicNode\LogicNORNode.cs" />
     <Compile Include="Nodes\LogicNode\LogicXNORNode.cs" />
@@ -365,7 +365,7 @@
     <Compile Include="Nodes\BoolNode\BoolInputNode.cs" />
     <Compile Include="Nodes\LogicNode\LogicNode.cs" />
     <Compile Include="Nodes\BranchNode\BranchNode.cs" />
-    <Compile Include="Nodes\CommentNode.cs" />
+    <Compile Include="Nodes\UtilNode\CommentNode.cs" />
     <Compile Include="Nodes\DescriptorForColor.cs" />
     <Compile Include="Nodes\EventNode\BaseEventNode.cs" />
     <Compile Include="Nodes\EventNode\TwitchNode\OnChatMsgEventNode.cs" />
@@ -375,7 +375,7 @@
     <Compile Include="Nodes\NodeButton.cs" />
     <Compile Include="Nodes\NodeCheckBox.cs" />
     <Compile Include="Nodes\NodeColorButton.cs" />
-    <Compile Include="Nodes\NodeHub.cs" />
+    <Compile Include="Nodes\UtilNode\HubNode.cs" />
     <Compile Include="Nodes\NodeProgress.cs" />
     <Compile Include="Nodes\NodeSelectEnumBox.cs" />
     <Compile Include="Nodes\NumberNode\FloatNode\FloatToUIntNode.cs" />
@@ -383,9 +383,9 @@
     <Compile Include="Nodes\MathNode\FloatNode\FloatSubtractNode.cs" />
     <Compile Include="Nodes\MathNode\FloatNode\FloatMultiplyNode.cs" />
     <Compile Include="Nodes\MathNode\FloatNode\FloatDivideNode.cs" />
-    <Compile Include="Nodes\BaseFloatNode.cs" />
+    <Compile Include="Nodes\FloatNode.cs" />
     <Compile Include="Nodes\NumberNode\FloatNode\FloatToIntNode.cs" />
-    <Compile Include="Nodes\BaseConvertNode.cs" />
+    <Compile Include="Nodes\ConvertNode.cs" />
     <Compile Include="Nodes\NumberNode\UIntNode\UIntInputNode.cs" />
     <Compile Include="Nodes\NumberNode\UIntNode\UIntDisplayNode.cs" />
     <Compile Include="Nodes\NumberNode\UIntNode\UIntToFloatNode.cs" />
@@ -398,7 +398,7 @@
     <Compile Include="Nodes\StringNode\StringDisplayNode.cs" />
     <Compile Include="Nodes\StringNode\StringFormatNode.cs" />
     <Compile Include="Nodes\StringNode\StringInputNode.cs" />
-    <Compile Include="Nodes\BaseUIntNode.cs" />
+    <Compile Include="Nodes\UIntNode.cs" />
     <Compile Include="Nodes\MathNode\IntNode\IntClampNode.cs" />
     <Compile Include="Nodes\MathNode\IntNode\IntDivideNode.cs" />
     <Compile Include="Nodes\NumberNode\IntNode\IntDisplayNode.cs" />
@@ -410,7 +410,7 @@
     <Compile Include="Nodes\MathNode\IntNode\IntAddNode.cs" />
     <Compile Include="Nodes\NumberNode\FloatNode\FloatInputNode.cs" />
     <Compile Include="Nodes\NumberNode\IntNode\IntInputNode.cs" />
-    <Compile Include="Nodes\BaseIntNode.cs" />
+    <Compile Include="Nodes\IntNode.cs" />
     <Compile Include="Nodes\DateTimeNode\DateTimeDisplayNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

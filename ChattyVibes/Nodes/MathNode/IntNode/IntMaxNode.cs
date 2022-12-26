@@ -4,7 +4,7 @@ using System;
 namespace ChattyVibes.Nodes.MathNode.IntNode
 {
     [STNode("/Math/Int", "LauraRozier", "", "", "Returns the larger of two numbers.")]
-    internal class IntMaxNode : BaseIntNode
+    internal class IntMaxNode : Nodes.IntNode
     {
         private int _aVal = 0;
         [STNodeProperty("A", "A value")]

@@ -2,12 +2,10 @@
 using System;
 using System.Drawing;
 using System.Linq;
-using static ChattyVibes.Nodes.StringNode.StringFormatNode;
-using static ST.Library.UI.NodeEditor.STNodeHub;
 
-namespace ChattyVibes.Nodes
+namespace ChattyVibes.Nodes.UtilNode
 {
-    [STNode("/", "LauraRozier", "", "", "Passthrough node")]
+    [STNode("/Util", "LauraRozier", "", "", "Passthrough node")]
     internal sealed class PassthroughNode : STNode
     {
         private readonly static Type C_OBJ_TYPE = typeof(object);
@@ -40,11 +38,11 @@ namespace ChattyVibes.Nodes
 
         private bool m_Connecting(object sender, STNodeOptionEventArgs e)
         {
-            if (e.TargetOption is STFormatNodeOption || e.TargetOption is STNodeHubOption)
-            {
-                if ((sender as STNodeOption).DataType != e.TargetOption.DataType)
-                    return true;
-            }
+            if ((e.TargetOption is StringNode.StringFormatNode.STFormatNodeOption ||
+                e.TargetOption is STNodeHub.STNodeHubOption) &&
+                (sender as STNodeOption).DataType != e.TargetOption.DataType
+            )
+                return true;
 
             if (
                 (sender == m_op_in && m_op_out.ConnectionCount > 0 && m_op_out.DataType != e.TargetOption.DataType) ||

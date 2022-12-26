@@ -2,7 +2,7 @@
 
 namespace ChattyVibes.Nodes.EventNode
 {
-    internal abstract class EventNode : BaseFlowNode
+    internal abstract class EventNode : FlowNode
     {
         protected override void OnCreate()
         {

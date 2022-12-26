@@ -5,7 +5,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.MathNode.UIntNode
 {
     [STNode("/Math/UInt", "LauraRozier", "", "", "This node can get two numbers divide result")]
-    internal class UIntDivideNode : BaseUIntNode
+    internal class UIntDivideNode : Nodes.UIntNode
     {
         private uint _aVal = 0u;
         private uint _bVal = 0u;

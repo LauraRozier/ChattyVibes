@@ -2,7 +2,7 @@
 
 namespace ChattyVibes.Nodes
 {
-    internal abstract class BaseConvertNode : STNode
+    internal abstract class ConvertNode : STNode
     {
         protected STNodeOption m_in;
         protected STNodeOption m_out;

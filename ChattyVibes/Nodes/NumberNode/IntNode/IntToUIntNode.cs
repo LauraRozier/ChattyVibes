@@ -4,7 +4,7 @@ using System.Drawing;
 namespace ChattyVibes.Nodes.NumberNode.IntNode
 {
     [STNode("/Number/Int", "LauraRozier", "", "", "Int to UInt node")]
-    internal class IntToUIntNode : BaseConvertNode
+    internal class IntToUIntNode : ConvertNode
     {
         private int _val;
 

@@ -5,7 +5,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.MathNode.FloatNode
 {
     [STNode("/Math/Float", "LauraRozier", "", "", "This node can get two floats divide result")]
-    internal class FloatDivideNode : BaseFloatNode
+    internal class FloatDivideNode : Nodes.FloatNode
     {
         private float _aVal = 0.0f;
         private float _bVal = 0.0f;

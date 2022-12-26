@@ -4,7 +4,7 @@ using System.Drawing;
 namespace ChattyVibes.Nodes.MathNode.UIntNode
 {
     [STNode("/Math/UInt", "LauraRozier", "", "", "This node can get two numbers subtract result")]
-    internal class UIntSubtractNode : BaseUIntNode
+    internal class UIntSubtractNode : Nodes.UIntNode
     {
         private uint _aVal = 0u;
         private uint _bVal = 0u;

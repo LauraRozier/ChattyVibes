@@ -1,9 +1,9 @@
 ﻿using ST.Library.UI.NodeEditor;
 using System.Drawing;
 
-namespace ChattyVibes.Nodes
+namespace ChattyVibes.Nodes.UtilNode
 {
-    [STNode("/", "LauraRozier", "", "", "Single input to many outputs")]
+    [STNode("/Util", "LauraRozier", "", "", "Single input to many outputs")]
     public class STNodeHubSingle : STNodeHub
     {
         public STNodeHubSingle() : base(true)
@@ -14,7 +14,7 @@ namespace ChattyVibes.Nodes
     }
 
     /*
-    [STNode("/", "LauraRozier", "", "", "Many inputs to many outputs")]
+    [STNode("/Util", "LauraRozier", "", "", "Many inputs to many outputs")]
     public class STNodeHubMulti : STNodeHub
     {
         public STNodeHubMulti() : base(false)

@@ -3,7 +3,7 @@
 namespace ChattyVibes.Nodes.MathNode.IntNode
 {
     [STNode("/Math/Int", "LauraRozier", "", "", "This node clamps the number within set values")]
-    internal class IntClampNode : BaseIntNode
+    internal class IntClampNode : Nodes.IntNode
     {
         private int m_nNum = 0;
         private int m_nMin = 0;

@@ -5,7 +5,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.NumberNode.UIntNode
 {
     [STNode("/Number/UInt", "LauraRozier", "", "", "UInt to Float node")]
-    internal class UIntToFloatNode : BaseConvertNode
+    internal class UIntToFloatNode : ConvertNode
     {
         private uint _val;
 

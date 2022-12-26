@@ -4,7 +4,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.NumberNode.FloatNode
 {
     [STNode("/Number/Float", "LauraRozier", "", "", "Float input node")]
-    internal class FloatInputNode : BaseFloatNode
+    internal class FloatInputNode : Nodes.FloatNode
     {
         private STNodeOption m_op_out;
 

@@ -3,7 +3,7 @@
 namespace ChattyVibes.Nodes.NumberNode.UIntNode
 {
     [STNode("/Number/UInt", "LauraRozier", "", "", "UInt display node")]
-    internal class UIntDisplayNode : BaseUIntNode
+    internal class UIntDisplayNode : Nodes.UIntNode
     {
         private uint _value = 0u;
 

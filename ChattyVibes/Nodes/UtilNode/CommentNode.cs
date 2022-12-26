@@ -2,9 +2,9 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace ChattyVibes.Nodes
+namespace ChattyVibes.Nodes.UtilNode
 {
-    [STNode("/", "LauraRozier", "", "", "This is a comment node")]
+    [STNode("/Util", "LauraRozier", "", "", "This is a comment node")]
     internal sealed class CommentNode : STNode
     {
         private string _string = "";

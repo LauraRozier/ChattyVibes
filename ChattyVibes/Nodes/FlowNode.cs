@@ -2,7 +2,7 @@
 
 namespace ChattyVibes.Nodes
 {
-    internal abstract class BaseFlowNode : STNode
+    internal abstract class FlowNode : STNode
     {
         protected enum FlowDirection
         {

@@ -4,7 +4,7 @@ using System;
 namespace ChattyVibes.Nodes.MathNode.UIntNode
 {
     [STNode("/Math/UInt", "LauraRozier", "", "", "Returns the smaller of two numbers.")]
-    internal class UIntMinNode : BaseUIntNode
+    internal class UIntMinNode : Nodes.UIntNode
     {
         private uint _aVal = 0u;
         [STNodeProperty("A", "A value")]

@@ -5,7 +5,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.MathNode.FloatNode
 {
     [STNode("/Math/Float", "LauraRozier", "", "", "Returns the smallest integral value that is greater than or equal to the specified number.")]
-    internal class FloatFloorNode : BaseFloatNode
+    internal class FloatFloorNode : Nodes.FloatNode
     {
         private float _val = 0.0f;
 

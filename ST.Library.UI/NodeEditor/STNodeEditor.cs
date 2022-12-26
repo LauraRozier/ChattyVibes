@@ -2414,6 +2414,14 @@ namespace ST.Library.UI.NodeEditor
                 if (name.EndsWith(".LogicNOTNode"))
                     sb.Replace(".Bool.", ".LogicNode.");
 
+                // Fix old paths
+                if (name.EndsWith(".CommentNode"))
+                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
+                if (name.EndsWith(".STNodeHubSingle"))
+                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
+                if (name.EndsWith(".PassthroughNode"))
+                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
+
                 // Replace node root-paths
                 sb.Replace(".Actions.", ".ActionNode.");
                 sb.Replace(".Bool.", ".BoolNode.");

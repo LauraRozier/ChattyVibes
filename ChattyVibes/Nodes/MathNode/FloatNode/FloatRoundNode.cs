@@ -6,7 +6,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.MathNode.FloatNode
 {
     [STNode("/Math/Float", "LauraRozier", "", "", "Rounds a value to a specified number of fractional digits, and uses the specified rounding convention for midpoint values.")]
-    internal class FloatRoundNode : BaseFloatNode
+    internal class FloatRoundNode : Nodes.FloatNode
     {
         private float _val = 0.0f;
         private int _digits = 2;

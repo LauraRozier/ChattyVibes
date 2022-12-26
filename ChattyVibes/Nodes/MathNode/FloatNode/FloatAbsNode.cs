@@ -5,7 +5,7 @@ using System.Globalization;
 namespace ChattyVibes.Nodes.MathNode.FloatNode
 {
     [STNode("/Math/Float", "LauraRozier", "", "", "Returns the absolute value of a specified number.")]
-    internal class FloatAbsNode : BaseFloatNode
+    internal class FloatAbsNode : Nodes.FloatNode
     {
         private float _val = 0.0f;
 
