@@ -265,11 +265,16 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Nodes\ActionNode\ActionNode.cs" />
-    <Compile Include="Nodes\ActionNode\BaseActionNode.cs" />
     <Compile Include="Nodes\ActionNode\AppNode\FlowCountNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendRotateCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendLinearCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendVibeCommandNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\GetJoinedChannelsNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\LeaveChannelNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\JoinChannelNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\SendReplyNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\SendWhisperNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\SendMessageNode.cs" />
     <Compile Include="Nodes\ArrayNode\FloatArrayNode.cs" />
     <Compile Include="Nodes\ArrayNode\UIntArrayNode.cs" />
     <Compile Include="Nodes\ArrayNode\IntArrayNode.cs" />
@@ -414,6 +419,7 @@
     <Compile Include="Nodes\DateTimeNode\DateTimeDisplayNode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queues\TwitchQueue.cs" />
     <Compile Include="Queues\ButtplugDeviceQueue.cs" />
     <Compile Include="Structs.cs" />
     <Compile Include="ToolStripRendererEx.cs" />
@@ -471,7 +477,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Nodes\ActionNode\TwitchNode\" />
     <Folder Include="Nodes\EventNode\IntifaceNode\" />
   </ItemGroup>
   <ItemGroup>

@@ -57,7 +57,7 @@ namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
                 return;
 
             MainForm.ButtplugQueues[_deviceId].Enqueue(
-                new Queues.QueuedTaskHandler(SendCommand),
+                new Queues.QueuedPlugTaskHandler(SendCommand),
                 new MsgData { Level = _level, Duration = _duration }
             );
         }

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace ChattyVibes.Queues
 {
-    public delegate Task QueuedTaskHandler(ButtplugClientDevice device, object data);
+    public delegate Task QueuedPlugTaskHandler(ButtplugClientDevice device, object data);
 
     internal class ButtplugDeviceQueue
     {
         private struct PlugQueueMsg
         {
-            public QueuedTaskHandler Handler { get; set; }
+            public QueuedPlugTaskHandler Handler { get; set; }
             public object Data { get; set; }
         }
 
@@ -44,7 +44,7 @@ namespace ChattyVibes.Queues
                     if (_queue.Count > 0 && _queue.TryDequeue(out PlugQueueMsg msg))
                         msg.Handler(_device, msg.Data).Wait();
 
-                    Thread.Sleep(100);
+                    Thread.Sleep(25);
                 }
                 catch (ThreadAbortException)
                 {
@@ -53,7 +53,7 @@ namespace ChattyVibes.Queues
             }
         }
 
-        public void Enqueue(QueuedTaskHandler handler, object data) =>
-            _queue.Enqueue(new PlugQueueMsg {  Handler = handler, Data = data });
+        public void Enqueue(QueuedPlugTaskHandler handler, object data) =>
+            _queue.Enqueue(new PlugQueueMsg { Handler = handler, Data = data });
     }
 }

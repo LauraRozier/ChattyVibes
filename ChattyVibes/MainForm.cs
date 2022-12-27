@@ -62,6 +62,7 @@ namespace ChattyVibes
 
         internal readonly static EventFactory EventFactory = new EventFactory();
         internal readonly static Dictionary<uint, ButtplugDeviceQueue> ButtplugQueues = new Dictionary<uint, ButtplugDeviceQueue>();
+        internal static TwitchQueue TwitchQueue = null;
 
         internal const string _graphDir = "./Graphs";
         internal const string _graphFileExt = ".bpgraph";
@@ -264,6 +265,12 @@ namespace ChattyVibes
             while (!_queue.IsEmpty)
                 _queue.TryDequeue(out _);
 
+            if (TwitchQueue != null)
+            {
+                TwitchQueue.Cleanup();
+                TwitchQueue = null;
+            }
+
             if (_chatClient != null)
             {
                 _chatClient.AutoReListenOnException = false;
@@ -440,6 +447,9 @@ namespace ChattyVibes
                 return;
             }
 
+            TwitchQueue?.Cleanup();
+            TwitchQueue = new TwitchQueue(_chatClient);
+
             _chatState = ConnectionState.Connected;
             UpdateGUI();
         }
@@ -448,6 +458,12 @@ namespace ChattyVibes
         {
             _chatState = ConnectionState.Disconnecting;
             UpdateGUI();
+
+            if (TwitchQueue != null)
+            {
+                TwitchQueue.Cleanup();
+                TwitchQueue = null;
+            }
 
             if (_chatClient != null && _chatClient.IsConnected)
             {
@@ -596,7 +612,7 @@ namespace ChattyVibes
                 return;
             }
 
-            // This time we take an input stream from the request to recieve the url
+            // This time we take an input stream from the request to receive the url
             string url;
 
             using (var reader = new StreamReader(httpRequest.InputStream, httpRequest.ContentEncoding))
@@ -605,7 +621,7 @@ namespace ChattyVibes
             Regex rx = new Regex(@".+#access_token=(.+)&scope.*&state=(.+)&token_type=bearer");
             var match = rx.Match(url);
 
-            // If state doesnt match reject data
+            // If state doesn't match reject data
             if (match.Groups[2].Value != CTwitchAuthStateVerify)
             {
                 httpListener.BeginGetContext(new AsyncCallback(IncomingAuth), httpListener);

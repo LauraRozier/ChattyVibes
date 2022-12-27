@@ -6,12 +6,14 @@ namespace ChattyVibes.Nodes
     {
         protected enum FlowDirection
         {
+            None,
             In,
             Out,
-            Both
+            Both,
+            ManualBoth
         }
 
-        protected FlowDirection _direction;
+        protected FlowDirection _direction = FlowDirection.None;
         protected STNodeOption m_op_flow_in;
         protected STNodeOption m_op_flow_out;
 
@@ -21,13 +23,13 @@ namespace ChattyVibes.Nodes
         {
             base.OnCreate();
 
-            if (_direction == FlowDirection.In || _direction == FlowDirection.Both)
+            if (_direction == FlowDirection.In || _direction == FlowDirection.Both || _direction == FlowDirection.ManualBoth)
             {
                 m_op_flow_in = InputOptions.Add(">", typeof(object), false);
                 m_op_flow_in.DataTransfer += new STNodeOptionEventHandler(m_op_flow_DataTransfer);
             }
 
-            if (_direction == FlowDirection.Out || _direction == FlowDirection.Both)
+            if (_direction == FlowDirection.Out || _direction == FlowDirection.Both || _direction == FlowDirection.ManualBoth)
                 m_op_flow_out = OutputOptions.Add(">", typeof(object), false);
         }
 
@@ -36,7 +38,7 @@ namespace ChattyVibes.Nodes
             if (e.TargetOption.Data != null)
                 OnFlowTrigger();
 
-            if (_direction == FlowDirection.Out || _direction == FlowDirection.Both)
+            if (_direction == FlowDirection.Both)
                 m_op_flow_out.TransferData(e.TargetOption.Data);
         }
 
