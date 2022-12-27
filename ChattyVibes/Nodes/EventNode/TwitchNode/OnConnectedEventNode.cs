@@ -5,7 +5,7 @@ using TwitchLib.Client.Events;
 namespace ChattyVibes.Nodes.EventNode.TwitchNode
 {
     [STNode("/Events/Twitch", "LauraRozier", "", "", "Twitch OnConnected event node")]
-    internal sealed class OnConnectedEventNode : BaseEventNode
+    internal sealed class OnConnectedEventNode : EventNode
     {
         private STNodeOption m_op_AutoJoinChannel_out;
         private STNodeOption m_op_BotUsername_out;

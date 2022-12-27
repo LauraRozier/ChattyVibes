@@ -45,16 +45,6 @@ namespace ChattyVibes
         private WebSocketClient _socketClient = null;
         private TwitchClient _chatClient = null;
 
-        private struct QueueItem
-        {
-            public QueuedItemType Type;
-            public object Sender;
-            public object EventArgs;
-        }
-
-        private readonly ConcurrentQueue<QueueItem> _queue = new ConcurrentQueue<QueueItem>();
-        private Thread _worker;
-
         private readonly static Color IdleBtnColor = Color.FromArgb(24, 30, 54);
         private readonly static Color SelectedBtnColor = Color.FromArgb(46, 51, 73);
 
@@ -118,95 +108,6 @@ namespace ChattyVibes
                 home.UpdateGUI();
         }
 
-        private void HandleQueue()
-        {
-            while (true)
-            {
-                try
-                {
-                    if (_queue.Count > 0 && _queue.TryDequeue(out QueueItem item))
-                        HandleEvent(item);
-
-                    Thread.Sleep(10);
-                }
-                catch (ThreadAbortException) { return; }
-            }
-        }
-
-        private void HandleEvent(QueueItem info)
-        {
-            if (!(_chatClient?.IsConnected ?? false))
-                return;
-
-            switch (info.Type)
-            {
-                case QueuedItemType.Message:
-                    {
-                        ((TwitchOnChatMsgEvent)EventFactory.GetEvent(EventType.TwitchOnChatMsg)).OnEvent(
-                            info.Sender,
-                            (OnMessageReceivedArgs)info.EventArgs
-                        );
-                        return;
-                    }
-                case QueuedItemType.Whisper:
-                    {
-                        ((TwitchOnWhisperMsgEvent)EventFactory.GetEvent(EventType.TwitchOnWhisperMsg)).OnEvent(
-                            info.Sender,
-                            (OnWhisperReceivedArgs)info.EventArgs
-                        );
-                        return;
-                    }
-                case QueuedItemType.NewSub:
-                    {
-                        ((TwitchOnNewSubEvent)EventFactory.GetEvent(EventType.TwitchOnNewSub)).OnEvent(
-                            info.Sender,
-                            (OnNewSubscriberArgs)info.EventArgs
-                        );
-                        return;
-                    }
-                case QueuedItemType.GiftSub:
-                    {
-                        ((TwitchOnGiftSubEvent)EventFactory.GetEvent(EventType.TwitchOnGiftSub)).OnEvent(
-                            info.Sender,
-                            (OnGiftedSubscriptionArgs)info.EventArgs
-                        );
-                        break;
-                    }
-                case QueuedItemType.ContGiftSub:
-                    {
-                        ((TwitchOnContinuedGiftSubEvent)EventFactory.GetEvent(EventType.TwitchOnContinuedGiftSub)).OnEvent(
-                            info.Sender,
-                            (OnContinuedGiftedSubscriptionArgs)info.EventArgs
-                        );
-                        return;
-                    }
-                case QueuedItemType.ComSub:
-                    {
-                        ((TwitchOnCommunitySubEvent)EventFactory.GetEvent(EventType.TwitchOnCommunitySub)).OnEvent(
-                            info.Sender,
-                            (OnCommunitySubscriptionArgs)info.EventArgs
-                        );
-                        return;
-                    }
-                case QueuedItemType.PrimeSub:
-                    {
-                        ((TwitchOnPrimeSubEvent)EventFactory.GetEvent(EventType.TwitchOnPrimeSub)).OnEvent(
-                            info.Sender,
-                            (OnPrimePaidSubscriberArgs)info.EventArgs
-                        );
-                        return;
-                    }
-                case QueuedItemType.ReSub:
-                    {
-                        ((TwitchOnResubEvent)EventFactory.GetEvent(EventType.TwitchOnResub)).OnEvent(
-                            info.Sender,
-                            (OnReSubscriberArgs)info.EventArgs
-                        );
-                        return;
-                    }
-            }
-        }
-
         internal async Task<DeviceBattery> SendBatteryLevelCommand(ButtplugClientDevice aToy)
         {
             var result = new DeviceBattery { Name = $"{aToy.Index} - {aToy.Name}" };
@@ -244,9 +145,6 @@ namespace ChattyVibes
             _plugClient.DeviceAdded += _plugClient_DeviceAdded;
             _plugClient.DeviceRemoved += _plugClient_DeviceRemoved;
 
-            _worker = new Thread(new ThreadStart(HandleQueue)) { IsBackground = true };
-            _worker.Start();
-
             btnHome.PerformClick();
             UpdateGUI();
             await LogMsg("Setup and ready to start.");
@@ -254,16 +152,12 @@ namespace ChattyVibes
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            _worker.Abort();
-            _worker.Join(5000);
+            EventFactory.Clear();
 
             foreach (var item in ButtplugQueues)
                 item.Value.Cleanup();
 
             ButtplugQueues.Clear();
-
-            while (!_queue.IsEmpty)
-                _queue.TryDequeue(out _);
 
             if (TwitchQueue != null)
             {
@@ -655,107 +549,67 @@ namespace ChattyVibes
         private async void _chatClient_OnConnected(object sender, OnConnectedArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Connected to Twitch");
-            ((TwitchOnConnectedEvent)EventFactory.GetEvent(EventType.TwitchOnConnected)).OnEvent(sender, e);
+            EventFactory.Enqueue(EventType.TwitchOnConnected, sender, e);
         }
 
         private async void _chatClient_OnDisconnected(object sender, OnDisconnectedEventArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: Disconnected from Twitch");
-            ((TwitchOnDisconnectedEvent)EventFactory.GetEvent(EventType.TwitchOnDisconnected)).OnEvent(sender, e);
+            EventFactory.Enqueue(EventType.TwitchOnDisconnected, sender, e);
         }
 
         private async void _chatClient_OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.BotUsername} - Joined channel {e.Channel}");
-            ((TwitchOnJoinedChannelEvent)EventFactory.GetEvent(EventType.TwitchOnJoinedChannel)).OnEvent(sender, e);
+            EventFactory.Enqueue(EventType.TwitchOnJoinedChannel, sender, e);
         }
 
         private async void _chatClient_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.ChatMessage.DisplayName} - Sent Message \"{e.ChatMessage.Message}\"");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.Message,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnChatMsg, sender, e);
         }
 
         private async void _chatClient_OnWhisperReceived(object sender, OnWhisperReceivedArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.WhisperMessage.DisplayName} - Sent Whisper \"{e.WhisperMessage.Message}\"");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.Whisper,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnWhisperMsg, sender, e);
         }
 
         private async void _chatClient_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.Subscriber.DisplayName} - New Sub tier {e.Subscriber.SubscriptionPlanName}");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.NewSub,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnNewSub, sender, e);
         }
 
         private async void _chatClient_OnGiftedSubscription(object sender, OnGiftedSubscriptionArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - New Gift Sub \"{e.GiftedSubscription.MsgParamRecipientDisplayName}\" Tier {e.GiftedSubscription.MsgParamSubPlanName} Length {e.GiftedSubscription.MsgParamMonths}");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.GiftSub,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnGiftSub, sender, e);
         }
 
         private async void _chatClient_OnReSubscriber(object sender, OnReSubscriberArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.ReSubscriber.DisplayName} - Re-Sub tier {e.ReSubscriber.SubscriptionPlanName} Message \"{e.ReSubscriber.ResubMessage}\"");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.ReSub,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnResub, sender, e);
         }
 
         private async void _chatClient_OnPrimePaidSubscriber(object sender, OnPrimePaidSubscriberArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.PrimePaidSubscriber.DisplayName} - Prime Subscriber");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.PrimeSub,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnPrimeSub, sender, e);
         }
 
         private async void _chatClient_OnCommunitySubscription(object sender, OnCommunitySubscriptionArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.GiftedSubscription.DisplayName} - Community Subscriber tier {e.GiftedSubscription.MsgParamSubPlan}");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.ComSub,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnCommunitySub, sender, e);
         }
 
         private async void _chatClient_OnContinuedGiftedSubscription(object sender, OnContinuedGiftedSubscriptionArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.ContinuedGiftedSubscription.DisplayName} - Continued Gifted Subscriber");
-            _queue.Enqueue(new QueueItem
-            {
-                Type = QueuedItemType.ContGiftSub,
-                Sender = sender,
-                EventArgs = e
-            });
+            EventFactory.Enqueue(EventType.TwitchOnContinuedGiftSub, sender, e);
         }
 
         private void panel3_Paint(object sender, PaintEventArgs e)
@@ -810,11 +664,13 @@ namespace ChattyVibes
 
             await LogMsg(logMsg);
             ButtplugQueues.Add(e.Device.Index, new ButtplugDeviceQueue(e.Device));
+            EventFactory.Enqueue(EventType.ButtplugDeviceAdded, sender, e);
         }
 
         private async void _plugClient_DeviceRemoved(object sender, DeviceRemovedEventArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Device \"{e.Device.Name}\" (idx {e.Device.Index}) disconnected");
+            EventFactory.Enqueue(EventType.ButtplugDeviceRemoved, sender, e);
 
             if (ButtplugQueues.ContainsKey(e.Device.Index))
             {

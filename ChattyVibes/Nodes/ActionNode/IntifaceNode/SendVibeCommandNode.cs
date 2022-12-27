@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
 {
     [STNode("/Actions/Intiface", "LauraRozier", "", "", "Intiface SendVibrateCommand node")]
-    internal sealed class SendVibeCommandNode : BaseActionNode
+    internal sealed class SendVibeCommandNode : ActionNode
     {
         private uint _deviceId = 0u;
         [STNodeProperty("Device ID", "The ID of the device to send the command to.")]

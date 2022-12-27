@@ -227,7 +227,9 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Events\BaseEvent.cs" />
+    <Compile Include="Events\ButtplugDeviceRemovedEvent.cs" />
     <Compile Include="Events\EventFactory.cs" />
+    <Compile Include="Events\ButtplugDeviceAddedEvent.cs" />
     <Compile Include="Events\TwitchOnWhisperMsgEvent.cs" />
     <Compile Include="Events\TwitchOnNewSubEvent.cs" />
     <Compile Include="Events\TwitchOnGiftSubEvent.cs" />
@@ -304,7 +306,6 @@
     <Compile Include="Nodes\EnumNode\EnumNode.cs" />
     <Compile Include="Nodes\EnumNode\SubscriptionPlanDisplayNode.cs" />
     <Compile Include="Nodes\EnumNode\SubscriptionPlanInputNode.cs" />
-    <Compile Include="Nodes\EventNode\EventNode.cs" />
     <Compile Include="Nodes\EventNode\TwitchNode\OnResubEventNode.cs" />
     <Compile Include="Nodes\EventNode\TwitchNode\OnPrimeSubEventNode.cs" />
     <Compile Include="Nodes\EventNode\TwitchNode\OnNewSubEventNode.cs" />
@@ -372,7 +373,7 @@
     <Compile Include="Nodes\BranchNode\BranchNode.cs" />
     <Compile Include="Nodes\UtilNode\CommentNode.cs" />
     <Compile Include="Nodes\DescriptorForColor.cs" />
-    <Compile Include="Nodes\EventNode\BaseEventNode.cs" />
+    <Compile Include="Nodes\EventNode\EventNode.cs" />
     <Compile Include="Nodes\EventNode\TwitchNode\OnChatMsgEventNode.cs" />
     <Compile Include="Nodes\FrmEnumSelect.cs">
       <SubType>Form</SubType>

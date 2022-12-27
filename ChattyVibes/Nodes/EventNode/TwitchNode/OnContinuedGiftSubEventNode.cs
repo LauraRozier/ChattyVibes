@@ -6,7 +6,7 @@ using TwitchLib.Client.Events;
 namespace ChattyVibes.Nodes.EventNode.TwitchNode
 {
     [STNode("/Events/Twitch", "LauraRozier", "", "", "Twitch ContinuedGiftSub event node")]
-    internal sealed class OnContinuedGiftSubEventNode : BaseEventNode
+    internal sealed class OnContinuedGiftSubEventNode : EventNode
     {
         private STNodeOption m_op_Channel_out;
         private STNodeOption m_op_DisplayName_out;

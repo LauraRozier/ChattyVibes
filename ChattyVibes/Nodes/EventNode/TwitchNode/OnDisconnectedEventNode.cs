@@ -5,7 +5,7 @@ using TwitchLib.Communication.Events;
 namespace ChattyVibes.Nodes.EventNode.TwitchNode
 {
     [STNode("/Events/Twitch", "LauraRozier", "", "", "Twitch OnDisconnected event node")]
-    internal sealed class OnDisconnectedEventNode : BaseEventNode
+    internal sealed class OnDisconnectedEventNode : EventNode
     {
         protected override void BindEvent()
         {

@@ -8,16 +8,4 @@
         Disconnecting,
         Error
     }
-
-    enum QueuedItemType
-    {
-        Message,
-        Whisper,
-        NewSub,
-        GiftSub,
-        ContGiftSub,
-        ComSub,
-        PrimeSub,
-        ReSub
-    }
 }

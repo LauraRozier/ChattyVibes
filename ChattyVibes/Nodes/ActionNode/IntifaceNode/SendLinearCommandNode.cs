@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
 {
     [STNode("/Actions/Intiface", "LauraRozier", "", "", "Intiface SendLinearCommand node")]
-    internal sealed class SendLinearCommandNode : BaseActionNode
+    internal sealed class SendLinearCommandNode : ActionNode
     {
         private const int C_DIR_CHANGE_DELAY = 50;
 

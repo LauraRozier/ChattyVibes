@@ -6,7 +6,7 @@ using TwitchLib.Client.Events;
 namespace ChattyVibes.Nodes.EventNode.TwitchNode
 {
     [STNode("/Events/Twitch", "LauraRozier", "", "", "Twitch OnChatMessage event node")]
-    internal sealed class OnChatMsgEventNode : BaseEventNode
+    internal sealed class OnChatMsgEventNode : EventNode
     {
         private STNodeOption m_op_Bits_out;
         private STNodeOption m_op_Channel_out;
