@@ -135,7 +135,7 @@ namespace ChattyVibes
                     {
                         if ((e.Modifiers & Keys.Control) == Keys.Control)
                         {
-                            nodeEditorPanel.Editor.Nodes.Clear();
+                            nodeEditorPanel.Editor.ClearNodes();
                             nodeEditorPanel.Editor.Modified = false;
 
                             if (!string.IsNullOrEmpty(_currentGraph))
@@ -295,7 +295,7 @@ namespace ChattyVibes
             _timer.Stop();
             _timer.Dispose();
             SaveGraph();
-            nodeEditorPanel.Editor.Nodes.Clear();
+            nodeEditorPanel.Editor.ClearNodes();
             base.OnFormClosing(e);
         }
 
@@ -402,7 +402,7 @@ namespace ChattyVibes
                 SaveGraph();
                 _currentGraph = name;
                 lbGraphs.SelectedIndex = lbGraphs.Items.Add(name);
-                nodeEditorPanel.Editor.Nodes.Clear();
+                nodeEditorPanel.Editor.ClearNodes();
                 nodeEditorPanel.Editor.Modified = false;
 
                 try
@@ -438,7 +438,7 @@ namespace ChattyVibes
 
             File.Delete(path);
             _currentGraph = string.Empty;
-            nodeEditorPanel.Editor.Nodes.Clear();
+            nodeEditorPanel.Editor.ClearNodes();
             nodeEditorPanel.Editor.Modified = false;
             lbGraphs.Items.RemoveAt(lbGraphs.SelectedIndex);
             lbGraphs.SelectedIndex = -1;
@@ -448,7 +448,7 @@ namespace ChattyVibes
         {
             string curItem = (string)lbGraphs.SelectedItem;
             SaveGraph();
-            nodeEditorPanel.Editor.Nodes.Clear();
+            nodeEditorPanel.Editor.ClearNodes();
             nodeEditorPanel.Editor.Modified = false;
 
             if (!string.IsNullOrEmpty(curItem))

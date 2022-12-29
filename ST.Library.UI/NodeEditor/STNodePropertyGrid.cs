@@ -570,20 +570,6 @@ namespace ST.Library.UI.NodeEditor
         }
 
         /// <summary>
-        /// Occurs when setting the rectangle area of the control
-        /// </summary>
-        /// <param name="x">x-coordinate</param>
-        /// <param name="y">y-coordinate</param>
-        /// <param name="width">width</param>
-        /// <param name="height">high</param>
-        /// <param name="specified">Specify the flag that needs to be set</param>
-        //protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified) {
-        //    if (width < 120) width = 120;
-        //    if (height < 50) height = 50;
-        //    base.SetBoundsCore(x, y, width, height, specified);
-        //}
-
-        /// <summary>
         /// Occurs when the control size changes
         /// </summary>
         /// <param name="e">event parameters</param>

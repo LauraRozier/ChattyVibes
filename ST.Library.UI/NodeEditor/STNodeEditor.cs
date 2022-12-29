@@ -533,6 +533,60 @@ namespace ST.Library.UI.NodeEditor
         private Rectangle m_rect_alert;
         private AlertLocation m_al;
 
+        private sealed class EditorPictureBox : PictureBox
+        {
+            public int TopOffset { get; set; }
+            public int LeftOffset { get; set; }
+            internal bool SkipProcessing { get; set; } = false;
+
+            public EditorPictureBox() : base()
+            {
+                Height = 120;
+                Width = 120;
+                BackColor = Color.FromArgb(255, 80, 80, 80);
+                SizeMode = PictureBoxSizeMode.Zoom;
+            }
+
+            protected override void OnCreateControl()
+            {
+                var typedParent = (STNodeEditor)Parent;
+                typedParent.Resize += new EventHandler(Parent_Changed);
+                Top = Parent.Top + (Margin.Top + TopOffset);
+                Left = Parent.Width - (Width + Margin.Right + LeftOffset);
+            }
+
+            internal void ProcessNodeChanges()
+            {
+                if (SkipProcessing)
+                    return;
+
+                var typedParent = (STNodeEditor)Parent;
+                Rectangle rect = new Rectangle(0, 0, 10, 10);
+                
+                var childNodes = typedParent.Nodes.ToArray();
+
+                if (childNodes.Length > 0)
+                {
+                    rect.Width = childNodes.Max(n => n.Right) + 10;
+                    rect.Height = childNodes.Max(n => n.Bottom) + 10;
+                }
+
+                try
+                {
+                    Image = ((STNodeEditor)Parent).GetCanvasImage(rect);
+                }
+                catch { }
+                
+                GC.Collect();
+            }
+
+            private void Parent_Changed(object sender, EventArgs e)
+            {
+                Top = Parent.Top + (Margin.Top + TopOffset);
+                Left = Parent.Width - (Width + Margin.Right + LeftOffset);
+            }
+        }
+
         private sealed class EditorButton : Button
         {
             public int TopOffset { get; set; }
@@ -546,32 +600,36 @@ namespace ST.Library.UI.NodeEditor
                 FlatStyle = FlatStyle.Flat;
                 FlatAppearance.BorderSize = 0;
                 ForeColor = Color.White;
-                BackColor = Color.FromArgb(255, 20, 20, 20);
+                BackColor = Color.FromArgb(255, 15, 15, 15);
             }
 
             protected override void OnCreateControl()
             {
-                Parent.Invalidated += new InvalidateEventHandler(Parent_Invalidated);
-                Top = Parent.Height - TopOffset;
-                Left = Parent.Width - LeftOffset;
+                Parent.Resize += new EventHandler(Parent_Resized);
+                Top = Parent.Height - (Height + Margin.Bottom + TopOffset);
+                Left = Parent.Width - (Width + Margin.Right + LeftOffset);
             }
 
-            private void Parent_Invalidated(object sender, InvalidateEventArgs e)
+            private void Parent_Resized(object sender, EventArgs e)
             {
                 Top = Parent.Height - (Height + Margin.Bottom + TopOffset);
                 Left = Parent.Width - (Width + Margin.Right + LeftOffset);
-                Invalidate();
             }
         }
 
+        private EditorPictureBox m_minimap = new EditorPictureBox
+        {
+            TopOffset = 5,
+            LeftOffset = 5,
+        };
         /* Zoom buttons */
-        private Button m_btn_zoom_plus;
-        private Button m_btn_zoom_min;
+        private EditorButton m_btn_zoom_plus;
+        private EditorButton m_btn_zoom_min;
         /* Move buttons */
-        private Button m_btn_move_up;
-        private Button m_btn_move_down;
-        private Button m_btn_move_left;
-        private Button m_btn_move_right;
+        private EditorButton m_btn_move_up;
+        private EditorButton m_btn_move_down;
+        private EditorButton m_btn_move_left;
+        private EditorButton m_btn_move_right;
 
         #endregion
 
@@ -636,12 +694,14 @@ namespace ST.Library.UI.NodeEditor
         {
             _modified = true;
             SelectedChanged?.Invoke(this, e);
+            m_minimap.ProcessNodeChanges();
         }
 
         protected virtual void OnActiveChanged(EventArgs e)
         {
             _modified = true;
             ActiveChanged?.Invoke(this, e);
+            m_minimap.ProcessNodeChanges();
         }
 
         protected virtual void OnHoverChanged(EventArgs e) =>
@@ -650,12 +710,14 @@ namespace ST.Library.UI.NodeEditor
         protected internal virtual void OnNodeAdded(STNodeEditorEventArgs e) {
             _modified = true;
             NodeAdded?.Invoke(this, e);
+            m_minimap.ProcessNodeChanges();
         }
 
         protected internal virtual void OnNodeRemoved(STNodeEditorEventArgs e)
         {
             _modified = true;
             NodeRemoved?.Invoke(this, e);
+            m_minimap.ProcessNodeChanges();
         }
 
         protected virtual void OnCanvasMoved(EventArgs e)
@@ -674,12 +736,14 @@ namespace ST.Library.UI.NodeEditor
         {
             _modified = true;
             OptionConnected?.Invoke(this, e);
+            m_minimap.ProcessNodeChanges();
         }
 
         protected internal virtual void OnOptionDisConnected(STNodeEditorOptionEventArgs e)
         {
             _modified = true;
             OptionDisConnected?.Invoke(this, e);
+            m_minimap.ProcessNodeChanges();
         }
 
         protected internal virtual void OnOptionConnecting(STNodeEditorOptionEventArgs e) =>
@@ -711,6 +775,8 @@ namespace ST.Library.UI.NodeEditor
             };
             m_sf.SetTabStops(0, new float[] { 40 });
 
+            Controls.Add(m_minimap);
+
             /* Zoom buttons */
             m_btn_zoom_plus = new EditorButton
             {
@@ -718,16 +784,16 @@ namespace ST.Library.UI.NodeEditor
                 LeftOffset = 42,
                 Text = "+",
             };
-            m_btn_zoom_plus.Click += new EventHandler(M_btn_Zoom_Click);
+            m_btn_zoom_plus.Click += new EventHandler(Btn_Zoom_Click);
+            Controls.Add(m_btn_zoom_plus);
+
             m_btn_zoom_min = new EditorButton
             {
                 TopOffset = 80,
                 LeftOffset = 12,
                 Text = "-",
             };
-            m_btn_zoom_min.Click += new EventHandler(M_btn_Zoom_Click);
-
-            Controls.Add(m_btn_zoom_plus);
+            m_btn_zoom_min.Click += new EventHandler(Btn_Zoom_Click);
             Controls.Add(m_btn_zoom_min);
 
             /* Move buttons */
@@ -737,42 +803,44 @@ namespace ST.Library.UI.NodeEditor
                 LeftOffset = 27,
                 Text = "▲",
             };
-            m_btn_move_up.Click += new EventHandler(M_btn_Move_Click);
+            m_btn_move_up.Click += new EventHandler(Btn_Move_Click);
+            Controls.Add(m_btn_move_up);
+
             m_btn_move_left = new EditorButton
             {
                 TopOffset = 27,
                 LeftOffset = 49,
                 Text = "◄",
             };
-            m_btn_move_left.Click += new EventHandler(M_btn_Move_Click);
+            m_btn_move_left.Click += new EventHandler(Btn_Move_Click);
+            Controls.Add(m_btn_move_left);
+
             m_btn_move_down = new EditorButton
             {
                 TopOffset = 5,
                 LeftOffset = 27,
                 Text = "▼",
             };
-            m_btn_move_down.Click += new EventHandler(M_btn_Move_Click);
+            m_btn_move_down.Click += new EventHandler(Btn_Move_Click);
+            Controls.Add(m_btn_move_down);
+
             m_btn_move_right = new EditorButton
             {
                 TopOffset = 27,
                 LeftOffset = 5,
                 Text = "►",
             };
-            m_btn_move_right.Click += new EventHandler(M_btn_Move_Click);
-
-            Controls.Add(m_btn_move_up);
-            Controls.Add(m_btn_move_left);
-            Controls.Add(m_btn_move_down);
+            m_btn_move_right.Click += new EventHandler(Btn_Move_Click);
             Controls.Add(m_btn_move_right);
         }
 
-        private void M_btn_Zoom_Click(object sender, EventArgs e)
+        private void Btn_Zoom_Click(object sender, EventArgs e)
         {
             float factor = (sender == m_btn_zoom_plus) ? 0.1f : -0.1f;
             ScaleCanvas(_CanvasScale + factor, Width / 2, Height / 2);
         }
 
-        private void M_btn_Move_Click(object sender, EventArgs e)
+        private void Btn_Move_Click(object sender, EventArgs e)
         {
             if (sender == m_btn_move_up)
                 MoveCanvas(_CanvasOffsetX, m_real_canvas_y + 40, true, CanvasMoveArgs.Top);
@@ -1272,6 +1340,9 @@ namespace ST.Library.UI.NodeEditor
             m_lst_node_out.Clear(); //Clear the coordinates of Node beyond the visual area
 
             foreach (STNode n in _Nodes) {
+                if (n.Owner == null)
+                    continue;
+
                 if (_ShowBorder)
                     OnDrawNodeBorder(dt, n);
 
@@ -2313,6 +2384,7 @@ namespace ST.Library.UI.NodeEditor
                     OnDrawNodeOutLocation(m_drawing_tools, img.Size, m_lst_node_out);
             }
 
+            GC.Collect();
             return img;
         }
 
@@ -2470,6 +2542,8 @@ namespace ST.Library.UI.NodeEditor
             if (s.ReadByte() != 1)
                 throw new InvalidDataException("Unrecognized file version number");
 
+            m_minimap.SkipProcessing = true;
+
             using (GZipStream gs = new GZipStream(s, CompressionMode.Decompress)) {
                 gs.Read(byLen, 0, 4);
                 float x = BitConverter.ToSingle(byLen, 0);
@@ -2493,12 +2567,14 @@ namespace ST.Library.UI.NodeEditor
                     try {
                         node = GetNodeFromData(byData);
                     } catch (Exception ex) {
+                        m_minimap.SkipProcessing = false;
                         throw new Exception("An error occurred while loading nodes Possible data corruption\r\n" + ex.Message, ex);
                     }
 
                     try {
                         _Nodes.Add(node);
                     } catch (Exception ex) {
+                        m_minimap.SkipProcessing = false;
                         throw new Exception("error loading node - " + node.Title, ex);
                     }
 
@@ -2531,6 +2607,9 @@ namespace ST.Library.UI.NodeEditor
 
             foreach (STNode node in _Nodes)
                 node.OnEditorLoadCompleted();
+
+            m_minimap.SkipProcessing = false;
+            m_minimap.ProcessNodeChanges();
         }
 
         private STNode GetNodeFromData(byte[] byData) {
@@ -2671,6 +2750,14 @@ namespace ST.Library.UI.NodeEditor
             }
 
             return _TypeColor[t];
+        }
+
+        public void ClearNodes()
+        {
+            m_minimap.SkipProcessing = true;
+            _Nodes.Clear();
+            m_minimap.SkipProcessing = false;
+            m_minimap.ProcessNodeChanges();
         }
 
         #endregion public

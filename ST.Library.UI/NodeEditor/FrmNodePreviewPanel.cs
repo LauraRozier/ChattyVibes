@@ -108,7 +108,7 @@ namespace ST.Library.UI.NodeEditor
         protected override void OnClosing(CancelEventArgs e) {
             base.OnClosing(e);
             Controls.Clear();
-            m_editor.Nodes.Clear();
+            m_editor.ClearNodes();
             m_editor.MouseLeave -= Event_MouseLeave;
             m_property.MouseLeave -= Event_MouseLeave;
             m_last_frm = null;

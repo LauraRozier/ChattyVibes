@@ -5,6 +5,9 @@ using System.Text;
 
 using System.Drawing;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
 /*
 MIT License
 
@@ -82,8 +85,7 @@ namespace ST.Library.UI.NodeEditor
                 Invalidate();
                 OnSelectedChanged();
 
-                if (_Owner != null)
-                    _Owner.OnSelectedChanged(EventArgs.Empty);
+                _Owner?.OnSelectedChanged(EventArgs.Empty);
             }
         }
 
@@ -311,9 +313,7 @@ namespace ST.Library.UI.NodeEditor
                     BuildSize(true, false, true);
                 } else {
                     SetOptionsLocation();
-
-                    if (_Owner != null)
-                        _Owner.Invalidate();
+                    _Owner?.Invalidate();
                 }
             }
         }
@@ -372,7 +372,7 @@ namespace ST.Library.UI.NodeEditor
             protected set { _TitleHeight = value; }
         }
 
-        private STNodeOptionCollection _InputOptions;
+        private readonly STNodeOptionCollection _InputOptions;
         /// <summary>
         /// Get a collection of input options
         /// </summary>
@@ -384,7 +384,7 @@ namespace ST.Library.UI.NodeEditor
         /// </summary>
         public int InputOptionsCount { get { return _InputOptions.Count; } }
 
-        private STNodeOptionCollection _OutputOptions;
+        private readonly STNodeOptionCollection _OutputOptions;
         /// <summary>
         /// Get output options
         /// </summary>
@@ -396,7 +396,7 @@ namespace ST.Library.UI.NodeEditor
         /// </summary>
         public int OutputOptionsCount { get { return _OutputOptions.Count; } }
 
-        private STNodeControlCollection _Controls;
+        private readonly STNodeControlCollection _Controls;
         /// <summary>
         /// Get the collection of controls contained in Node
         /// </summary>
@@ -717,8 +717,6 @@ namespace ST.Library.UI.NodeEditor
         /// </summary>
         /// <param name="dt">Drawing tool</param>
         protected virtual void OnDrawBody(DrawingTools dt) {
-            SolidBrush brush = dt.SolidBrush;
-
             foreach (STNodeOption op in _InputOptions) {
                 if (op == STNodeOption.Empty)
                     continue;
