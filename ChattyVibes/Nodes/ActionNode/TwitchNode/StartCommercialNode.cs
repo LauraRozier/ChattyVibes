@@ -76,14 +76,14 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
             Title = "Start Commercial Chat";
 
             m_op_channel_in = InputOptions.Add("Channel", typeof(string), false);
-            m_op_duration_in = InputOptions.Add("Duration", typeof(CommercialLength), false);
+            m_op_duration_in = InputOptions.Add("", typeof(CommercialLength), false);
 
             m_op_channel_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
             m_op_duration_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
 
             m_ctrl_select = new NodeSelectEnumBox
             {
-                DisplayRectangle = new Rectangle(10, 21, 120, 18),
+                DisplayRectangle = new Rectangle(10, 41, 120, 18),
                 Enum = _duration
             };
             m_ctrl_select.ValueChanged += (s, e) =>

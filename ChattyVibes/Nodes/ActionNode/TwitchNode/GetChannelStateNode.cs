@@ -82,7 +82,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 m_op_r9k_out.TransferData(false);
                 m_op_slow_mode_out.TransferData(-1);
                 m_op_emote_only_out.TransferData(false);
-                m_op_followers_only_out.TransferData(TimeSpan.FromMinutes(-1));
+                m_op_followers_only_out.TransferData(-1.0f);
                 m_op_sub_only_out.TransferData(false);
             }
 
@@ -115,7 +115,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
             m_op_r9k_out.TransferData(false);
             m_op_slow_mode_out.TransferData(-1);
             m_op_emote_only_out.TransferData(false);
-            m_op_followers_only_out.TransferData(TimeSpan.FromMinutes(-1));
+            m_op_followers_only_out.TransferData(-1.0f);
             m_op_sub_only_out.TransferData(false);
         }
 
