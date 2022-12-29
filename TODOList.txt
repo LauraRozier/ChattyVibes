@@ -23,6 +23,9 @@ Done:
 - SubscribersOnlyMode Node
 - StartCommercial Node
 - Raid Node
+- Zoom buttons
+- Move canvas buttons
+- Minimap
 
 WiP:
 - Array
@@ -46,15 +49,12 @@ ToDo:
 - VIP Node
 
 Future:
-- Zoom buttons
-- Move canvas buttons
 - Smoother zoom
 - Node lib scrollbar
 - Make node properties control active on double-clicking a node (Maybe also move the mouse cursor?)
 - Replace connection for single-input/output connectors
 
 Look into:
-- Minimap
 - Suggestion box on line drag
 - RMB on canvas for Suggestion box
 - Implicit type conversions / Fluidity between numeric types
