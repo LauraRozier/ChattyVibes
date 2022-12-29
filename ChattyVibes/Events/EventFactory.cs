@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading;
 using TwitchLib.Client.Events;
 using TwitchLib.Communication.Events;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ChattyVibes.Events
 {
@@ -38,8 +40,10 @@ namespace ChattyVibes.Events
             public object Args;
         }
 
+        private volatile bool _shouldStop = false;
+        private volatile bool _isClearingQueue = false;
         private readonly Dictionary<EventType, BaseEvent> _events = new Dictionary<EventType, BaseEvent>();
-        private readonly Dictionary<EventType, ConcurrentQueue<QueueItem>> _queues = new Dictionary<EventType, ConcurrentQueue<QueueItem>>
+        private Dictionary<EventType, ConcurrentQueue<QueueItem>> _queues = new Dictionary<EventType, ConcurrentQueue<QueueItem>>
         {
             { EventType.TwitchOnConnected, new ConcurrentQueue<QueueItem>() },
             { EventType.TwitchOnDisconnected, new ConcurrentQueue<QueueItem>() },
@@ -59,25 +63,30 @@ namespace ChattyVibes.Events
         private readonly Thread _worker;
 
         public BaseEvent GetEvent(EventType eventType) =>
-            _events[eventType];
+            _events?[eventType];
 
         public void Enqueue(EventType type, object sender, object eventArgs) =>
-            _queues[type].Enqueue(new QueueItem { Sender = sender, Args = eventArgs });
+            _queues?[type]?.Enqueue(new QueueItem { Sender = sender, Args = eventArgs });
 
         public void Clear(EventType type)
         {
+            if (_queues == null)
+                return;
+
+            _isClearingQueue = true;
+
             while (!_queues[type].IsEmpty)
                 _queues[type].TryDequeue(out _);
+
+            _isClearingQueue = false;
         }
 
-        internal void Clear()
+        internal async Task Cleanup()
         {
-            _worker.Abort();
-            _worker.Join(5000);
+            _shouldStop = true;
 
-            foreach (var item in _queues)
-                while (!item.Value.IsEmpty)
-                    item.Value.TryDequeue(out _);
+            while (_worker.IsAlive)
+                await Task.Delay(10);
         }
 
         public EventFactory()
@@ -103,19 +112,42 @@ namespace ChattyVibes.Events
 
         private void HandleQueue()
         {
-            while (true)
+            try
             {
-                try
+                while (!_shouldStop)
                 {
-                    foreach (var item in _queues)
+                    if (_isClearingQueue)
                     {
-                        if ((!item.Value.IsEmpty) && item.Value.TryDequeue(out QueueItem qitem))
-                            FireEvent(item.Key, qitem.Sender, qitem.Args);
+                        Thread.Sleep(10);
+                        continue;
+                    }
+
+                    foreach (var item in _queues.Where(item => !item.Value.IsEmpty))
+                    {
+                        if (!item.Value.TryDequeue(out QueueItem qitem))
+                            continue;
+
+                        FireEvent(item.Key, qitem.Sender, qitem.Args);
                     }
 
                     Thread.Sleep(10);
                 }
-                catch (ThreadAbortException) { return; }
+            }
+            catch (ThreadAbortException)
+            {
+                _shouldStop = true;
+            }
+            finally
+            {
+                _isClearingQueue = true;
+                var tmp = _queues;
+                _queues = null;
+
+                foreach (var queue in tmp.Where(eq => !eq.Value.IsEmpty).Select(eq => eq.Value))
+                {
+                    while (!queue.IsEmpty)
+                        queue.TryDequeue(out _);
+                }
             }
         }
 

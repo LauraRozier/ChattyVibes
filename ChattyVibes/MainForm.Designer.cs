@@ -91,7 +91,7 @@ namespace ChattyVibes
             this.btnLog.TabIndex = 3;
             this.btnLog.Text = "Log";
             this.btnLog.UseVisualStyleBackColor = true;
-            this.btnLog.Click += new System.EventHandler(this.btnLog_Click);
+            this.btnLog.Click += new System.EventHandler(this.BtnLog_Click);
             // 
             // btnBindingGraph
             // 
@@ -106,7 +106,7 @@ namespace ChattyVibes
             this.btnBindingGraph.TabIndex = 4;
             this.btnBindingGraph.Text = "Binding Graphs";
             this.btnBindingGraph.UseVisualStyleBackColor = true;
-            this.btnBindingGraph.Click += new System.EventHandler(this.btnBindingGraph_Click);
+            this.btnBindingGraph.Click += new System.EventHandler(this.BtnBindingGraph_Click);
             // 
             // btnHome
             // 
@@ -121,7 +121,7 @@ namespace ChattyVibes
             this.btnHome.TabIndex = 1;
             this.btnHome.Text = "Home";
             this.btnHome.UseVisualStyleBackColor = true;
-            this.btnHome.Click += new System.EventHandler(this.btnHome_Click);
+            this.btnHome.Click += new System.EventHandler(this.BtnHome_Click);
             // 
             // panel4
             // 
@@ -175,7 +175,7 @@ namespace ChattyVibes
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1134, 49);
             this.panel3.TabIndex = 1;
-            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
+            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.Panel3_Paint);
             this.panel3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MoveMainForm);
             // 
             // lblTitle
@@ -205,7 +205,7 @@ namespace ChattyVibes
             this.btnClose.TabIndex = 0;
             this.btnClose.Text = "X";
             this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             // 
             // pnlForm
             // 

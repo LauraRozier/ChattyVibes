@@ -1,13 +1,14 @@
 ﻿using ST.Library.UI.NodeEditor;
 using TwitchLib.Client;
+using TwitchLib.Client.Extensions;
 
 namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 {
-    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch LeaveChannel node")]
-    internal sealed class LeaveChannelNode : ActionNode
+    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch ClearChat node")]
+    internal sealed class ClearChatNode : ActionNode
     {
         private string _channel = string.Empty;
-        [STNodeProperty("Channel", "The name of the channel to leave.")]
+        [STNodeProperty("Channel", "The name of the channel to clear.")]
         public string Channel
         {
             get { return _channel; }
@@ -46,14 +47,15 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
             try
             {
                 if (client.GetJoinedChannel(dataObj.Channel) != default)
-                    client.LeaveChannel(dataObj.Channel);
-            } catch { }
+                    client.ClearChat(dataObj.Channel);
+            }
+            catch { }
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "Leave Channel";
+            Title = "Clear Chat";
 
             m_op_in = InputOptions.Add("Channel", typeof(string), false);
 

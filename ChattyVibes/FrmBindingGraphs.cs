@@ -125,7 +125,7 @@ namespace ChattyVibes
                     {
                         if ((e.Modifiers & Keys.Control) == Keys.Control)
                         {
-                            SaveGraph();
+                            SaveGraph(true);
                             e.Handled = true;
                         }
 
@@ -142,7 +142,7 @@ namespace ChattyVibes
                             {
                                 try
                                 {
-                                    nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, $"{_currentGraph}{MainForm._graphFileExt}"));
+                                    nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm.GraphDir, $"{_currentGraph}{MainForm.FraphFileExt}"));
                                     nodeEditorPanel.Editor.ShowAlert($"Reloaded `{_currentGraph}` successfully", Color.White, C_ALERT_OK);
                                 }
                                 catch
@@ -283,7 +283,7 @@ namespace ChattyVibes
             contextMenuStrip1.ShowImageMargin = false;
             contextMenuStrip1.Renderer = new ToolStripRendererEx();
 
-            foreach (var file in Directory.GetFiles(MainForm._graphDir, MainForm._graphFilePtrn, SearchOption.TopDirectoryOnly))
+            foreach (var file in Directory.GetFiles(MainForm.GraphDir, MainForm.GraphFilePtrn, SearchOption.TopDirectoryOnly))
                 lbGraphs.Items.Add(Path.GetFileNameWithoutExtension(file));
 
             _timer.Interval = 10;
@@ -332,10 +332,10 @@ namespace ChattyVibes
 
             if (result == DialogResult.OK)
             {
-                if (name.EndsWith(MainForm._graphFileExt))
+                if (name.EndsWith(MainForm.FraphFileExt))
                     name = Path.GetFileNameWithoutExtension(name);
 
-                if (File.Exists(Path.Combine(MainForm._graphDir, $"{name}{MainForm._graphFileExt}")))
+                if (File.Exists(Path.Combine(MainForm.GraphDir, $"{name}{MainForm.FraphFileExt}")))
                 {
                     MessageBox.Show(
                         "Error - This graph already exists!",
@@ -352,14 +352,16 @@ namespace ChattyVibes
             return string.Empty;
         }
 
-        private void SaveGraph()
+        private void SaveGraph(bool skipQuestion = false)
         {
             if (nodeEditorPanel.Editor.Modified)
             {
-                var result = MessageBox.Show(
-                    $"Do you wish to save your changes?",
-                    "Confirm Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question
-                );
+                DialogResult result = skipQuestion
+                    ? DialogResult.Yes
+                    : MessageBox.Show(
+                        $"Do you wish to save your changes?",
+                        "Confirm Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question
+                    );
 
                 if (result == DialogResult.Yes)
                 {
@@ -378,7 +380,7 @@ namespace ChattyVibes
                     {
                         try
                         {
-                            nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm._graphDir, $"{_currentGraph}{MainForm._graphFileExt}"));
+                            nodeEditorPanel.Editor.SaveCanvas(Path.Combine(MainForm.GraphDir, $"{_currentGraph}{MainForm.FraphFileExt}"));
                             nodeEditorPanel.Editor.ShowAlert($"Saved `{_currentGraph}` successfully", Color.White, C_ALERT_OK);
                         }
                         catch
@@ -390,7 +392,7 @@ namespace ChattyVibes
             }
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void BtnAdd_Click(object sender, EventArgs e)
         {
             
             string name = AskNewGraphName();
@@ -405,7 +407,7 @@ namespace ChattyVibes
 
                 try
                 {
-                    var path = Path.Combine(MainForm._graphDir, $"{name}{MainForm._graphFileExt}");
+                    var path = Path.Combine(MainForm.GraphDir, $"{name}{MainForm.FraphFileExt}");
                     nodeEditorPanel.Editor.SaveCanvas(path);
                     nodeEditorPanel.Editor.ShowAlert($"Created `{name}` successfully", Color.White, C_ALERT_OK);
                 }
@@ -416,12 +418,12 @@ namespace ChattyVibes
             }
         }
 
-        private void btnDelete_Click(object sender, EventArgs e)
+        private void BtnDelete_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_currentGraph))
                 return;
 
-            string path = Path.Combine(MainForm._graphDir, $"{_currentGraph}{MainForm._graphFileExt}");
+            string path = Path.Combine(MainForm.GraphDir, $"{_currentGraph}{MainForm.FraphFileExt}");
 
             if (!File.Exists(path))
                 return;
@@ -442,7 +444,7 @@ namespace ChattyVibes
             lbGraphs.SelectedIndex = -1;
         }
 
-        private void lbGraphs_SelectedIndexChanged(object sender, EventArgs e)
+        private void LbGraphs_SelectedIndexChanged(object sender, EventArgs e)
         {
             string curItem = (string)lbGraphs.SelectedItem;
             SaveGraph();
@@ -455,7 +457,7 @@ namespace ChattyVibes
 
                 try
                 {
-                    nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm._graphDir, $"{curItem}{MainForm._graphFileExt}"));
+                    nodeEditorPanel.Editor.LoadCanvas(Path.Combine(MainForm.GraphDir, $"{curItem}{MainForm.FraphFileExt}"));
                     nodeEditorPanel.Editor.ShowAlert($"Loaded `{_currentGraph}` successfully", Color.White, C_ALERT_OK);
                 }
                 catch
@@ -465,7 +467,7 @@ namespace ChattyVibes
             }
         }
 
-        private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RemoveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (nodeEditorPanel.Editor.ActiveNode == null)
                 return;
@@ -473,7 +475,7 @@ namespace ChattyVibes
             nodeEditorPanel.Editor.Nodes.Remove(nodeEditorPanel.Editor.ActiveNode);
         }
 
-        private void lockLocationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LockLocationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (nodeEditorPanel.Editor.ActiveNode == null)
                 return;

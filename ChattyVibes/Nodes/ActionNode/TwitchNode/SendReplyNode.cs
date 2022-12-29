@@ -53,7 +53,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 
         protected override void OnFlowTrigger()
         {
-            if (MainForm._chatState != ConnectionState.Connected)
+            if (MainForm.ChatState != ConnectionState.Connected)
                 return;
 
             MainForm.TwitchQueue?.Enqueue(

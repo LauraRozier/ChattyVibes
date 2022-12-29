@@ -109,7 +109,7 @@
             this.tbChannel.Name = "tbChannel";
             this.tbChannel.Size = new System.Drawing.Size(288, 23);
             this.tbChannel.TabIndex = 8;
-            this.tbChannel.TextChanged += new System.EventHandler(this.tbChannel_TextChanged);
+            this.tbChannel.TextChanged += new System.EventHandler(this.TbChannel_TextChanged);
             // 
             // label4
             // 
@@ -133,7 +133,7 @@
             this.tbClientId.Size = new System.Drawing.Size(288, 23);
             this.tbClientId.TabIndex = 6;
             this.tbClientId.Text = "77nu3r5gyqhuzsambceccrbd9ctjdo";
-            this.tbClientId.TextChanged += new System.EventHandler(this.tbClientId_TextChanged);
+            this.tbClientId.TextChanged += new System.EventHandler(this.TbClientId_TextChanged);
             // 
             // label3
             // 
@@ -155,7 +155,7 @@
             this.tbUsername.Name = "tbUsername";
             this.tbUsername.Size = new System.Drawing.Size(288, 23);
             this.tbUsername.TabIndex = 4;
-            this.tbUsername.TextChanged += new System.EventHandler(this.tbUsername_TextChanged);
+            this.tbUsername.TextChanged += new System.EventHandler(this.TbUsername_TextChanged);
             // 
             // panel1
             // 
@@ -343,7 +343,7 @@
             this.btnDisconnectIntiface.TabIndex = 3;
             this.btnDisconnectIntiface.Text = "Disconnect Intiface";
             this.btnDisconnectIntiface.UseVisualStyleBackColor = false;
-            this.btnDisconnectIntiface.Click += new System.EventHandler(this.btnDisconnectIntiface_Click);
+            this.btnDisconnectIntiface.Click += new System.EventHandler(this.BtnDisconnectIntiface_Click);
             // 
             // btnConnectIntiface
             // 
@@ -357,7 +357,7 @@
             this.btnConnectIntiface.TabIndex = 2;
             this.btnConnectIntiface.Text = "Connect Intiface";
             this.btnConnectIntiface.UseVisualStyleBackColor = false;
-            this.btnConnectIntiface.Click += new System.EventHandler(this.btnConnectIntiface_Click);
+            this.btnConnectIntiface.Click += new System.EventHandler(this.BtnConnectIntiface_Click);
             // 
             // btnDisconnectTwitch
             // 
@@ -371,7 +371,7 @@
             this.btnDisconnectTwitch.TabIndex = 1;
             this.btnDisconnectTwitch.Text = "Disconnect Twitch";
             this.btnDisconnectTwitch.UseVisualStyleBackColor = false;
-            this.btnDisconnectTwitch.Click += new System.EventHandler(this.btnDisconnectTwitch_Click);
+            this.btnDisconnectTwitch.Click += new System.EventHandler(this.BtnDisconnectTwitch_Click);
             // 
             // btnConnectTwitch
             // 
@@ -384,7 +384,7 @@
             this.btnConnectTwitch.TabIndex = 0;
             this.btnConnectTwitch.Text = "Connect Twitch";
             this.btnConnectTwitch.UseVisualStyleBackColor = false;
-            this.btnConnectTwitch.Click += new System.EventHandler(this.btnConnectTwitch_Click);
+            this.btnConnectTwitch.Click += new System.EventHandler(this.BtnConnectTwitch_Click);
             // 
             // groupBox2
             // 
@@ -425,7 +425,7 @@
             this.tbHostname.Size = new System.Drawing.Size(349, 23);
             this.tbHostname.TabIndex = 2;
             this.tbHostname.Text = "localhost";
-            this.tbHostname.TextChanged += new System.EventHandler(this.tbHostname_TextChanged);
+            this.tbHostname.TextChanged += new System.EventHandler(this.TbHostname_TextChanged);
             // 
             // label1
             // 
@@ -455,7 +455,7 @@
             0,
             0,
             0});
-            this.tbPort.ValueChanged += new System.EventHandler(this.tbPort_ValueChanged);
+            this.tbPort.ValueChanged += new System.EventHandler(this.TbPort_ValueChanged);
             // 
             // FrmHome
             // 

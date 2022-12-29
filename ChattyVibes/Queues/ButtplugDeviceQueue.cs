@@ -15,8 +15,9 @@ namespace ChattyVibes.Queues
             public object Data { get; set; }
         }
 
+        private volatile bool _shouldStop = false;
         private readonly ButtplugClientDevice _device;
-        private readonly ConcurrentQueue<PlugQueueMsg> _queue = new ConcurrentQueue<PlugQueueMsg>();
+        private ConcurrentQueue<PlugQueueMsg> _queue = new ConcurrentQueue<PlugQueueMsg>();
         private readonly Thread _worker;
 
         public ButtplugDeviceQueue(ButtplugClientDevice device)
@@ -26,30 +27,37 @@ namespace ChattyVibes.Queues
             _worker.Start();
         }
 
-        public void Cleanup()
+        public async Task Cleanup()
         {
-            _worker.Abort();
-            _worker.Join(5000);
+            _shouldStop = true;
 
-            while (!_queue.IsEmpty)
-                _queue.TryDequeue(out _);
+            while (_worker.IsAlive)
+                await Task.Delay(10);
         }
 
         private void HandleQueue()
         {
-            while (true)
+            try
             {
-                try
+                while (!_shouldStop)
                 {
                     if (_queue.Count > 0 && _queue.TryDequeue(out PlugQueueMsg msg))
                         msg.Handler(_device, msg.Data).Wait();
 
                     Thread.Sleep(25);
                 }
-                catch (ThreadAbortException)
-                {
-                    return;
-                }
+            }
+            catch (ThreadAbortException)
+            {
+                _shouldStop = true;
+            }
+            finally
+            {
+                var tmp = _queue;
+                _queue = null;
+
+                while (!tmp.IsEmpty)
+                    tmp.TryDequeue(out _);
             }
         }
 

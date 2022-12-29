@@ -94,7 +94,7 @@ namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
 
         protected override void OnFlowTrigger()
         {
-            if (MainForm._plugState != ConnectionState.Connected || !MainForm.ButtplugQueues.ContainsKey(_deviceId))
+            if (MainForm.PlugState != ConnectionState.Connected || !MainForm.ButtplugQueues.ContainsKey(_deviceId))
                 return;
 
             MainForm.ButtplugQueues[_deviceId].Enqueue(

@@ -1,13 +1,14 @@
 ﻿using ST.Library.UI.NodeEditor;
 using TwitchLib.Client;
+using TwitchLib.Client.Extensions;
 
 namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 {
-    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch SendMessage node")]
-    internal sealed class SendMessageNode : ActionNode
+    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch SendAnnouncement node")]
+    internal sealed class SendAnnouncementNode : ActionNode
     {
         private string _channel = string.Empty;
-        [STNodeProperty("Channel", "The channel to send the message to.")]
+        [STNodeProperty("Channel", "The channel to send the announcement to.")]
         public string Channel
         {
             get { return _channel; }
@@ -55,13 +56,13 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 return;
 
             MsgData dataObj = (MsgData)data;
-            client.SendMessage(dataObj.Channel, dataObj.Message);
+            client.Announce(dataObj.Channel, dataObj.Message);
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "Send Message";
+            Title = "Send Announcement";
 
             m_op_channel_in = InputOptions.Add("Channel", typeof(string), false);
             m_op_message_in = InputOptions.Add("Message", typeof(string), false);

@@ -6,14 +6,14 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
     [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch JoinChannel node")]
     internal sealed class JoinChannelNode : ActionNode
     {
-        private string _channelName = string.Empty;
-        [STNodeProperty("ChannelName", "The name of the channel to join.")]
-        public string ChannelName
+        private string _channel = string.Empty;
+        [STNodeProperty("Channel", "The name of the channel to join.")]
+        public string Channel
         {
-            get { return _channelName; }
+            get { return _channel; }
             set
             {
-                _channelName = value;
+                _channel = value;
                 Invalidate();
             }
         }
@@ -22,17 +22,17 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 
         private struct MsgData
         {
-            public string ChannelName { get; set; }
+            public string Channel { get; set; }
         }
 
         protected override void OnFlowTrigger()
         {
-            if (MainForm._chatState != ConnectionState.Connected)
+            if (MainForm.ChatState != ConnectionState.Connected)
                 return;
 
             MainForm.TwitchQueue?.Enqueue(
                 new Queues.QueuedTwitchTaskHandler(SendCommand),
-                new MsgData { ChannelName = _channelName }
+                new MsgData { Channel = _channel }
             );
         }
 
@@ -45,11 +45,11 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 
             try
             {
-                if (client.GetJoinedChannel(dataObj.ChannelName) != null)
+                if (client.GetJoinedChannel(dataObj.Channel) != default)
                     return;
             } catch { }
             
-            client.JoinChannel(dataObj.ChannelName);
+            client.JoinChannel(dataObj.Channel);
         }
 
         protected override void OnCreate()
@@ -57,7 +57,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
             base.OnCreate();
             Title = "Join Channel";
 
-            m_op_in = InputOptions.Add("Channel Name", typeof(string), false);
+            m_op_in = InputOptions.Add("Channel", typeof(string), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
         }
@@ -65,9 +65,9 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
         private void m_op_DataTransfer(object sender, STNodeOptionEventArgs e)
         {
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
-                ChannelName = (string)e.TargetOption.Data;
+                Channel = (string)e.TargetOption.Data;
             else
-                ChannelName = string.Empty;
+                Channel = string.Empty;
         }
     }
 }

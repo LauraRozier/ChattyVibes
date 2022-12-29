@@ -271,9 +271,18 @@
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendRotateCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendLinearCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendVibeCommandNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\RaidNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\StartCommercialNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\SubscribersOnlyModeNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\SlowModeNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\FollowersOnlyModeNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\EmoteOnlyModeNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\GetChannelStateNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\GetJoinedChannelsNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\ClearChatNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\LeaveChannelNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\JoinChannelNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\SendAnnouncementNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\SendReplyNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\SendWhisperNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\SendMessageNode.cs" />
@@ -288,6 +297,8 @@
     <Compile Include="Nodes\DictNode\FloatDictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\UIntDictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\IntDictForEachNode.cs" />
+    <Compile Include="Nodes\EventNode\IntifaceNode\OnDeviceRemovedNode.cs" />
+    <Compile Include="Nodes\EventNode\IntifaceNode\OnDeviceAddedNode.cs" />
     <Compile Include="Nodes\ListNode\FloatListForEachNode.cs" />
     <Compile Include="Nodes\ListNode\UIntListForEachNode.cs" />
     <Compile Include="Nodes\ListNode\IntListForEachNode.cs" />
@@ -477,9 +488,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Nodes\EventNode\IntifaceNode\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\ST.Library.UI\ST.Library.UI.csproj">
       <Project>{effcc270-4999-4077-a543-56cccce92147}</Project>

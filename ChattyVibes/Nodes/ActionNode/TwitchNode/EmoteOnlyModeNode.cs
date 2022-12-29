@@ -1,13 +1,14 @@
 ﻿using ST.Library.UI.NodeEditor;
 using TwitchLib.Client;
+using TwitchLib.Client.Extensions;
 
 namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 {
-    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch SendMessage node")]
-    internal sealed class SendMessageNode : ActionNode
+    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch EmoteOnlyMode node")]
+    internal sealed class EmoteOnlyModeNode : ActionNode
     {
         private string _channel = string.Empty;
-        [STNodeProperty("Channel", "The channel to send the message to.")]
+        [STNodeProperty("Channel", "The name of the channel to change the EmoteOnly mode of.")]
         public string Channel
         {
             get { return _channel; }
@@ -17,25 +18,25 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 Invalidate();
             }
         }
-        private string _message = string.Empty;
-        [STNodeProperty("Message", "The message to send.")]
-        public string Message
+        private bool _enabled = true;
+        [STNodeProperty("Enabled", "Wether to enable or disable EmoteOnly mode.")]
+        public bool Enabled
         {
-            get { return _message; }
+            get { return _enabled; }
             set
             {
-                _message = value;
+                _enabled = value;
                 Invalidate();
             }
         }
 
         private STNodeOption m_op_channel_in;
-        private STNodeOption m_op_message_in;
+        private STNodeOption m_op_ena_in;
 
         private struct MsgData
         {
             public string Channel { get; set; }
-            public string Message { get; set; }
+            public bool Enabled { get; set; }
         }
 
         protected override void OnFlowTrigger()
@@ -45,7 +46,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 
             MainForm.TwitchQueue?.Enqueue(
                 new Queues.QueuedTwitchTaskHandler(SendCommand),
-                new MsgData { Channel = _channel, Message = _message }
+                new MsgData { Channel = _channel, Enabled = _enabled }
             );
         }
 
@@ -55,19 +56,29 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 return;
 
             MsgData dataObj = (MsgData)data;
-            client.SendMessage(dataObj.Channel, dataObj.Message);
+
+            try
+            {
+                if (client.GetJoinedChannel(dataObj.Channel) != default)
+                {
+                    if (dataObj.Enabled)
+                        client.EmoteOnlyOn(dataObj.Channel);
+                    else
+                        client.EmoteOnlyOff(dataObj.Channel);
+                }
+            } catch { }
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "Send Message";
+            Title = "Emote Only Mode";
 
             m_op_channel_in = InputOptions.Add("Channel", typeof(string), false);
-            m_op_message_in = InputOptions.Add("Message", typeof(string), false);
+            m_op_ena_in = InputOptions.Add("Enabled", typeof(bool), false);
 
             m_op_channel_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
-            m_op_message_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
+            m_op_ena_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
         }
 
         private void m_op_DataTransfer(object sender, STNodeOptionEventArgs e)
@@ -77,14 +88,14 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 if (sender == m_op_channel_in)
                     Channel = (string)e.TargetOption.Data;
                 else
-                    Message = (string)e.TargetOption.Data;
+                    Enabled = (bool)e.TargetOption.Data;
             }
             else
             {
                 if (sender == m_op_channel_in)
                     Channel = string.Empty;
                 else
-                    Message = string.Empty;
+                    Enabled = true;
             }
         }
     }

@@ -101,7 +101,7 @@
             this.lbGraphs.ScrollAlwaysVisible = true;
             this.lbGraphs.Size = new System.Drawing.Size(200, 537);
             this.lbGraphs.TabIndex = 1;
-            this.lbGraphs.SelectedIndexChanged += new System.EventHandler(this.lbGraphs_SelectedIndexChanged);
+            this.lbGraphs.SelectedIndexChanged += new System.EventHandler(this.LbGraphs_SelectedIndexChanged);
             // 
             // panel6
             // 
@@ -126,7 +126,7 @@
             this.btnDelete.TabIndex = 1;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            this.btnDelete.Click += new System.EventHandler(this.BtnDelete_Click);
             // 
             // btnAdd
             // 
@@ -140,7 +140,7 @@
             this.btnAdd.TabIndex = 0;
             this.btnAdd.Text = "Add";
             this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
             // 
             // label1
             // 
@@ -179,14 +179,14 @@
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
             this.removeToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.removeToolStripMenuItem.Text = "&Remove";
-            this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
+            this.removeToolStripMenuItem.Click += new System.EventHandler(this.RemoveToolStripMenuItem_Click);
             // 
             // lockLocationToolStripMenuItem
             // 
             this.lockLocationToolStripMenuItem.Name = "lockLocationToolStripMenuItem";
             this.lockLocationToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.lockLocationToolStripMenuItem.Text = "U/Lock &Location";
-            this.lockLocationToolStripMenuItem.Click += new System.EventHandler(this.lockLocationToolStripMenuItem_Click);
+            this.lockLocationToolStripMenuItem.Click += new System.EventHandler(this.LockLocationToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 

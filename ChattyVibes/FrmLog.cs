@@ -14,7 +14,7 @@ namespace ChattyVibes
 
         private void FrmLog_Load(object sender, EventArgs e)
         {
-            tbLog.Lines = MainFrm._logMessages.ToArray();
+            tbLog.Lines = MainFrm.LogMessages.ToArray();
             tbLog.Update();
         }
 

@@ -1,0 +1,68 @@
+Done:
+- \r and \n handling for comments
+- String Length
+- String ToLower
+- String ToUpper
+- String Trim(End/Start)
+- String IndexOf
+- String LastIndexOf
+- String Replace
+- String Remove
+- JoinChannel Node
+- LeaveChannel Node
+- GetJoinedChannels Node
+- SendMessage Node
+- SendWhisper Node
+- SendReply Node
+- Announce Node
+- ClearChat Node
+- EmoteOnlyMode Node
+- GetchannelState Node
+- FollowersOnlyMode Node
+- SlowMode Node
+- SubscribersOnlyMode Node
+- StartCommercial Node
+- Raid Node
+
+WiP:
+- Array
+- List
+- Dictionary
+- Char
+- Fix DPI scaling
+
+ToDo:
+- Flow-based +x counters
+- String Split
+- BanUser Node
+- DeleteMessage Node
+- GetChannelModerators Node
+- GetVIPs Node
+- Mod Node
+- TimeoutUser Node
+- Unban Node
+- Unmod Node
+- UnVIP Node
+- VIP Node
+
+Future:
+- Zoom buttons
+- Move canvas buttons
+- Smoother zoom
+- Node lib scrollbar
+- Make node properties control active on double-clicking a node (Maybe also move the mouse cursor?)
+- Replace connection for single-input/output connectors
+
+Look into:
+- Minimap
+- Suggestion box on line drag
+- RMB on canvas for Suggestion box
+- Implicit type conversions / Fluidity between numeric types
+- Minimize app button
+- Maximize app button
+- Form resizing
+- Save splitter pos on resize
+- Random bad performance when placing new nodes
+- Better node alignment / alignment modes (Snap grid / Snap neighbours)
+- Highlight compatible in/outputs during line drag
+- Undo/redo

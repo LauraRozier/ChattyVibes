@@ -1,14 +1,13 @@
-﻿using Buttplug;
-using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System;
 using System.Windows.Forms;
 
 namespace ChattyVibes
 {
     public partial class FrmHome : ChildForm
     {
-        //private Thread _batteryWorker;
+        /* Unused battery code
+        private Thread _batteryWorker;
+        */
 
         public FrmHome()
         {
@@ -29,7 +28,7 @@ namespace ChattyVibes
             tbHostname.Text = MainFrm._conf.ButtplugHostname;
             tbPort.Value    = MainFrm._conf.ButtplugPort;
 
-            /*
+            /* Unused battery code
             _batteryWorker = new Thread(new ThreadStart(HandleBatteries)) { IsBackground = true };
             _batteryWorker.Start();
             */
@@ -39,7 +38,7 @@ namespace ChattyVibes
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            /*
+            /* Unused battery code
             _batteryWorker.Abort();
             _batteryWorker.Join(5000);
             */
@@ -50,7 +49,7 @@ namespace ChattyVibes
 
         internal void UpdateGUI()
         {
-            switch (MainForm._chatState)
+            switch (MainForm.ChatState)
             {
                 case ConnectionState.NotConnected:
                     {
@@ -89,7 +88,7 @@ namespace ChattyVibes
                     }
             }
 
-            switch (MainForm._plugState)
+            switch (MainForm.PlugState)
             {
                 case ConnectionState.NotConnected:
                     {
@@ -134,13 +133,14 @@ namespace ChattyVibes
             }
         }
 
+        /* Unused battery code
         private void HandleBatteries()
         {
             while (true)
             {
                 try
                 {
-                    if (MainForm._plugState != ConnectionState.Connected)
+                    if (MainForm.PlugState != ConnectionState.Connected)
                     {
                         Thread.Sleep(100);
                         continue;
@@ -148,7 +148,7 @@ namespace ChattyVibes
 
                     List<DeviceBattery> results = new List<DeviceBattery>();
 
-                    foreach (ButtplugClientDevice toy in MainFrm._plugDevices)
+                    foreach (ButtplugClientDevice toy in MainFrm.PlugDevices)
                     {
                         try
                         {
@@ -180,8 +180,9 @@ namespace ChattyVibes
                 catch (ThreadAbortException) { return; }
             }
         }
+        */
 
-        private void tbUsername_TextChanged(object sender, EventArgs e)
+        private void TbUsername_TextChanged(object sender, EventArgs e)
         {
             if (tbUsername.Text.Length <= 0)
             {
@@ -193,7 +194,7 @@ namespace ChattyVibes
             MainFrm._conf.TwitchUsername = tbUsername.Text;
         }
 
-        private void tbClientId_TextChanged(object sender, EventArgs e)
+        private void TbClientId_TextChanged(object sender, EventArgs e)
         {
             if (tbClientId.Text.Length <= 0)
             {
@@ -205,7 +206,7 @@ namespace ChattyVibes
             MainFrm._conf.TwitchClientId = tbClientId.Text;
         }
 
-        private void tbChannel_TextChanged(object sender, EventArgs e)
+        private void TbChannel_TextChanged(object sender, EventArgs e)
         {
             if (tbChannel.Text.Length <= 0)
             {
@@ -217,7 +218,7 @@ namespace ChattyVibes
             MainFrm._conf.ChannelName = tbChannel.Text;
         }
 
-        private void tbHostname_TextChanged(object sender, EventArgs e)
+        private void TbHostname_TextChanged(object sender, EventArgs e)
         {
             if (tbHostname.Text.Length <= 0)
             {
@@ -229,7 +230,7 @@ namespace ChattyVibes
             MainFrm._conf.ButtplugHostname = tbHostname.Text;
         }
 
-        private void tbPort_ValueChanged(object sender, EventArgs e)
+        private void TbPort_ValueChanged(object sender, EventArgs e)
         {
             if (tbPort.Value <= 0)
             {
@@ -241,19 +242,19 @@ namespace ChattyVibes
             MainFrm._conf.ButtplugPort = (uint)tbPort.Value;
         }
 
-        private void btnConnectTwitch_Click(object sender, EventArgs e) =>
-            MainFrm.ConnectTwitch().GetAwaiter();
+        private async void BtnConnectTwitch_Click(object sender, EventArgs e) =>
+            await MainFrm.ConnectTwitch();
 
-        private void btnDisconnectTwitch_Click(object sender, EventArgs e) =>
-            MainFrm.DisconnectTwitch().GetAwaiter();
+        private async void BtnDisconnectTwitch_Click(object sender, EventArgs e) =>
+            await MainFrm.DisconnectTwitch();
 
-        private void btnConnectIntiface_Click(object sender, EventArgs e) =>
-            MainFrm.ConnectButtplug().GetAwaiter();
+        private async void BtnConnectIntiface_Click(object sender, EventArgs e) =>
+            await MainFrm.ConnectButtplug();
 
-        private void btnDisconnectIntiface_Click(object sender, EventArgs e) =>
-            MainFrm.DisconnectButtplug().GetAwaiter();
+        private async void BtnDisconnectIntiface_Click(object sender, EventArgs e) =>
+            await MainFrm.DisconnectButtplug();
 
-        private void BtnRescanDevices_Click(object sender, EventArgs e) =>
-            MainFrm.RescanDevices().GetAwaiter();
+        private async void BtnRescanDevices_Click(object sender, EventArgs e) =>
+            await MainFrm.RescanDevices();
     }
 }

@@ -1,13 +1,16 @@
 ﻿using ST.Library.UI.NodeEditor;
+using System.Drawing;
 using TwitchLib.Client;
+using TwitchLib.Client.Enums;
+using TwitchLib.Client.Extensions;
 
 namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 {
-    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch SendMessage node")]
-    internal sealed class SendMessageNode : ActionNode
+    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch StartCommercial node")]
+    internal sealed class StartCommercialNode : ActionNode
     {
         private string _channel = string.Empty;
-        [STNodeProperty("Channel", "The channel to send the message to.")]
+        [STNodeProperty("Channel", "The name of the channel to start the commercial for.")]
         public string Channel
         {
             get { return _channel; }
@@ -17,25 +20,28 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 Invalidate();
             }
         }
-        private string _message = string.Empty;
-        [STNodeProperty("Message", "The message to send.")]
-        public string Message
+        private CommercialLength _duration = CommercialLength.Seconds60;
+        [STNodeProperty("Duration", "The duration of the commercial.")]
+        public CommercialLength Duration
         {
-            get { return _message; }
+            get { return _duration; }
             set
             {
-                _message = value;
+                _duration = value;
+                m_ctrl_select.Enum = value;
                 Invalidate();
             }
         }
 
+        private NodeSelectEnumBox m_ctrl_select;
+
         private STNodeOption m_op_channel_in;
-        private STNodeOption m_op_message_in;
+        private STNodeOption m_op_duration_in;
 
         private struct MsgData
         {
             public string Channel { get; set; }
-            public string Message { get; set; }
+            public CommercialLength Duration { get; set; }
         }
 
         protected override void OnFlowTrigger()
@@ -45,7 +51,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 
             MainForm.TwitchQueue?.Enqueue(
                 new Queues.QueuedTwitchTaskHandler(SendCommand),
-                new MsgData { Channel = _channel, Message = _message }
+                new MsgData { Channel = _channel, Duration = _duration }
             );
         }
 
@@ -55,19 +61,37 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 return;
 
             MsgData dataObj = (MsgData)data;
-            client.SendMessage(dataObj.Channel, dataObj.Message);
+
+            try
+            {
+                if (client.GetJoinedChannel(dataObj.Channel) != default)
+                    client.StartCommercial(dataObj.Channel, dataObj.Duration);
+            }
+            catch { }
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "Send Message";
+            Title = "Start Commercial Chat";
 
             m_op_channel_in = InputOptions.Add("Channel", typeof(string), false);
-            m_op_message_in = InputOptions.Add("Message", typeof(string), false);
+            m_op_duration_in = InputOptions.Add("Duration", typeof(CommercialLength), false);
 
             m_op_channel_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
-            m_op_message_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
+            m_op_duration_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
+
+            m_ctrl_select = new NodeSelectEnumBox
+            {
+                DisplayRectangle = new Rectangle(10, 21, 120, 18),
+                Enum = _duration
+            };
+            m_ctrl_select.ValueChanged += (s, e) =>
+            {
+                _duration = (CommercialLength)m_ctrl_select.Enum;
+                Invalidate();
+            };
+            Controls.Add(m_ctrl_select);
         }
 
         private void m_op_DataTransfer(object sender, STNodeOptionEventArgs e)
@@ -77,14 +101,14 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 if (sender == m_op_channel_in)
                     Channel = (string)e.TargetOption.Data;
                 else
-                    Message = (string)e.TargetOption.Data;
+                    Duration = (CommercialLength)e.TargetOption.Data;
             }
             else
             {
                 if (sender == m_op_channel_in)
                     Channel = string.Empty;
                 else
-                    Message = string.Empty;
+                    Duration = CommercialLength.Seconds60;
             }
         }
     }
