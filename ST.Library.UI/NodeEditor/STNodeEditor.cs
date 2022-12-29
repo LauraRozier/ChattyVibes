@@ -543,7 +543,7 @@ namespace ST.Library.UI.NodeEditor
             {
                 Height = 120;
                 Width = 120;
-                BackColor = Color.FromArgb(255, 80, 80, 80);
+                BackColor = Color.FromArgb(65, 80, 80, 80);
                 SizeMode = PictureBoxSizeMode.Zoom;
             }
 
@@ -565,18 +565,20 @@ namespace ST.Library.UI.NodeEditor
                 
                 var childNodes = typedParent.Nodes.ToArray();
 
-                if (childNodes.Length > 0)
+                if (childNodes.Length <= 0 || (childNodes.Length == 1 && childNodes[0].Owner == null))
                 {
-                    rect.Width = childNodes.Max(n => n.Right) + 10;
-                    rect.Height = childNodes.Max(n => n.Bottom) + 10;
+                    Image = null;
+                    return;
                 }
 
                 try
                 {
+                    rect.Width = childNodes.Max(n => n.Right) + 10;
+                    rect.Height = childNodes.Max(n => n.Bottom) + 10;
                     Image = ((STNodeEditor)Parent).GetCanvasImage(rect);
                 }
                 catch { }
-                
+
                 GC.Collect();
             }
 
@@ -606,13 +608,13 @@ namespace ST.Library.UI.NodeEditor
             protected override void OnCreateControl()
             {
                 Parent.Resize += new EventHandler(Parent_Resized);
-                Top = Parent.Height - (Height + Margin.Bottom + TopOffset);
+                Top = Parent.Top + (Margin.Top + TopOffset);
                 Left = Parent.Width - (Width + Margin.Right + LeftOffset);
             }
 
             private void Parent_Resized(object sender, EventArgs e)
             {
-                Top = Parent.Height - (Height + Margin.Bottom + TopOffset);
+                Top = Parent.Top + (Margin.Top + TopOffset);
                 Left = Parent.Width - (Width + Margin.Right + LeftOffset);
             }
         }
@@ -780,8 +782,8 @@ namespace ST.Library.UI.NodeEditor
             /* Zoom buttons */
             m_btn_zoom_plus = new EditorButton
             {
-                TopOffset = 80,
-                LeftOffset = 42,
+                TopOffset = 135,
+                LeftOffset = 71,
                 Text = "+",
             };
             m_btn_zoom_plus.Click += new EventHandler(Btn_Zoom_Click);
@@ -789,8 +791,8 @@ namespace ST.Library.UI.NodeEditor
 
             m_btn_zoom_min = new EditorButton
             {
-                TopOffset = 80,
-                LeftOffset = 12,
+                TopOffset = 135,
+                LeftOffset = 27,
                 Text = "-",
             };
             m_btn_zoom_min.Click += new EventHandler(Btn_Zoom_Click);
@@ -799,8 +801,8 @@ namespace ST.Library.UI.NodeEditor
             /* Move buttons */
             m_btn_move_up = new EditorButton
             {
-                TopOffset = 49,
-                LeftOffset = 27,
+                TopOffset = 167,
+                LeftOffset = 49,
                 Text = "▲",
             };
             m_btn_move_up.Click += new EventHandler(Btn_Move_Click);
@@ -808,8 +810,8 @@ namespace ST.Library.UI.NodeEditor
 
             m_btn_move_left = new EditorButton
             {
-                TopOffset = 27,
-                LeftOffset = 49,
+                TopOffset = 189,
+                LeftOffset = 71,
                 Text = "◄",
             };
             m_btn_move_left.Click += new EventHandler(Btn_Move_Click);
@@ -817,8 +819,8 @@ namespace ST.Library.UI.NodeEditor
 
             m_btn_move_down = new EditorButton
             {
-                TopOffset = 5,
-                LeftOffset = 27,
+                TopOffset = 211,
+                LeftOffset = 49,
                 Text = "▼",
             };
             m_btn_move_down.Click += new EventHandler(Btn_Move_Click);
@@ -826,8 +828,8 @@ namespace ST.Library.UI.NodeEditor
 
             m_btn_move_right = new EditorButton
             {
-                TopOffset = 27,
-                LeftOffset = 5,
+                TopOffset = 189,
+                LeftOffset = 27,
                 Text = "►",
             };
             m_btn_move_right.Click += new EventHandler(Btn_Move_Click);
