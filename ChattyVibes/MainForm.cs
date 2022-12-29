@@ -397,9 +397,45 @@ namespace ChattyVibes
         {
             if (e.Button == MouseButtons.Left)
             {
+                if (WindowState == FormWindowState.Maximized)
+                {
+                    btnMaximize.Text = "🗖";
+                    Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 25, 25));
+                }
+
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
+        }
+
+        private void BtnMinimize_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+        }
+
+        private void BtnMaximize_Click(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Maximized)
+            {
+                WindowState = FormWindowState.Normal;
+                btnMaximize.Text = "🗖";
+                Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 25, 25));
+            }
+            else
+            {
+                var area = Screen.FromHandle(Handle).WorkingArea;
+                area.X = 0;
+                area.Y = 0;
+                area.Width += 1;
+                area.Height += 1;
+                MaximizedBounds = area;
+
+                WindowState = FormWindowState.Maximized;
+                btnMaximize.Text = "🗗";
+                Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 0, 0));
+            }
+
+            CenterToScreen();
         }
 
         private void BtnClose_Click(object sender, EventArgs e)
