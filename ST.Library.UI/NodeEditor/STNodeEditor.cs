@@ -533,6 +533,46 @@ namespace ST.Library.UI.NodeEditor
         private Rectangle m_rect_alert;
         private AlertLocation m_al;
 
+        private sealed class EditorButton : Button
+        {
+            public int TopOffset { get; set; }
+            public int LeftOffset { get; set; }
+
+            public EditorButton() : base()
+            {
+                Height = 22;
+                Width = 22;
+                Font = new Font("courier new", 8.25f, FontStyle.Bold);
+                FlatStyle = FlatStyle.Flat;
+                FlatAppearance.BorderSize = 0;
+                ForeColor = Color.White;
+                BackColor = Color.FromArgb(255, 20, 20, 20);
+            }
+
+            protected override void OnCreateControl()
+            {
+                Parent.Invalidated += new InvalidateEventHandler(Parent_Invalidated);
+                Top = Parent.Height - TopOffset;
+                Left = Parent.Width - LeftOffset;
+            }
+
+            private void Parent_Invalidated(object sender, InvalidateEventArgs e)
+            {
+                Top = Parent.Height - (Height + Margin.Bottom + TopOffset);
+                Left = Parent.Width - (Width + Margin.Right + LeftOffset);
+                Invalidate();
+            }
+        }
+
+        /* Zoom buttons */
+        private Button m_btn_zoom_plus;
+        private Button m_btn_zoom_min;
+        /* Move buttons */
+        private Button m_btn_move_up;
+        private Button m_btn_move_down;
+        private Button m_btn_move_left;
+        private Button m_btn_move_right;
+
         #endregion
 
         #region event ----------------------------------------------------------------------------------------------------
@@ -670,6 +710,78 @@ namespace ST.Library.UI.NodeEditor
                 FormatFlags = StringFormatFlags.NoWrap
             };
             m_sf.SetTabStops(0, new float[] { 40 });
+
+            /* Zoom buttons */
+            m_btn_zoom_plus = new EditorButton
+            {
+                TopOffset = 80,
+                LeftOffset = 42,
+                Text = "+",
+            };
+            m_btn_zoom_plus.Click += new EventHandler(M_btn_Zoom_Click);
+            m_btn_zoom_min = new EditorButton
+            {
+                TopOffset = 80,
+                LeftOffset = 12,
+                Text = "-",
+            };
+            m_btn_zoom_min.Click += new EventHandler(M_btn_Zoom_Click);
+
+            Controls.Add(m_btn_zoom_plus);
+            Controls.Add(m_btn_zoom_min);
+
+            /* Move buttons */
+            m_btn_move_up = new EditorButton
+            {
+                TopOffset = 49,
+                LeftOffset = 27,
+                Text = "▲",
+            };
+            m_btn_move_up.Click += new EventHandler(M_btn_Move_Click);
+            m_btn_move_left = new EditorButton
+            {
+                TopOffset = 27,
+                LeftOffset = 49,
+                Text = "◄",
+            };
+            m_btn_move_left.Click += new EventHandler(M_btn_Move_Click);
+            m_btn_move_down = new EditorButton
+            {
+                TopOffset = 5,
+                LeftOffset = 27,
+                Text = "▼",
+            };
+            m_btn_move_down.Click += new EventHandler(M_btn_Move_Click);
+            m_btn_move_right = new EditorButton
+            {
+                TopOffset = 27,
+                LeftOffset = 5,
+                Text = "►",
+            };
+            m_btn_move_right.Click += new EventHandler(M_btn_Move_Click);
+
+            Controls.Add(m_btn_move_up);
+            Controls.Add(m_btn_move_left);
+            Controls.Add(m_btn_move_down);
+            Controls.Add(m_btn_move_right);
+        }
+
+        private void M_btn_Zoom_Click(object sender, EventArgs e)
+        {
+            float factor = (sender == m_btn_zoom_plus) ? 0.1f : -0.1f;
+            ScaleCanvas(_CanvasScale + factor, Width / 2, Height / 2);
+        }
+
+        private void M_btn_Move_Click(object sender, EventArgs e)
+        {
+            if (sender == m_btn_move_up)
+                MoveCanvas(_CanvasOffsetX, m_real_canvas_y + 40, true, CanvasMoveArgs.Top);
+            else if (sender == m_btn_move_down)
+                MoveCanvas(_CanvasOffsetX, m_real_canvas_y - 40, true, CanvasMoveArgs.Top);
+            else if (sender == m_btn_move_left)
+                MoveCanvas(m_real_canvas_x + 40, _CanvasOffsetY, true, CanvasMoveArgs.Left);
+            else
+                MoveCanvas(m_real_canvas_x - 40, _CanvasOffsetY, true, CanvasMoveArgs.Left);
         }
 
         protected override void WndProc(ref Message m) {
@@ -1813,6 +1925,68 @@ namespace ST.Library.UI.NodeEditor
                 new Rectangle(5, img.Height - 5, img.Width - 10, 5), GraphicsUnit.Pixel);
         }
 
+        /// <summary>
+        /// Patch outdated node GUIDs with their new GUID
+        /// </summary>
+        /// <param name="guid">The old GUID</param>
+        /// <param name="name">The FullName of the node</param>
+        /// <returns>The proper GUID</returns>
+        private string PatchOldData(string guid, string name)
+        {
+            if (!m_dic_type.ContainsKey(guid))
+            {
+                StringBuilder sb = new StringBuilder(name);
+
+                // Fix a bad path
+                if (name.EndsWith(".StringAppendNode"))
+                    sb.Replace(".Number.Int.", ".StringNode.");
+                if (name.EndsWith(".StringContainsNode"))
+                    sb.Replace(".Number.Int.", ".StringNode.");
+                if (name.EndsWith(".StringDisplayNode"))
+                    sb.Replace(".Number.Int.", ".StringNode.");
+                if (name.EndsWith(".LogicNOTNode"))
+                    sb.Replace(".Bool.", ".LogicNode.");
+
+                // Fix old paths
+                if (name.EndsWith(".CommentNode"))
+                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
+                if (name.EndsWith(".STNodeHubSingle"))
+                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
+                if (name.EndsWith(".PassthroughNode"))
+                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
+
+                // Replace node root-paths
+                sb.Replace(".Actions.", ".ActionNode.");
+                sb.Replace(".Bool.", ".BoolNode.");
+                sb.Replace(".Branch.", ".BranchNode.");
+                sb.Replace(".Time.", ".DateTimeNode.");
+                sb.Replace(".Events.", ".EventNode.");
+                sb.Replace(".Logic.", ".LogicNode.");
+                sb.Replace(".Math.", ".MathNode.");
+                sb.Replace(".Number.", ".NumberNode.");
+                sb.Replace(".String.", ".StringNode.");
+                sb.Replace(".Graphics.", "GraphicsNode");
+                // Replace node sub-paths
+                sb.Replace(".App.", ".AppNode.");
+                sb.Replace(".Buttplug.", ".IntifaceNode.");
+                sb.Replace(".Twitch.", ".TwitchNode.");
+                sb.Replace(".Color.", ".ColorNode.");
+                sb.Replace(".Image.", ".ImageNode.");
+                sb.Replace(".Float.", ".FloatNode.");
+                sb.Replace(".Int.", ".IntNode.");
+                sb.Replace(".UInt.", ".UIntNode.");
+                sb.Replace(".ButtplugNode.", ".IntifaceNode.");
+
+                string patchedName = sb.ToString();
+
+                foreach (var t in m_dic_type)
+                    if (t.Value.FullName.Equals(patchedName))
+                        return t.Key;
+            }
+
+            return guid;
+        }
+
         #endregion private
 
         #region public --------------------------------------------------------------------------------------------------------
@@ -2390,68 +2564,6 @@ namespace ST.Library.UI.NodeEditor
             STNode node = (STNode)Activator.CreateInstance(t);
             node.OnLoadNode(dic);
             return node;
-        }
-
-        /// <summary>
-        /// Patch outdated node GUIDs with their new GUID
-        /// </summary>
-        /// <param name="guid">The old GUID</param>
-        /// <param name="name">The FullName of the node</param>
-        /// <returns>The proper GUID</returns>
-        private string PatchOldData(string guid, string name)
-        {
-            if (!m_dic_type.ContainsKey(guid))
-            {
-                StringBuilder sb = new StringBuilder(name);
-
-                // Fix a bad path
-                if (name.EndsWith(".StringAppendNode"))
-                    sb.Replace(".Number.Int.", ".StringNode.");
-                if (name.EndsWith(".StringContainsNode"))
-                    sb.Replace(".Number.Int.", ".StringNode.");
-                if (name.EndsWith(".StringDisplayNode"))
-                    sb.Replace(".Number.Int.", ".StringNode.");
-                if (name.EndsWith(".LogicNOTNode"))
-                    sb.Replace(".Bool.", ".LogicNode.");
-
-                // Fix old paths
-                if (name.EndsWith(".CommentNode"))
-                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
-                if (name.EndsWith(".STNodeHubSingle"))
-                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
-                if (name.EndsWith(".PassthroughNode"))
-                    sb.Replace(".Nodes.", ".Nodes.UtilNode.");
-
-                // Replace node root-paths
-                sb.Replace(".Actions.", ".ActionNode.");
-                sb.Replace(".Bool.", ".BoolNode.");
-                sb.Replace(".Branch.", ".BranchNode.");
-                sb.Replace(".Time.", ".DateTimeNode.");
-                sb.Replace(".Events.", ".EventNode.");
-                sb.Replace(".Logic.", ".LogicNode.");
-                sb.Replace(".Math.", ".MathNode.");
-                sb.Replace(".Number.", ".NumberNode.");
-                sb.Replace(".String.", ".StringNode.");
-                sb.Replace(".Graphics.", "GraphicsNode");
-                // Replace node sub-paths
-                sb.Replace(".App.", ".AppNode.");
-                sb.Replace(".Buttplug.", ".IntifaceNode.");
-                sb.Replace(".Twitch.", ".TwitchNode.");
-                sb.Replace(".Color.", ".ColorNode.");
-                sb.Replace(".Image.", ".ImageNode.");
-                sb.Replace(".Float.", ".FloatNode.");
-                sb.Replace(".Int.", ".IntNode.");
-                sb.Replace(".UInt.", ".UIntNode.");
-                sb.Replace(".ButtplugNode.", ".IntifaceNode."); 
-
-                string patchedName = sb.ToString();
-
-                foreach (var t in m_dic_type)
-                    if (t.Value.FullName.Equals(patchedName))
-                        return t.Key;
-            }
-
-            return guid;
         }
 
         /// <summary>

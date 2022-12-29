@@ -518,10 +518,12 @@ namespace ST.Library.UI.NodeEditor
             _MarkColor = Color.FromArgb(200, Color.Brown);
             _Font = new Font("courier new", 8.25f);
 
-            m_sf = new StringFormat();
-            m_sf.Alignment = StringAlignment.Near;
-            m_sf.LineAlignment = StringAlignment.Center;
-            m_sf.FormatFlags = StringFormatFlags.NoWrap;
+            m_sf = new StringFormat
+            {
+                Alignment = StringAlignment.Near,
+                LineAlignment = StringAlignment.Center,
+                FormatFlags = StringFormatFlags.NoWrap
+            };
             m_sf.SetTabStops(0, new float[] { 40 });
             m_static_pt_init.X += 10;
             m_static_pt_init.Y += 10;
