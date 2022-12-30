@@ -16,13 +16,13 @@ namespace ChattyVibes.Nodes.BoolNode
                 _value = value;
                 m_ctrl_checkbox.Checked = value;
                 Invalidate();
-                m_op_bool.TransferData(value);
+                m_op_out.TransferData(value);
             }
         }
 
         private NodeCheckBox m_ctrl_checkbox;
 
-        private STNodeOption m_op_bool;
+        private STNodeOption m_op_out;
 
         protected override void OnCreate()
         {
@@ -31,7 +31,7 @@ namespace ChattyVibes.Nodes.BoolNode
             AutoSize = false;
             Size = new Size(100, 40);
 
-            m_op_bool = OutputOptions.Add("", typeof(bool), false);
+            m_op_out = OutputOptions.Add("", typeof(bool), false);
 
             m_ctrl_checkbox = new NodeCheckBox
             {
@@ -41,11 +41,11 @@ namespace ChattyVibes.Nodes.BoolNode
             m_ctrl_checkbox.ValueChanged += (s, e) =>
             {
                 _value = m_ctrl_checkbox.Checked;
-                m_op_bool.TransferData(_value);
+                m_op_out.TransferData(_value);
             };
             Controls.Add(m_ctrl_checkbox);
 
-            m_op_bool.TransferData(_value);
+            m_op_out.TransferData(_value);
         }
     }
 }

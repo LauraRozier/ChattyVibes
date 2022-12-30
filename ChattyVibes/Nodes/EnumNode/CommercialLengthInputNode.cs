@@ -4,12 +4,12 @@ using TwitchLib.Client.Enums;
 
 namespace ChattyVibes.Nodes.EnumNode
 {
-    [STNode("/Enum", "LauraRozier", "", "", "SubscriptionPlan value node")]
-    internal sealed class SubscriptionPlanInputNode : EnumNode
+    [STNode("/Enum", "LauraRozier", "", "", "CommercialLength value node")]
+    internal sealed class CommercialLengthInputNode : EnumNode
     {
-        private SubscriptionPlan _value = SubscriptionPlan.NotSet;
+        private CommercialLength _value = CommercialLength.Seconds60;
         [STNodeProperty("Value", "The boolean value")]
-        public SubscriptionPlan Value
+        public CommercialLength Value
         {
             get { return _value; }
             set
@@ -28,9 +28,9 @@ namespace ChattyVibes.Nodes.EnumNode
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "SubscriptionPlan";
+            Title = "CommercialLength";
 
-            m_op_out = OutputOptions.Add("", typeof(SubscriptionPlan), false);
+            m_op_out = OutputOptions.Add("", typeof(CommercialLength), false);
 
             m_op_out.TransferData(_value);
 
@@ -41,7 +41,7 @@ namespace ChattyVibes.Nodes.EnumNode
             };
             m_ctrl_select.ValueChanged += (s, e) =>
             {
-                _value = (SubscriptionPlan)m_ctrl_select.Enum;
+                _value = (CommercialLength)m_ctrl_select.Enum;
                 Invalidate();
                 m_op_out.TransferData(_value);
             };

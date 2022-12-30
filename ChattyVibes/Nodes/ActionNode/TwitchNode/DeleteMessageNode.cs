@@ -1,13 +1,14 @@
 ﻿using ST.Library.UI.NodeEditor;
 using TwitchLib.Client;
+using TwitchLib.Client.Extensions;
 
 namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 {
-    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch SendReply node")]
-    internal sealed class SendReplyNode : ActionNode
+    [STNode("/Actions/Twitch", "LauraRozier", "", "", "Twitch DeleteMessage node")]
+    internal sealed class DeleteMessageNode : ActionNode
     {
         private string _channel = string.Empty;
-        [STNodeProperty("Channel", "The channel to send the reply to.")]
+        [STNodeProperty("Channel", "The name of the channel to remove the message from.")]
         public string Channel
         {
             get { return _channel; }
@@ -17,38 +18,25 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 Invalidate();
             }
         }
-        private string _msgId = string.Empty;
-        [STNodeProperty("Message ID", "The message ID to reply to.")]
-        public string MsgId
+        private string _messageId = string.Empty;
+        [STNodeProperty("Message ID", "The message ID to remove.")]
+        public string MessageId
         {
-            get { return _msgId; }
+            get { return _messageId; }
             set
             {
-                _msgId = value;
-                Invalidate();
-            }
-        }
-        private string _message = string.Empty;
-        [STNodeProperty("Message", "The message to send.")]
-        public string Message
-        {
-            get { return _message; }
-            set
-            {
-                _message = value;
+                _messageId = value;
                 Invalidate();
             }
         }
 
         private STNodeOption m_op_channel_in;
-        private STNodeOption m_op_msgid_in;
         private STNodeOption m_op_message_in;
 
         private struct MsgData
         {
             public string Channel { get; set; }
-            public string MsgId { get; set; }
-            public string Message { get; set; }
+            public string MessageId { get; set; }
         }
 
         protected override void OnFlowTrigger()
@@ -58,7 +46,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
 
             MainForm.TwitchQueue?.Enqueue(
                 new Queues.QueuedTwitchTaskHandler(SendCommand),
-                new MsgData { Channel = _channel, MsgId = _msgId, Message = _message }
+                new MsgData { Channel = _channel, MessageId = _messageId }
             );
         }
 
@@ -68,20 +56,18 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 return;
 
             MsgData dataObj = (MsgData)data;
-            client.SendReply(dataObj.Channel, dataObj.MsgId, dataObj.Message);
+            client.DeleteMessage(dataObj.Channel, dataObj.MessageId);
         }
 
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "Send Reply";
+            Title = "Delete Message";
 
             m_op_channel_in = InputOptions.Add("Channel", typeof(string), false);
-            m_op_msgid_in = InputOptions.Add("Message ID", typeof(string), false);
-            m_op_message_in = InputOptions.Add("Message", typeof(string), false);
+            m_op_message_in = InputOptions.Add("Message ID", typeof(string), false);
 
             m_op_channel_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
-            m_op_msgid_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
             m_op_message_in.DataTransfer += new STNodeOptionEventHandler(m_op_DataTransfer);
         }
 
@@ -91,19 +77,15 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
             {
                 if (sender == m_op_channel_in)
                     Channel = (string)e.TargetOption.Data;
-                else if(sender == m_op_msgid_in)
-                    MsgId = (string)e.TargetOption.Data;
                 else
-                    Message = (string)e.TargetOption.Data;
+                    MessageId = (string)e.TargetOption.Data;
             }
             else
             {
                 if (sender == m_op_channel_in)
                     Channel = string.Empty;
-                else if (sender == m_op_msgid_in)
-                    MsgId = string.Empty;
                 else
-                    Message = string.Empty;
+                    MessageId = string.Empty;
             }
         }
     }

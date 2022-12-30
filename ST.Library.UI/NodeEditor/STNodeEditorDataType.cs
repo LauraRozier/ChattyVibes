@@ -7,14 +7,14 @@ namespace ST.Library.UI.NodeEditor
     public enum ConnectionStatus
     {
         /// <summary>
-        /// no owner
+        /// No Owner
         /// </summary>
-        [Description("no owner")]
+        [Description("No Owner")]
         NoOwner,
         /// <summary>
-        /// same owner
+        /// Same Owner
         /// </summary>
-        [Description("same owner")]
+        [Description("Same Owner")]
         SameOwner,
         /// <summary>
         /// Both are input or output options
@@ -22,59 +22,59 @@ namespace ST.Library.UI.NodeEditor
         [Description("Both are input or output options")]
         SameInputOrOutput,
         /// <summary>
-        /// different data types
+        /// Different data types
         /// </summary>
-        [Description("different data types")]
+        [Description("Different data types")]
         ErrorType,
         /// <summary>
-        /// single link node
+        /// Single link node
         /// </summary>
-        [Description("single link node")]
+        [Description("Single link node")]
         SingleOption,
         /// <summary>
-        /// circular path
+        /// Circular path
         /// </summary>
-        [Description("circular path")]
+        [Description("Circular path")]
         Loop,
         /// <summary>
-        /// existing connection
+        /// Existing connection
         /// </summary>
-        [Description("existing connection")]
+        [Description("Existing connection")]
         Exists,
         /// <summary>
-        /// blank option
+        /// Blank option
         /// </summary>
-        [Description("blank option")]
+        [Description("Blank option")]
         EmptyOption,
         /// <summary>
-        /// already connected
+        /// Connected
         /// </summary>
-        [Description("already connected")]
+        [Description("Connected")]
         Connected,
         /// <summary>
-        /// disconnected
+        /// Disconnected
         /// </summary>
-        [Description("disconnected")]
+        [Description("Disconnected")]
         DisConnected,
         /// <summary>
-        /// node is locked
+        /// Node is locked
         /// </summary>
-        [Description("node is locked")]
+        [Description("Node is locked")]
         Locked,
         /// <summary>
-        /// operation denied
+        /// Operation denied
         /// </summary>
-        [Description("operation denied")]
+        [Description("Operation denied")]
         Reject,
         /// <summary>
-        /// being connected
+        /// Being connected
         /// </summary>
-        [Description("being connected")]
+        [Description("Being connected")]
         Connecting,
         /// <summary>
-        /// disconnecting
+        /// Disconnecting
         /// </summary>
-        [Description("disconnecting")]
+        [Description("Disconnecting")]
         DisConnecting,
         /// <summary>
         /// Invalid data type

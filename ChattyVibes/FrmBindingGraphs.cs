@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using TwitchLib.Client.Enums;
 
 namespace ChattyVibes
 {
@@ -224,33 +225,6 @@ namespace ChattyVibes
             base.OnLoad(ea);
             nodeEditorPanel.LoadAssembly(Application.ExecutablePath);
             nodeEditorPanel.Y = Height - 100;
-            nodeEditorPanel.Editor.OptionConnected += new STNodeEditorOptionEventHandler((s, e) =>
-            {
-                string msg = "";
-
-                switch (e.Status)
-                {
-                    case ConnectionStatus.NoOwner: msg = "No Owner"; break;
-                    case ConnectionStatus.SameOwner: msg = "Same Owner"; break;
-                    case ConnectionStatus.SameInputOrOutput: msg = "Both are input or output options"; break;
-                    case ConnectionStatus.ErrorType: msg = "Different data types"; break;
-                    case ConnectionStatus.SingleOption: msg = "Single link node"; break;
-                    case ConnectionStatus.Loop: msg = "Circular path"; break;
-                    case ConnectionStatus.Exists: msg = "Existing connection"; break;
-                    case ConnectionStatus.EmptyOption: msg = "Blank option"; break;
-                    case ConnectionStatus.Connected: msg = "Connected"; break;
-                    case ConnectionStatus.DisConnected: msg = "Disconnected"; break;
-                    case ConnectionStatus.Locked: msg = "Node is locked"; break;
-                    case ConnectionStatus.Reject: msg = "Operation denied"; break;
-                    case ConnectionStatus.Connecting: msg = "Being connected"; break;
-                    case ConnectionStatus.DisConnecting: msg = "Disconnecting"; break;
-                    case ConnectionStatus.InvalidType: msg = "Invalid data type"; break;
-                }
-                nodeEditorPanel.Editor.ShowAlert(
-                    msg, Color.White,
-                    e.Status == ConnectionStatus.Connected ? C_ALERT_OK : C_ALERT_ERR
-                );
-            });
             nodeEditorPanel.Editor.CanvasScaled += new EventHandler((s, e) =>
             {
                 nodeEditorPanel.Editor.ShowAlert(
@@ -269,6 +243,8 @@ namespace ChattyVibes
             nodeEditorPanel.Editor.SetTypeColor(typeof(string), Constants.C_COLOR_STRING);
             nodeEditorPanel.Editor.SetTypeColor(typeof(DateTime), Constants.C_COLOR_DATETIME);
             nodeEditorPanel.Editor.SetTypeColor(typeof(Enum), Constants.C_COLOR_ENUM);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(SubscriptionPlan), Constants.C_COLOR_ENUM);
+            nodeEditorPanel.Editor.SetTypeColor(typeof(CommercialLength), Constants.C_COLOR_ENUM);
 
             nodeEditorPanel.TreeView.PropertyGrid.SetInfoKey("Author", "Mail", "Link", "Show Help");
             nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(bool), Constants.C_COLOR_BOOL);
@@ -279,6 +255,8 @@ namespace ChattyVibes
             nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(string), Constants.C_COLOR_STRING);
             nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(DateTime), Constants.C_COLOR_DATETIME);
             nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(Enum), Constants.C_COLOR_ENUM);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(SubscriptionPlan), Constants.C_COLOR_ENUM);
+            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(CommercialLength), Constants.C_COLOR_ENUM);
 
             contextMenuStrip1.ShowImageMargin = false;
             contextMenuStrip1.Renderer = new ToolStripRendererEx();

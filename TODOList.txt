@@ -26,6 +26,18 @@ Done:
 - Zoom buttons
 - Move canvas buttons
 - Minimap
+- CommercialLength Enum
+- SubscriptionPlan Enum
+- DeleteMessage Node
+- TimeoutUser Node
+- BanUser Node
+- Unban Node
+- Mod Node
+- Unmod Node
+- VIP Node
+- UnVIP Node
+- GetChannelModerators Node
+- GetVIPs Node
 
 WiP:
 - Array
@@ -37,16 +49,6 @@ WiP:
 ToDo:
 - Flow-based +x counters
 - String Split
-- BanUser Node
-- DeleteMessage Node
-- GetChannelModerators Node
-- GetVIPs Node
-- Mod Node
-- TimeoutUser Node
-- Unban Node
-- Unmod Node
-- UnVIP Node
-- VIP Node
 
 Future:
 - Smoother zoom

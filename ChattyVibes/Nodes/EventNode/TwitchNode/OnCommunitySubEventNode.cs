@@ -1,6 +1,7 @@
 ﻿using ChattyVibes.Events;
 using ST.Library.UI.NodeEditor;
 using System;
+using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 
 namespace ChattyVibes.Nodes.EventNode.TwitchNode
@@ -52,7 +53,7 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
             m_op_MassGiftCount_out = OutputOptions.Add("Mass Gift Count", typeof(int), false);
             m_op_MultiMonthGiftDuration_out = OutputOptions.Add("Multi-month Gift Duration", typeof(int), false);
             m_op_SenderCount_out = OutputOptions.Add("Sender Count", typeof(int), false);
-            m_op_SubPlan_out = OutputOptions.Add("Sub Plan", typeof(Enum), false);
+            m_op_SubPlan_out = OutputOptions.Add("SubscriptionPlan", typeof(SubscriptionPlan), false);
             m_op_SystemMsg_out = OutputOptions.Add("System Message", typeof(string), false);
             m_op_UserId_out = OutputOptions.Add("UserId", typeof(string), false);
             m_op_TmiSentTs_out = OutputOptions.Add("Timestamp", typeof(DateTime), false);

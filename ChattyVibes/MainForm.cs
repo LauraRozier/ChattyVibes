@@ -303,6 +303,8 @@ namespace ChattyVibes
             _chatClient.OnCommunitySubscription += ChatClient_OnCommunitySubscription;
             _chatClient.OnPrimePaidSubscriber += ChatClient_OnPrimePaidSubscriber;
             _chatClient.OnReSubscriber += ChatClient_OnReSubscriber;
+            _chatClient.OnVIPsReceived += ChatClient_OnVIPsReceived;
+            _chatClient.OnModeratorsReceived += ChatClient_OnModeratorsReceived;
 
             _authToken = null;
             _server.Start();
@@ -395,14 +397,8 @@ namespace ChattyVibes
 
         private void MoveMainForm(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left && WindowState != FormWindowState.Maximized)
             {
-                if (WindowState == FormWindowState.Maximized)
-                {
-                    btnMaximize.Text = "🗖";
-                    Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 25, 25));
-                }
-
                 ReleaseCapture();
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
@@ -654,6 +650,18 @@ namespace ChattyVibes
         {
             await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.ContinuedGiftedSubscription.DisplayName} - Continued Gifted Subscriber");
             EventFactory.Enqueue(EventType.TwitchOnContinuedGiftSub, sender, e);
+        }
+
+        private async void ChatClient_OnVIPsReceived(object sender, OnVIPsReceivedArgs e)
+        {
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.Channel} - VIPs Received");
+            EventFactory.Enqueue(EventType.TwitchOnVIPsReceived, sender, e);
+        }
+
+        private async void ChatClient_OnModeratorsReceived(object sender, OnModeratorsReceivedArgs e)
+        {
+            await LogMsg($"{DateTime.UtcNow:o} - Twitch: {e.Channel} - Moderators Received");
+            EventFactory.Enqueue(EventType.TwitchOnModeratorsReceived, sender, e);
         }
 
         private void Panel3_Paint(object sender, PaintEventArgs e)

@@ -1,6 +1,7 @@
 ﻿using ChattyVibes.Events;
 using ST.Library.UI.NodeEditor;
 using System;
+using TwitchLib.Client.Enums;
 using TwitchLib.Client.Events;
 
 namespace ChattyVibes.Nodes.EventNode.TwitchNode
@@ -54,7 +55,7 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
             m_op_ShouldShareStreak_out = OutputOptions.Add("Should Share Streak", typeof(bool), false);
             m_op_StreakMonths_out = OutputOptions.Add("Streak Months", typeof(int), false);
             m_op_ResubMessage_out = OutputOptions.Add("Resub Message", typeof(string), false);
-            m_op_SubPlan_out = OutputOptions.Add("Sub Plan", typeof(Enum), false);
+            m_op_SubPlan_out = OutputOptions.Add("Sub Plan", typeof(SubscriptionPlan), false);
             m_op_SystemMsg_out = OutputOptions.Add("System Message", typeof(string), false);
             m_op_UserId_out = OutputOptions.Add("UserId", typeof(string), false);
             m_op_TmiSentTs_out = OutputOptions.Add("Timestamp", typeof(DateTime), false);

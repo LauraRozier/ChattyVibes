@@ -230,6 +230,8 @@
     <Compile Include="Events\ButtplugDeviceRemovedEvent.cs" />
     <Compile Include="Events\EventFactory.cs" />
     <Compile Include="Events\ButtplugDeviceAddedEvent.cs" />
+    <Compile Include="Events\TwitchOnModeratorsReceivedEvent.cs" />
+    <Compile Include="Events\TwitchOnVIPsReceivedEvent.cs" />
     <Compile Include="Events\TwitchOnWhisperMsgEvent.cs" />
     <Compile Include="Events\TwitchOnNewSubEvent.cs" />
     <Compile Include="Events\TwitchOnGiftSubEvent.cs" />
@@ -271,7 +273,17 @@
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendRotateCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendLinearCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendVibeCommandNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\GetChannelStateNode - Copy.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\GetVIPsNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\VIPUserNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\ModUserNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\UnVIPUserNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\UnmodUserNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\UnbanUserNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\RaidNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\DeleteMessageNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\BanUserNode.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\TimeoutUserNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\StartCommercialNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\SubscribersOnlyModeNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\SlowModeNode.cs" />
@@ -297,6 +309,8 @@
     <Compile Include="Nodes\DictNode\FloatDictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\UIntDictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\IntDictForEachNode.cs" />
+    <Compile Include="Nodes\EnumNode\CommercialLengthDisplayNode.cs" />
+    <Compile Include="Nodes\EnumNode\CommercialLengthInputNode.cs" />
     <Compile Include="Nodes\EventNode\IntifaceNode\OnDeviceRemovedNode.cs" />
     <Compile Include="Nodes\EventNode\IntifaceNode\OnDeviceAddedNode.cs" />
     <Compile Include="Nodes\ListNode\FloatListForEachNode.cs" />

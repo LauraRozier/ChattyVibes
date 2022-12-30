@@ -3,10 +3,10 @@ using TwitchLib.Client.Enums;
 
 namespace ChattyVibes.Nodes.EnumNode
 {
-    [STNode("/Enum", "LauraRozier", "", "", "SubscriptionPlan display node")]
-    internal sealed class SubscriptionPlanDisplayNode : EnumNode
+    [STNode("/Enum", "LauraRozier", "", "", "CommercialLength display node")]
+    internal sealed class CommercialLengthDisplayNode : EnumNode
     {
-        private SubscriptionPlan _value = SubscriptionPlan.NotSet;
+        private CommercialLength _value = CommercialLength.Seconds60;
 
         private STNodeOption m_op_in;
         private STNodeOption m_op_out;
@@ -14,10 +14,10 @@ namespace ChattyVibes.Nodes.EnumNode
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "SubscriptionPlan Display";
+            Title = "CommercialLength Display";
 
-            m_op_in = InputOptions.Add("NotSet", typeof(SubscriptionPlan), true);
-            m_op_out = OutputOptions.Add("", typeof(SubscriptionPlan), false);
+            m_op_in = InputOptions.Add("Seconds60", typeof(CommercialLength), true);
+            m_op_out = OutputOptions.Add("", typeof(CommercialLength), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_op_in_DataTransfer);
             m_op_out.TransferData(_value);
@@ -26,9 +26,9 @@ namespace ChattyVibes.Nodes.EnumNode
         private void m_op_in_DataTransfer(object sender, STNodeOptionEventArgs e)
         {
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
-                _value = (SubscriptionPlan)e.TargetOption.Data;
+                _value = (CommercialLength)e.TargetOption.Data;
             else
-                _value = SubscriptionPlan.NotSet;
+                _value = CommercialLength.Seconds60;
 
             SetOptionText(m_op_in, _value.ToString());
             m_op_out.TransferData(_value);

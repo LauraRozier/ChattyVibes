@@ -23,6 +23,8 @@ namespace ChattyVibes.Events
         TwitchOnCommunitySub,
         TwitchOnPrimeSub,
         TwitchOnResub,
+        TwitchOnVIPsReceived,
+        TwitchOnModeratorsReceived,
 
         // Buttplug.IO events
         ButtplugDeviceAdded,
@@ -56,6 +58,8 @@ namespace ChattyVibes.Events
             { EventType.TwitchOnCommunitySub, new ConcurrentQueue<QueueItem>() },
             { EventType.TwitchOnPrimeSub, new ConcurrentQueue<QueueItem>() },
             { EventType.TwitchOnResub, new ConcurrentQueue<QueueItem>() },
+            { EventType.TwitchOnVIPsReceived, new ConcurrentQueue<QueueItem>() },
+            { EventType.TwitchOnModeratorsReceived, new ConcurrentQueue<QueueItem>() },
 
             { EventType.ButtplugDeviceAdded, new ConcurrentQueue<QueueItem>() },
             { EventType.ButtplugDeviceRemoved, new ConcurrentQueue<QueueItem>() }
@@ -102,6 +106,8 @@ namespace ChattyVibes.Events
             _events.Add(EventType.TwitchOnCommunitySub, new TwitchOnCommunitySubEvent());
             _events.Add(EventType.TwitchOnPrimeSub, new TwitchOnPrimeSubEvent());
             _events.Add(EventType.TwitchOnResub, new TwitchOnResubEvent());
+            _events.Add(EventType.TwitchOnVIPsReceived, new TwitchOnVIPsReceivedEvent());
+            _events.Add(EventType.TwitchOnModeratorsReceived, new TwitchOnModeratorsReceivedEvent());
 
             _events.Add(EventType.ButtplugDeviceAdded, new ButtplugDeviceAddedEvent());
             _events.Add(EventType.ButtplugDeviceRemoved, new ButtplugDeviceRemovedEvent());
@@ -209,6 +215,16 @@ namespace ChattyVibes.Events
                 case EventType.TwitchOnResub:
                     {
                         ((TwitchOnResubEvent)_events[type]).OnEvent(sender, (OnReSubscriberArgs)args);
+                        return;
+                    }
+                case EventType.TwitchOnVIPsReceived:
+                    {
+                        ((TwitchOnVIPsReceivedEvent)_events[type]).OnEvent(sender, (OnVIPsReceivedArgs)args);
+                        return;
+                    }
+                case EventType.TwitchOnModeratorsReceived:
+                    {
+                        ((TwitchOnModeratorsReceivedEvent)_events[type]).OnEvent(sender, (OnModeratorsReceivedArgs)args);
                         return;
                     }
                 // Buttplug.IO
