@@ -225,15 +225,9 @@ namespace ChattyVibes
             base.OnLoad(ea);
             nodeEditorPanel.LoadAssembly(Application.ExecutablePath);
             nodeEditorPanel.Y = Height - 100;
-            nodeEditorPanel.Editor.CanvasScaled += new EventHandler((s, e) =>
-            {
-                nodeEditorPanel.Editor.ShowAlert(
-                    nodeEditorPanel.Editor.CanvasScale.ToString("F2"),
-                    Color.White, C_ALERT_WARN
-                );
-            });
             nodeEditorPanel.Editor.NodeAdded += new STNodeEditorEventHandler((s, e) => e.Node.ContextMenuStrip = contextMenuStrip1);
 
+            nodeEditorPanel.TreeView.PropertyGrid.SetInfoKey("Author", "Mail", "Link", "Show Help");
             nodeEditorPanel.PropertyGrid.SetInfoKey("Author", "Mail", "Link", "Show Help");
             nodeEditorPanel.Editor.SetTypeColor(typeof(bool), Constants.C_COLOR_BOOL);
             nodeEditorPanel.Editor.SetTypeColor(typeof(float), Constants.C_COLOR_FLOAT);
@@ -245,18 +239,6 @@ namespace ChattyVibes
             nodeEditorPanel.Editor.SetTypeColor(typeof(Enum), Constants.C_COLOR_ENUM);
             nodeEditorPanel.Editor.SetTypeColor(typeof(SubscriptionPlan), Constants.C_COLOR_ENUM);
             nodeEditorPanel.Editor.SetTypeColor(typeof(CommercialLength), Constants.C_COLOR_ENUM);
-
-            nodeEditorPanel.TreeView.PropertyGrid.SetInfoKey("Author", "Mail", "Link", "Show Help");
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(bool), Constants.C_COLOR_BOOL);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(float), Constants.C_COLOR_FLOAT);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(int), Constants.C_COLOR_INT);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(uint), Constants.C_COLOR_UINT);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(char), Constants.C_COLOR_CHAR);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(string), Constants.C_COLOR_STRING);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(DateTime), Constants.C_COLOR_DATETIME);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(Enum), Constants.C_COLOR_ENUM);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(SubscriptionPlan), Constants.C_COLOR_ENUM);
-            nodeEditorPanel.TreeView.Editor.SetTypeColor(typeof(CommercialLength), Constants.C_COLOR_ENUM);
 
             contextMenuStrip1.ShowImageMargin = false;
             contextMenuStrip1.Renderer = new ToolStripRendererEx();

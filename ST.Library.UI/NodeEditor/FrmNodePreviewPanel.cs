@@ -11,49 +11,42 @@ namespace ST.Library.UI.NodeEditor
         public Color BorderColor { get; set; }
         public bool AutoBorderColor { get; set; }
 
-        private bool m_bRight;
+        private readonly bool m_bRight;
         private Point m_ptHandle;
-        private int m_nHandleSize;
+        private readonly int m_nHandleSize;
         private Rectangle m_rect_handle;
         private Rectangle m_rect_panel;
         private Rectangle m_rect_exclude;
         private Region m_region;
-        private Type m_type;
+        private readonly Type m_type;
         private STNode m_node;
-        private STNodeEditor m_editor;
-        private STNodePropertyGrid m_property;
+        private readonly STNodePropertyGrid m_property;
 
-        private Pen m_pen = new Pen(Color.Black);
-        private SolidBrush m_brush = new SolidBrush(Color.Black);
+        private readonly Pen m_pen = new Pen(Color.Black);
+        private readonly SolidBrush m_brush = new SolidBrush(Color.Black);
         private static FrmNodePreviewPanel m_last_frm;
 
         [DllImport("user32.dll")]
         private static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
 
-        public FrmNodePreviewPanel(Type stNodeType, Point ptHandle, int nHandleSize, bool bRight, STNodeEditor editor, STNodePropertyGrid propertyGrid) {
+        public FrmNodePreviewPanel(Type stNodeType, Point ptHandle, int nHandleSize, bool bRight, STNodePropertyGrid propertyGrid) {
             SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.ResizeRedraw, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 
-            if (m_last_frm != null)
-                m_last_frm.Close();
-
+            m_last_frm?.Close();
             m_last_frm = this;
 
-            m_editor = editor;
             m_property = propertyGrid;
-            m_editor.Size = new Size(200, 200);
             m_property.Size = new Size(200, 200);
-            m_editor.Location = new Point(1 + (bRight ? nHandleSize : 0), 1);
-            m_property.Location = new Point(m_editor.Right, 1);
+            m_property.Location = new Point(nHandleSize + 1, 1);
             m_property.InfoFirstOnDraw = true;
-            Controls.Add(m_editor);
             Controls.Add(m_property);
             ShowInTaskbar = false;
             FormBorderStyle = FormBorderStyle.None;
-            Size = new Size(402 + nHandleSize, 202);
+            Size = new Size(202 + nHandleSize, 202);
 
             m_type = stNodeType;
             m_ptHandle = ptHandle;
@@ -67,8 +60,6 @@ namespace ST.Library.UI.NodeEditor
         protected override void OnLoad(EventArgs e) {
             base.OnLoad(e);
             m_node = (STNode)Activator.CreateInstance(m_type);
-            m_node.Left = 20; m_node.Top = 20;
-            m_editor.Nodes.Add(m_node);
             m_property.SetNode(m_node);
 
             m_rect_panel = new Rectangle(0, 0, 402, 202);
@@ -95,12 +86,11 @@ namespace ST.Library.UI.NodeEditor
 
             using (Graphics g = CreateGraphics()) {
                 IntPtr h = m_region.GetHrgn(g);
-                FrmNodePreviewPanel.SetWindowRgn(Handle, h, false);
+                SetWindowRgn(Handle, h, false);
                 m_region.ReleaseHrgn(h);
             }
 
             MouseLeave += Event_MouseLeave;
-            m_editor.MouseLeave += Event_MouseLeave;
             m_property.MouseLeave += Event_MouseLeave;
             BeginInvoke(new MethodInvoker(() => { m_property.Focus(); }));
         }
@@ -108,14 +98,12 @@ namespace ST.Library.UI.NodeEditor
         protected override void OnClosing(CancelEventArgs e) {
             base.OnClosing(e);
             Controls.Clear();
-            m_editor.ClearNodes();
-            m_editor.MouseLeave -= Event_MouseLeave;
             m_property.MouseLeave -= Event_MouseLeave;
             m_last_frm = null;
         }
 
         void Event_MouseLeave(object sender, EventArgs e) {
-            Point pt = Control.MousePosition;
+            Point pt = MousePosition;
 
             if (m_rect_panel.Contains(pt) || m_rect_handle.Contains(pt))
                 return;

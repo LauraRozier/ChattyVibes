@@ -132,17 +132,16 @@ namespace ST.Library.UI.NodeEditor
             get { return m_grid; }
         }
 
-        private Point m_pt_down;
         private bool m_is_mx;
         private bool m_is_my;
-        private Pen m_pen;
+        private readonly Pen m_pen;
 
         private bool m_nInited;
         private readonly Dictionary<ConnectionStatus, string> m_dic_status_key = new Dictionary<ConnectionStatus, string>();
 
-        private STNodeEditor m_editor;
-        private STNodeTreeView m_tree;
-        private STNodePropertyGrid m_grid;
+        private readonly STNodeEditor m_editor;
+        private readonly STNodeTreeView m_tree;
+        private readonly STNodePropertyGrid m_grid;
 
         public override Size MinimumSize {
             get { return base.MinimumSize; }
@@ -175,8 +174,6 @@ namespace ST.Library.UI.NodeEditor
             m_pen = new Pen(BackColor, 3);
 
             Type t = typeof(ConnectionStatus);
-            var vv = Enum.GetValues(t);
-            var vvv = vv.GetValue(0);
 
             foreach (var f in t.GetFields()) {
                 if (!f.FieldType.IsEnum)
@@ -236,7 +233,7 @@ namespace ST.Library.UI.NodeEditor
             m_pen.Width = 3;
             m_pen.Color = _SplitLineColor;
             g.DrawLine(m_pen, _X, 0, _X, Height);
-            int nX = 0;
+            int nX;
 
             if (_LeftLayout) {
                 g.DrawLine(m_pen, 0, _Y, _X - 1, _Y);
@@ -257,25 +254,24 @@ namespace ST.Library.UI.NodeEditor
             if (_LeftLayout) {
                 //m_tree.Location = Point.Empty;
                 //m_tree.Size = new Size(m_sx - 1, m_sy - 1);
-                STNodeEditorPannel.MoveWindow(m_tree.Handle, 0, 0, _X - 1, _Y - 1, false);
+                MoveWindow(m_tree.Handle, 0, 0, _X - 1, _Y - 1, false);
 
                 //m_grid.Location = new Point(0, m_sy + 2);
                 //m_grid.Size = new Size(m_sx - 1, Height - m_sy - 2);
-                STNodeEditorPannel.MoveWindow(m_grid.Handle, 0, _Y + 2, _X - 1, Height - _Y - 2, false);
+                MoveWindow(m_grid.Handle, 0, _Y + 2, _X - 1, Height - _Y - 2, false);
 
                 //m_editor.Location = new Point(m_sx + 2, 0);
                 //m_editor.Size = new Size(Width - m_sx - 2, Height);
-                STNodeEditorPannel.MoveWindow(m_editor.Handle, _X + 2, 0, Width - _X - 2, Height, false);
+                MoveWindow(m_editor.Handle, _X + 2, 0, Width - _X - 2, Height, false);
             } else {
-                STNodeEditorPannel.MoveWindow(m_editor.Handle, 0, 0, _X - 1, Height, false);
-                STNodeEditorPannel.MoveWindow(m_tree.Handle, _X + 2, 0, Width - _X - 2, _Y - 1, false);
-                STNodeEditorPannel.MoveWindow(m_grid.Handle, _X + 2, _Y + 2, Width - _X - 2, Height - _Y - 2, false);
+                MoveWindow(m_editor.Handle, 0, 0, _X - 1, Height, false);
+                MoveWindow(m_tree.Handle, _X + 2, 0, Width - _X - 2, _Y - 1, false);
+                MoveWindow(m_grid.Handle, _X + 2, _Y + 2, Width - _X - 2, Height - _Y - 2, false);
             }
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
-            m_pt_down = e.Location;
             m_is_mx = m_is_my = false;
 
             if (Cursor == Cursors.VSplit) {
@@ -354,10 +350,8 @@ namespace ST.Library.UI.NodeEditor
         /// <param name="strText">Corresponding display text</param>
         /// <returns>Old text</returns>
         public string SetConnectionStatusText(ConnectionStatus status, string strText) {
-            string strOld = null;
-
             if (m_dic_status_key.ContainsKey(status)) {
-                strOld = m_dic_status_key[status];
+                string strOld = m_dic_status_key[status];
                 m_dic_status_key[status] = strText;
                 return strOld;
             }

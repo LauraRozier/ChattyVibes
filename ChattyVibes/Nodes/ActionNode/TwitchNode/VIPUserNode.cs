@@ -29,27 +29,14 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
                 Invalidate();
             }
         }
-        private string _message = string.Empty;
-        [STNodeProperty("Message", "The message to send.")]
-        public string Message
-        {
-            get { return _message; }
-            set
-            {
-                _message = value;
-                Invalidate();
-            }
-        }
 
         private STNodeOption m_op_channel_in;
         private STNodeOption m_op_username_in;
-        private STNodeOption m_op_message_in;
 
         private struct MsgData
         {
             public string Channel { get; set; }
             public string Username { get; set; }
-            public string Message { get; set; }
         }
 
         protected override void OnFlowTrigger()

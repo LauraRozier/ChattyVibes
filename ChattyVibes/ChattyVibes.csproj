@@ -273,7 +273,7 @@
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendRotateCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendLinearCommandNode.cs" />
     <Compile Include="Nodes\ActionNode\IntifaceNode\SendVibeCommandNode.cs" />
-    <Compile Include="Nodes\ActionNode\TwitchNode\GetChannelStateNode - Copy.cs" />
+    <Compile Include="Nodes\ActionNode\TwitchNode\GetModeratorsNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\GetVIPsNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\VIPUserNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\ModUserNode.cs" />
