@@ -41,16 +41,7 @@ namespace ST.Library.UI.NodeEditor
 {
     public class STNodeTreeView : Control
     {
-        private Color _ItemBackColor = Color.FromArgb(255, 45, 45, 45);
-        /// <summary>
-        /// Get or set the background color of each row attribute option
-        /// </summary>
-        [Description("Get or set the background color of each row attribute option")]
-        public Color ItemBackColor {
-            get { return _ItemBackColor; }
-            set { _ItemBackColor = value; }
-        }
-
+        private const int C_SCROLL_WIDTH = 8;
         private Color _ItemHoverColor = Color.FromArgb(50, 125, 125, 125);
         /// <summary>
         /// Get or set the background color when the property option is hovered by the mouse
@@ -116,7 +107,7 @@ namespace ST.Library.UI.NodeEditor
             set { _FolderCountColor = value; }
         }
 
-        private Color _SwitchColor = Color.LightGray;
+        private readonly Color _SwitchColor = Color.LightGray;
 
         private bool _ShowFolderCount = true;
         /// <summary>
@@ -161,16 +152,7 @@ namespace ST.Library.UI.NodeEditor
             }
         }
 
-        private STNodeEditor _Editor;
-        /// <summary>
-        /// Get the STNodeEditor used when previewing the node
-        /// </summary>
-        [Description("Get the STNodeEditor used when previewing the node"), Browsable(false)]
-        public STNodeEditor Editor {
-            get { return _Editor; }
-        }
-
-        private STNodePropertyGrid _PropertyGrid;
+        private readonly STNodePropertyGrid _PropertyGrid;
         /// <summary>
         /// Get the STNodePropertyGrid used when previewing the node
         /// </summary>
@@ -187,9 +169,9 @@ namespace ST.Library.UI.NodeEditor
         private readonly STNodeTreeCollection m_items_source = new STNodeTreeCollection("ROOT");
         private readonly Dictionary<Type, string> m_dic_all_type = new Dictionary<Type, string>();
 
-        private Pen m_pen;
-        private SolidBrush m_brush;
-        private StringFormat m_sf;
+        private readonly Pen m_pen = new Pen(Color.Black);
+        private readonly SolidBrush m_brush = new SolidBrush(Color.White);
+        private readonly StringFormat m_sf = new StringFormat { LineAlignment = StringAlignment.Center };
         private DrawingTools m_dt;
         private readonly Color m_clr_item_1 = Color.FromArgb(10, 0, 0, 0);// Color.FromArgb(255, 40, 40, 40);
         private readonly Color m_clr_item_2 = Color.FromArgb(10, 255, 255, 255);// Color.FromArgb(255, 50, 50, 50);
@@ -199,6 +181,11 @@ namespace ST.Library.UI.NodeEditor
         private int m_nSearchOffsetY;                   //The vertical height that needs to be offset when drawing retrieved data
         private int m_nVHeight;                         //The total height required by the content in the control
 
+        private Rectangle m_thumbRect = new Rectangle(0, 0, C_SCROLL_WIDTH, 0);
+        private decimal m_scrollJump;
+        private bool m_thumbActive = false;
+        private Point m_previousMousePos = default;
+
         private bool m_bHoverInfo;                      //Whether the current mouse is hovering over the information display button
         private STNodeTreeCollection m_item_hover;      //The tree node currently hovered over by the mouse
         private Point m_pt_control;                     //The coordinates of the mouse on the control
@@ -206,7 +193,13 @@ namespace ST.Library.UI.NodeEditor
         private Rectangle m_rect_clear;                 //Clear the search button area
 
         private string m_str_search;                    //retrieved text
-        private readonly TextBox m_tbx = new TextBox(); //search text box
+        private readonly TextBox m_tbx = new TextBox
+        {
+            Left = 6,
+            BackColor = Color.FromArgb(255, 30, 30, 30),
+            BorderStyle = BorderStyle.None,
+            MaxLength = 20
+        }; //search text box
 
         /// <summary>
         /// Construct a STNode tree control
@@ -220,30 +213,25 @@ namespace ST.Library.UI.NodeEditor
 
             MinimumSize = new Size(100, 60);
             Size = new Size(200, 150);
-            m_items_draw = m_items_source;
-            m_pen = new Pen(Color.Black);
-            m_brush = new SolidBrush(Color.White);
-            m_sf = new StringFormat { LineAlignment = StringAlignment.Center };
-            m_dt.Pen = m_pen;
-            m_dt.SolidBrush = m_brush;
             ForeColor = Color.FromArgb(255, 220, 220, 220);
             BackColor = Color.FromArgb(255, 35, 35, 35);
-            m_tbx.Left = 6;
-            m_tbx.BackColor = Color.FromArgb(255, 30, 30, 30);
+
+            m_items_draw = m_items_source;
+
+            m_dt.Pen = m_pen;
+            m_dt.SolidBrush = m_brush;
+
             m_tbx.ForeColor = ForeColor;
-            m_tbx.BorderStyle = BorderStyle.None;
-            m_tbx.MaxLength = 20;
-            m_tbx.TextChanged += new EventHandler(m_tbx_TextChanged);
+            m_tbx.TextChanged += new EventHandler(Tbx_TextChanged);
             Controls.Add(m_tbx);
             AllowDrop = true;
 
-            _Editor = new STNodeEditor();
             _PropertyGrid = new STNodePropertyGrid();
         }
 
         #region private method ==========
 
-        private void m_tbx_TextChanged(object sender, EventArgs e) {
+        private void Tbx_TextChanged(object sender, EventArgs e) {
             m_str_search = m_tbx.Text.Trim().ToLower();
             m_nSearchOffsetY = 0;
 
@@ -260,7 +248,6 @@ namespace ST.Library.UI.NodeEditor
 
         private bool Search(STNodeTreeCollection items, Stack<string> stack, string strText) {
             bool bFound = false;
-            string[] strName = new string[items.Count];
             int nCounter = 0;
 
             foreach (STNodeTreeCollection v in items) {
@@ -415,6 +402,8 @@ namespace ST.Library.UI.NodeEditor
 
             g.ResetTransform();
             OnDrawSearch(m_dt);
+
+            OnDrawScrollbar(m_dt);
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
@@ -425,6 +414,8 @@ namespace ST.Library.UI.NodeEditor
 
             if (!string.IsNullOrEmpty(m_str_search) && m_rect_clear.Contains(e.Location))
                 Cursor = Cursors.Hand;
+            else if (m_thumbRect.Contains(e.Location) || m_thumbActive)
+                Cursor = Cursors.NoMoveVert;
             else
                 Cursor = Cursors.Arrow;
 
@@ -441,6 +432,17 @@ namespace ST.Library.UI.NodeEditor
                 if (bHoverInfo != m_bHoverInfo) {
                     m_bHoverInfo = bHoverInfo;
                     bRedraw = true;
+                }
+            }
+
+            if (m_thumbActive)
+            {
+                int diff = m_previousMousePos.Y - e.Location.Y;
+
+                if (Math.Abs(diff) >= (m_nItemHeight / m_scrollJump))
+                {
+                    PerformScroll(diff);
+                    m_previousMousePos = e.Location;
                 }
             }
 
@@ -461,22 +463,41 @@ namespace ST.Library.UI.NodeEditor
             m_pt_offsety.Y -= m_nOffsetY;
 
             if (m_item_hover == null)
+            {
+                if (m_thumbRect.Contains(e.Location) && !m_thumbActive)
+                {
+                    m_previousMousePos = e.Location;
+                    m_thumbActive = true;
+                }
+
                 return;
+            }
 
             if (m_item_hover.SwitchRectangle.Contains(m_pt_offsety)) {
                 m_item_hover.IsOpen = !m_item_hover.IsOpen;
                 Invalidate();
             } else if (m_item_hover.InfoRectangle.Contains(m_pt_offsety)) {
                 Rectangle rect = RectangleToScreen(m_item_hover.DisplayRectangle);
-                FrmNodePreviewPanel frm = new FrmNodePreviewPanel(m_item_hover.STNodeType,
+                FrmNodePreviewPanel frm = new FrmNodePreviewPanel(
+                    m_item_hover.STNodeType,
                     new Point(rect.Right - m_nItemHeight, rect.Top + m_nOffsetY),
-                    m_nItemHeight, _InfoPanelIsLeftLayout, _Editor, _PropertyGrid)
-                { BackColor = BackColor };
+                    m_nItemHeight,
+                    _InfoPanelIsLeftLayout,
+                    _PropertyGrid
+                ) { BackColor = BackColor };
                 frm.Show(this);
             } else if (m_item_hover.STNodeType != null) {
                 DataObject d = new DataObject("STNodeType", m_item_hover.STNodeType);
                 DoDragDrop(d, DragDropEffects.Copy);
             }
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            if (m_thumbActive)
+                m_thumbActive = false;
+
+            base.OnMouseUp(e);
         }
 
         protected override void OnMouseDoubleClick(MouseEventArgs e) {
@@ -503,8 +524,13 @@ namespace ST.Library.UI.NodeEditor
 
         protected override void OnMouseWheel(MouseEventArgs e) {
             base.OnMouseWheel(e);
+            PerformScroll(e.Delta);
+        }
 
-            if (e.Delta > 0) {
+        private void PerformScroll(int delta)
+        {
+            if (delta > 0)
+            {
                 if (m_nOffsetY == 0)
                     return;
 
@@ -512,7 +538,9 @@ namespace ST.Library.UI.NodeEditor
 
                 if (m_nOffsetY > 0)
                     m_nOffsetY = 0;
-            } else {
+            }
+            else
+            {
                 if (Height - m_nOffsetY >= m_nVHeight)
                     return;
 
@@ -558,6 +586,66 @@ namespace ST.Library.UI.NodeEditor
         }
 
         /// <summary>
+        /// Occurs when drawing the scrollbar area
+        /// </summary>
+        /// <param name="dt">drawing tool</param>
+        protected virtual void OnDrawScrollbar(DrawingTools dt)
+        {
+            Graphics g = dt.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+
+            m_thumbRect.X = Width - C_SCROLL_WIDTH;
+            int barHeight = Height - m_nItemHeight;
+
+            m_brush.Color = ControlPaint.Dark(BackColor);
+            g.FillRectangle(m_brush, m_thumbRect.X, m_nItemHeight, C_SCROLL_WIDTH, barHeight);
+
+            int nCounter = 0;
+
+            foreach (STNodeTreeCollection v in m_items_draw)
+                nCounter = CountScrollRegionItems(v, nCounter);
+
+            decimal totalItemHeight = nCounter * m_nItemHeight;
+            m_thumbRect.Height = barHeight;
+            m_thumbRect.Y = m_nItemHeight;
+
+            if (totalItemHeight - barHeight > 1)
+            {
+                decimal viewableRatio = barHeight / totalItemHeight;
+                m_thumbRect.Height = Math.Max(19, (int)Math.Ceiling(barHeight * viewableRatio));
+
+                decimal scrollTrackSpace = totalItemHeight - barHeight;
+                decimal scrollThumbSpace = barHeight - m_thumbRect.Height;
+                m_scrollJump = scrollTrackSpace / scrollThumbSpace;
+
+                m_thumbRect.Y -= (int)Math.Ceiling(m_nOffsetY / m_scrollJump);
+            }
+
+            m_brush.Color = ControlPaint.Light(BackColor);
+            g.FillRectangle(m_brush, m_thumbRect.X, m_thumbRect.Y, C_SCROLL_WIDTH, m_thumbRect.Height);
+
+            m_brush.Color = ControlPaint.Light(BackColor, 0.15f);
+            int thumbCenter = m_thumbRect.Y + (m_thumbRect.Height / 2);
+            g.FillRectangle(m_brush, m_thumbRect.X + 1, thumbCenter - 2, C_SCROLL_WIDTH - 2, 1);
+            g.FillRectangle(m_brush, m_thumbRect.X + 1, thumbCenter,     C_SCROLL_WIDTH - 2, 1);
+            g.FillRectangle(m_brush, m_thumbRect.X + 1, thumbCenter + 2, C_SCROLL_WIDTH - 2, 1);
+        }
+
+        private int CountScrollRegionItems(STNodeTreeCollection Items, int nCounter)
+        {
+            nCounter++;
+
+            if (Items.STNodeType == null)
+            {
+                if (Items.IsOpen)
+                    foreach (STNodeTreeCollection n in Items)
+                        nCounter = CountScrollRegionItems(n, nCounter++);
+            }
+
+            return nCounter;
+        }
+
+        /// <summary>
         /// Occurs when starting to draw each node of the tree node
         /// </summary>
         /// <param name="dt">drawing tool</param>
@@ -566,12 +654,11 @@ namespace ST.Library.UI.NodeEditor
         /// <param name="nLevel">What level of sub-collection is currently in</param>
         /// <returns>number of drawn</returns>
         protected virtual int OnStartDrawItem(DrawingTools dt, STNodeTreeCollection Items, int nCounter, int nLevel) {
-            Graphics g = dt.Graphics;
-            Items.DisplayRectangle = new Rectangle(0, m_nItemHeight * (nCounter + 1), Width, m_nItemHeight);
+            Items.DisplayRectangle = new Rectangle(0, m_nItemHeight * (nCounter + 1), Width - C_SCROLL_WIDTH, m_nItemHeight);
             Items.SwitchRectangle = new Rectangle(5 + nLevel * 10, (nCounter + 1) * m_nItemHeight, 10, m_nItemHeight);
 
             if (_ShowInfoButton && Items.STNodeType != null)
-                Items.InfoRectangle = new Rectangle(Width - 18, Items.DisplayRectangle.Top + (m_nItemHeight - 14) / 2, 14, 14);
+                Items.InfoRectangle = new Rectangle(Width - 18 - (C_SCROLL_WIDTH + 2), Items.DisplayRectangle.Top + (m_nItemHeight - 14) / 2, 14, 14);
             else
                 Items.InfoRectangle = Rectangle.Empty;
 
@@ -613,13 +700,25 @@ namespace ST.Library.UI.NodeEditor
                 g.FillRectangle(m_brush, items.DisplayRectangle);
             }
 
-            Rectangle rect = new Rectangle(45 + nLevel * 10, items.SwitchRectangle.Top, Width - 45 - nLevel * 10, m_nItemHeight);
+            Rectangle rect = new Rectangle(45 + nLevel * 10, items.SwitchRectangle.Top, Width - 45 - (nLevel * 10) - C_SCROLL_WIDTH, m_nItemHeight);
             m_pen.Color = Color.FromArgb(100, 125, 125, 125);
-            g.DrawLine(m_pen, 9, items.SwitchRectangle.Top + m_nItemHeight / 2, items.SwitchRectangle.Left + 19, items.SwitchRectangle.Top + m_nItemHeight / 2);
+            g.DrawLine(
+                m_pen,
+                items.SwitchRectangle.Left + 5,
+                items.SwitchRectangle.Top + m_nItemHeight / 2,
+                items.SwitchRectangle.Left + 19,
+                items.SwitchRectangle.Top + m_nItemHeight / 2
+            );
 
             if (nCounter != 0)
                 for (int i = 0; i <= nLevel; i++)
-                    g.DrawLine(m_pen, 9 + i * 10, items.SwitchRectangle.Top - m_nItemHeight / 2, 9 + i * 10, items.SwitchRectangle.Top + m_nItemHeight / 2 - 1);
+                    g.DrawLine(
+                        m_pen,
+                        9 + i * 10,
+                        items.SwitchRectangle.Top - m_nItemHeight / 2,
+                        9 + i * 10,
+                        items.SwitchRectangle.Top + m_nItemHeight / 2
+                    );
 
             OnDrawItemText(dt, items, rect);
             OnDrawItemIcon(dt, items, rect);
@@ -644,24 +743,6 @@ namespace ST.Library.UI.NodeEditor
                     return;
 
                 g.DrawLine(m_pen, items.SwitchRectangle.Left + 4, nT + 1, items.SwitchRectangle.Left + 4, nT + 7);
-                //if (items.IsOpen) {
-                //    //g.FillPolygon(m_brush, new Point[]{
-                //    //    new Point(items.DotRectangle.Left + 0, items.DotRectangle.Top + m_nItemHeight / 2 - 2),
-                //    //    new Point(items.DotRectangle.Left + 9, items.DotRectangle.Top + m_nItemHeight / 2 - 2),
-                //    //    new Point(items.DotRectangle.Left + 4, items.DotRectangle.Top + m_nItemHeight / 2 + 3)
-                //    //});
-                //    g.DrawRectangle(m_pen, items.SwitchRectangle.Left, nT, 8, 8);
-                //    g.DrawLine(m_pen, items.SwitchRectangle.Left + 1, nT + 4, items.SwitchRectangle.Right - 3, nT + 4);
-                //} else {
-                //    //g.FillPolygon(m_brush, new Point[]{
-                //    //    new Point(items.DotRectangle.Left + 2, items.DotRectangle.Top + m_nItemHeight / 2 - 5),
-                //    //    new Point(items.DotRectangle.Left + 2, items.DotRectangle.Top + m_nItemHeight / 2 + 5),
-                //    //    new Point(items.DotRectangle.Left + 7, items.DotRectangle.Top + m_nItemHeight / 2)
-                //    //});
-                //    g.DrawRectangle(m_pen, items.SwitchRectangle.Left, nT, 8, 8);
-                //    g.DrawLine(m_pen, items.SwitchRectangle.Left + 1, nT + 4, items.SwitchRectangle.Right - 3, nT + 4);
-                //    g.DrawLine(m_pen, items.SwitchRectangle.Left + 4, nT + 1, items.SwitchRectangle.Left + 4, nT + 7);
-                //}
             }
         }
 
@@ -852,7 +933,7 @@ namespace ST.Library.UI.NodeEditor
         /// </summary>
         protected class STNodeTreeCollection : IEnumerable
         {
-            private string _Name;
+            private readonly string _Name;
             /// <summary>
             /// Get the display name of the current tree node
             /// </summary>
@@ -942,7 +1023,7 @@ namespace ST.Library.UI.NodeEditor
                 }
             }
 
-            private SortedDictionary<string, STNodeTreeCollection> m_dic = new SortedDictionary<string, STNodeTreeCollection>();
+            private readonly SortedDictionary<string, STNodeTreeCollection> m_dic = new SortedDictionary<string, STNodeTreeCollection>();
 
             /// <summary>
             /// Construct a collection of tree nodes
