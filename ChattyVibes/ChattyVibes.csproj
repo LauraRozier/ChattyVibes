@@ -378,6 +378,8 @@
     <Compile Include="Nodes\MathNode\UIntNode\UIntSubtractNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntClampNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntCompareNode.cs" />
+    <Compile Include="Nodes\StringNode\StringEqualsNode.cs" />
+    <Compile Include="Nodes\StringNode\StringCompareNode.cs" />
     <Compile Include="Nodes\UtilNode\PassthroughNode.cs" />
     <Compile Include="Nodes\StringNode\StringRemoveNode.cs" />
     <Compile Include="Nodes\StringNode\StringReplaceNode.cs" />

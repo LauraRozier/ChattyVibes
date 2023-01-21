@@ -38,6 +38,9 @@ Done:
 - UnVIP Node
 - GetChannelModerators Node
 - GetVIPs Node
+- Node lib scrollbar
+- String Compare
+- String Equals
 
 WiP:
 - Array
@@ -52,7 +55,6 @@ ToDo:
 
 Future:
 - Smoother zoom
-- Node lib scrollbar
 - Make node properties control active on double-clicking a node (Maybe also move the mouse cursor?)
 - Replace connection for single-input/output connectors
 
