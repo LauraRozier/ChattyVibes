@@ -91,7 +91,7 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
         private void OnEventNode_RaiseEvent(object sender, OnMessageReceivedArgs e)
         {
             if (!string.IsNullOrWhiteSpace(_channel))
-                if (!_channel.Equals(e.ChatMessage.Channel))
+                if (!_channel.ToUpper().Equals(e.ChatMessage.Channel.ToUpper()))
                     return;
 
             m_op_Bits_out.TransferData(e.ChatMessage.Bits);
