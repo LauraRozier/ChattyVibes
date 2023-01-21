@@ -307,9 +307,14 @@
     <Compile Include="Nodes\ActionNode\TwitchNode\SendReplyNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\SendWhisperNode.cs" />
     <Compile Include="Nodes\ActionNode\TwitchNode\SendMessageNode.cs" />
+    <Compile Include="Nodes\ArrayNode\ArrayContainsNode.cs" />
+    <Compile Include="Nodes\ArrayNode\FloatArrayContainsNode.cs" />
     <Compile Include="Nodes\ArrayNode\FloatArrayNode.cs" />
+    <Compile Include="Nodes\ArrayNode\IntArrayContainsNode.cs" />
+    <Compile Include="Nodes\ArrayNode\StringArrayContainsNode.cs" />
     <Compile Include="Nodes\ArrayNode\StringArrayForEachNode.cs" />
     <Compile Include="Nodes\ArrayNode\StringArrayNode.cs" />
+    <Compile Include="Nodes\ArrayNode\UIntArrayContainsNode.cs" />
     <Compile Include="Nodes\ArrayNode\UIntArrayNode.cs" />
     <Compile Include="Nodes\ArrayNode\IntArrayNode.cs" />
     <Compile Include="Nodes\ArrayNode\ArrayNode.cs" />
