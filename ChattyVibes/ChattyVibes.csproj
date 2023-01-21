@@ -318,6 +318,7 @@
     <Compile Include="Nodes\ArrayNode\IntArrayForEachNode.cs" />
     <Compile Include="Nodes\DictNode\DictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\FloatDictForEachNode.cs" />
+    <Compile Include="Nodes\DictNode\StringDictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\UIntDictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\IntDictForEachNode.cs" />
     <Compile Include="Nodes\EnumNode\CommercialLengthDisplayNode.cs" />
@@ -325,6 +326,7 @@
     <Compile Include="Nodes\EventNode\IntifaceNode\OnDeviceRemovedNode.cs" />
     <Compile Include="Nodes\EventNode\IntifaceNode\OnDeviceAddedNode.cs" />
     <Compile Include="Nodes\ListNode\FloatListForEachNode.cs" />
+    <Compile Include="Nodes\ListNode\StringListForEachNode.cs" />
     <Compile Include="Nodes\ListNode\UIntListForEachNode.cs" />
     <Compile Include="Nodes\ListNode\IntListForEachNode.cs" />
     <Compile Include="Nodes\ListNode\ListForEachNode.cs" />
