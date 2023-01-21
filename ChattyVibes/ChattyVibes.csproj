@@ -336,8 +336,6 @@
     <Compile Include="Nodes\BranchNode\DateTimeBranchNode.cs" />
     <Compile Include="Nodes\BranchNode\UIntBranchNode.cs" />
     <Compile Include="Nodes\BranchNode\IntBranchNode.cs" />
-    <Compile Include="Nodes\CharNode\CharNode.cs" />
-    <Compile Include="Nodes\CharNode\CharInputNode.cs" />
     <Compile Include="Nodes\DateTimeNode\DateTimeNode.cs" />
     <Compile Include="Nodes\EnumNode\EnumNode.cs" />
     <Compile Include="Nodes\EnumNode\SubscriptionPlanDisplayNode.cs" />
