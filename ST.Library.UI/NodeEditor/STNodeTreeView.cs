@@ -595,10 +595,11 @@ namespace ST.Library.UI.NodeEditor
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
 
             m_thumbRect.X = Width - C_SCROLL_WIDTH;
-            int barHeight = Height - m_nItemHeight;
+            m_thumbRect.Y = m_nItemHeight;
+            m_thumbRect.Height = Height - m_nItemHeight;
 
             m_brush.Color = ControlPaint.Dark(BackColor);
-            g.FillRectangle(m_brush, m_thumbRect.X, m_nItemHeight, C_SCROLL_WIDTH, barHeight);
+            g.FillRectangle(m_brush, m_thumbRect.X, m_nItemHeight, C_SCROLL_WIDTH, m_thumbRect.Height);
 
             int nCounter = 0;
 
@@ -606,18 +607,13 @@ namespace ST.Library.UI.NodeEditor
                 nCounter = CountScrollRegionItems(v, nCounter);
 
             decimal totalItemHeight = nCounter * m_nItemHeight;
-            m_thumbRect.Height = barHeight;
-            m_thumbRect.Y = m_nItemHeight;
+            decimal scrollTrackSpace = totalItemHeight - m_thumbRect.Height;
 
-            if (totalItemHeight - barHeight > 1)
+            if (scrollTrackSpace > 1)
             {
-                decimal viewableRatio = barHeight / totalItemHeight;
-                m_thumbRect.Height = Math.Max(19, (int)Math.Ceiling(barHeight * viewableRatio));
-
-                decimal scrollTrackSpace = totalItemHeight - barHeight;
-                decimal scrollThumbSpace = barHeight - m_thumbRect.Height;
-                m_scrollJump = scrollTrackSpace / scrollThumbSpace;
-
+                int barHeight = m_thumbRect.Height;
+                m_thumbRect.Height = Math.Max(19, (int)Math.Ceiling(barHeight * (barHeight / totalItemHeight)));
+                m_scrollJump = scrollTrackSpace / (barHeight - m_thumbRect.Height);
                 m_thumbRect.Y -= (int)Math.Ceiling(m_nOffsetY / m_scrollJump);
             }
 
@@ -635,12 +631,9 @@ namespace ST.Library.UI.NodeEditor
         {
             nCounter++;
 
-            if (Items.STNodeType == null)
-            {
-                if (Items.IsOpen)
-                    foreach (STNodeTreeCollection n in Items)
-                        nCounter = CountScrollRegionItems(n, nCounter++);
-            }
+            if (Items.STNodeType == null && Items.IsOpen)
+                foreach (STNodeTreeCollection n in Items)
+                    nCounter = CountScrollRegionItems(n, nCounter++);
 
             return nCounter;
         }
