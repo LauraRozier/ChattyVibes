@@ -8,6 +8,19 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
     [STNode("/Events/Twitch", "LauraRozier", "", "", "Twitch OnChatMessage event node")]
     internal sealed class OnChatMsgEventNode : EventNode
     {
+        private string _channel = string.Empty;
+        [STNodeProperty("Channel", "(Optional) The channel to handle the event for")]
+        public string Channel
+        {
+            get { return _channel; }
+            set
+            {
+                _channel = value;
+                Invalidate();
+            }
+        }
+
+        private STNodeOption m_op_in_channel;
         private STNodeOption m_op_Bits_out;
         private STNodeOption m_op_Channel_out;
         private STNodeOption m_op_CustomRewardId_out;
@@ -44,6 +57,7 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
             base.OnCreate();
             Title = "On Chat Message";
 
+            m_op_in_channel = InputOptions.Add("Channel", typeof(string), true);
             m_op_Bits_out = OutputOptions.Add("Bits", typeof(int), false);
             m_op_Channel_out = OutputOptions.Add("Channel", typeof(string), false);
             m_op_CustomRewardId_out = OutputOptions.Add("Custom Reward ID", typeof(string), false);
@@ -62,10 +76,24 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
             m_op_Message_out = OutputOptions.Add("Message", typeof(string), false);
             m_op_SubscribedMonthCount_out = OutputOptions.Add("Subscribed Month Count", typeof(int), false);
             m_op_TmiSentTs_out = OutputOptions.Add("Timestamp", typeof(DateTime), false);
+
+            m_op_in_channel.DataTransfer += new STNodeOptionEventHandler(m_op_in_DataTransfer);
+        }
+
+        private void m_op_in_DataTransfer(object sender, STNodeOptionEventArgs e)
+        {
+            if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
+                Channel = (string)e.TargetOption.Data;
+            else
+                Channel = string.Empty;
         }
 
         private void OnEventNode_RaiseEvent(object sender, OnMessageReceivedArgs e)
         {
+            if (!string.IsNullOrWhiteSpace(_channel))
+                if (!_channel.Equals(e.ChatMessage.Channel))
+                    return;
+
             m_op_Bits_out.TransferData(e.ChatMessage.Bits);
             m_op_Channel_out.TransferData(e.ChatMessage.Channel);
             m_op_CustomRewardId_out.TransferData(e.ChatMessage.CustomRewardId);

@@ -9,6 +9,19 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
     [STNode("/Events/Twitch", "LauraRozier", "", "", "Twitch OnCommunitySub event node")]
     internal sealed class OnCommunitySubEventNode : EventNode
     {
+        private string _channel = string.Empty;
+        [STNodeProperty("Channel", "(Optional) The channel to handle the event for")]
+        public string Channel
+        {
+            get { return _channel; }
+            set
+            {
+                _channel = value;
+                Invalidate();
+            }
+        }
+
+        private STNodeOption m_op_in_channel;
         private STNodeOption m_op_Channel_out;
         private STNodeOption m_op_DisplayName_out;
         private STNodeOption m_op_Id_out;
@@ -42,6 +55,7 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
             base.OnCreate();
             Title = "On Community Sub";
 
+            m_op_in_channel = InputOptions.Add("Channel", typeof(string), true);
             m_op_Channel_out = OutputOptions.Add("Channel", typeof(string), false);
             m_op_DisplayName_out = OutputOptions.Add("Display Name", typeof(string), false);
             m_op_Id_out = OutputOptions.Add("ID", typeof(string), false);
@@ -57,10 +71,24 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
             m_op_SystemMsg_out = OutputOptions.Add("System Message", typeof(string), false);
             m_op_UserId_out = OutputOptions.Add("UserId", typeof(string), false);
             m_op_TmiSentTs_out = OutputOptions.Add("Timestamp", typeof(DateTime), false);
+
+            m_op_in_channel.DataTransfer += new STNodeOptionEventHandler(m_op_in_DataTransfer);
+        }
+
+        private void m_op_in_DataTransfer(object sender, STNodeOptionEventArgs e)
+        {
+            if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
+                Channel = (string)e.TargetOption.Data;
+            else
+                Channel = string.Empty;
         }
 
         private void OnEventNode_RaiseEvent(object sender, OnCommunitySubscriptionArgs e)
         {
+            if (!string.IsNullOrWhiteSpace(_channel))
+                if (!_channel.Equals(e.Channel))
+                    return;
+
             m_op_Channel_out.TransferData(e.Channel);
             m_op_DisplayName_out.TransferData(e.GiftedSubscription.DisplayName);
             m_op_Id_out.TransferData(e.GiftedSubscription.Id);
