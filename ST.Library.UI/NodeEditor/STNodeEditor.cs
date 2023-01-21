@@ -2021,11 +2021,11 @@ namespace ST.Library.UI.NodeEditor
                     sb.Replace(".Bool.", ".LogicNode.");
 
                 // Fix old paths
-                if (name.EndsWith(".CommentNode"))
+                if (name.EndsWith(".Nodes.CommentNode"))
                     sb.Replace(".Nodes.", ".Nodes.UtilNode.");
-                if (name.EndsWith(".STNodeHubSingle"))
+                if (name.EndsWith(".Nodes.STNodeHubSingle"))
                     sb.Replace(".Nodes.", ".Nodes.UtilNode.");
-                if (name.EndsWith(".PassthroughNode"))
+                if (name.EndsWith(".Nodes.PassthroughNode"))
                     sb.Replace(".Nodes.", ".Nodes.UtilNode.");
 
                 // Replace node root-paths
@@ -2051,9 +2051,10 @@ namespace ST.Library.UI.NodeEditor
                 sb.Replace(".ButtplugNode.", ".IntifaceNode.");
 
                 string patchedName = sb.ToString();
-
+                //ChattyVibes.Nodes.UtilNode.CommentNode
+                //ChattyVibes.Nodes.UtilNode.CommentNode
                 foreach (var t in m_dic_type)
-                    if (t.Value.FullName.Equals(patchedName))
+                    if (t.Value.FullName.ToUpper().Equals(patchedName.ToUpper()))
                         return t.Key;
             }
 
@@ -2637,8 +2638,9 @@ namespace ST.Library.UI.NodeEditor
 
             string[] modelSplit = strModel.Split('|');
             strGUID = PatchOldData(strGUID, modelSplit[1]);
+            bool hasGUID = m_dic_type.ContainsKey(strGUID);
 
-            if (!m_dic_type.ContainsKey(strGUID))
+            if (!hasGUID)
                 throw new TypeLoadException("Could not find type {" + modelSplit[1] + "} In the assembly Make sure the assembly {" + modelSplit[0] + "} Has been correctly loaded by the editor The assembly can be loaded by calling LoadAssembly()");
 
             Type t = m_dic_type[strGUID];
