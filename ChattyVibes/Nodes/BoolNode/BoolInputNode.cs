@@ -31,7 +31,7 @@ namespace ChattyVibes.Nodes.BoolNode
             AutoSize = false;
             Size = new Size(100, 40);
 
-            m_op_out = OutputOptions.Add("", typeof(bool), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(bool), false);
 
             m_ctrl_checkbox = new NodeCheckBox
             {

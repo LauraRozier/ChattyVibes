@@ -19,8 +19,8 @@ namespace ChattyVibes.Nodes.GraphicsNode.ColorNode
             //TitleColor = SysColor.FromArgb(200, FrmBindingGraphs.C_COLOR_COLOR);
             Title = "Color Display";
 
-            m_in_color = InputOptions.Add("", typeof(Color), true);
-            m_out_color = OutputOptions.Add("", typeof(Color), false);
+            m_in_color = InputOptions.Add(string.Empty, typeof(Color), true);
+            m_out_color = OutputOptions.Add(string.Empty, typeof(Color), false);
 
             m_in_color.DataTransfer += new STNodeOptionEventHandler(m_in_color_DataTransfer);
             m_out_color.TransferData(_color);

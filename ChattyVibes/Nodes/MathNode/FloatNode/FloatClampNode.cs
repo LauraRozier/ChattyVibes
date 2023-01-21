@@ -39,10 +39,10 @@ namespace ChattyVibes.Nodes.MathNode.FloatNode
             base.OnCreate();
             Title = "Float Clamp";
 
-            m_in_num = InputOptions.Add("", typeof(float), true);
+            m_in_num = InputOptions.Add(string.Empty, typeof(float), true);
             m_in_min = InputOptions.Add("Min", typeof(float), true);
             m_in_max = InputOptions.Add("Max", typeof(float), true);
-            m_out = OutputOptions.Add("", typeof(float), false);
+            m_out = OutputOptions.Add(string.Empty, typeof(float), false);
 
             m_in_num.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_in_min.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);

@@ -17,7 +17,7 @@ namespace ChattyVibes.Nodes.EnumNode
             Title = "CommercialLength Display";
 
             m_op_in = InputOptions.Add("Seconds60", typeof(CommercialLength), true);
-            m_op_out = OutputOptions.Add("", typeof(CommercialLength), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(CommercialLength), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_op_in_DataTransfer);
             m_op_out.TransferData(_value);

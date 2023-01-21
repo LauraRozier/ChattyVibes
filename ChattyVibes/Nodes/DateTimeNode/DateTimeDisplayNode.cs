@@ -16,7 +16,7 @@ namespace ChattyVibes.Nodes.DateTimeNode
             Title = "DateTime Display";
 
             m_op_in = InputOptions.Add(_value.ToString(), typeof(DateTime), true);
-            m_op_out = OutputOptions.Add("", typeof(DateTime), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(DateTime), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(op_DataTransfer);
             m_op_out.TransferData(_value);

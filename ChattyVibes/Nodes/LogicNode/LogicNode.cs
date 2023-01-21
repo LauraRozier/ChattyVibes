@@ -22,7 +22,7 @@ namespace ChattyVibes.Nodes.LogicNode
 
             m_op_a_in = InputOptions.Add("A", typeof(bool), true);
             m_op_b_in = InputOptions.Add("B", typeof(bool), true);
-            m_op_out = OutputOptions.Add("", typeof(bool), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(bool), false);
 
             m_op_a_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_op_b_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);

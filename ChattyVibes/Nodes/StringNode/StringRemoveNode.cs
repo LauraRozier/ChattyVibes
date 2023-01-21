@@ -5,7 +5,7 @@ namespace ChattyVibes.Nodes.StringNode
     [STNode("/String", "LauraRozier", "", "", "String remove node")]
     internal sealed class StringRemoveNode : StringNode
     {
-        private string _str = "";
+        private string _str = string.Empty;
         private int _start = 0;
         private int _count = 0;
 
@@ -22,7 +22,7 @@ namespace ChattyVibes.Nodes.StringNode
             m_op_str_in = InputOptions.Add("String", typeof(string), true);
             m_op_start_in = InputOptions.Add("Start", typeof(int), true);
             m_op_count_in = InputOptions.Add("Count", typeof(int), true);
-            m_op_out = OutputOptions.Add("", typeof(string), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(string), false);
 
             m_op_str_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_op_start_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
@@ -44,7 +44,7 @@ namespace ChattyVibes.Nodes.StringNode
             else
             {
                 if (sender == m_op_str_in)
-                    _str = "";
+                    _str = string.Empty;
                 else if (sender == m_op_start_in)
                     _start = 0;
                 else

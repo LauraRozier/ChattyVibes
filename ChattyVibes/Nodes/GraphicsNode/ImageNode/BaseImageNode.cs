@@ -11,7 +11,7 @@ namespace ChattyVibes.Nodes.GraphicsNode.ImageNode
         protected override void OnCreate()
         {
             base.OnCreate();
-            m_op_img_out = OutputOptions.Add("", typeof(Image), false);
+            m_op_img_out = OutputOptions.Add(string.Empty, typeof(Image), false);
             AutoSize = false;
             Width = 160;
             Height = 120;

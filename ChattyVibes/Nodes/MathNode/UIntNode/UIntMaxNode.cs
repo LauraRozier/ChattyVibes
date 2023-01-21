@@ -40,7 +40,7 @@ namespace ChattyVibes.Nodes.MathNode.UIntNode
 
             m_in_A = InputOptions.Add("A", typeof(uint), true);
             m_in_B = InputOptions.Add("B", typeof(uint), true);
-            m_out = OutputOptions.Add("", typeof(uint), false);
+            m_out = OutputOptions.Add(string.Empty, typeof(uint), false);
 
             m_in_A.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_in_B.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);

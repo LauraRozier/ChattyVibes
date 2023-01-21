@@ -22,7 +22,7 @@ namespace ChattyVibes.Nodes.ActionNode.AppNode
             base.OnCreate();
             Title = "Flow Counter";
 
-            m_op_count_out = OutputOptions.Add("", typeof(int), false);
+            m_op_count_out = OutputOptions.Add(string.Empty, typeof(int), false);
 
             SetOptionText(m_op_count_out, _count.ToString());
         }

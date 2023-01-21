@@ -18,7 +18,7 @@ namespace ChattyVibes.Nodes.GraphicsNode.ImageNode
             Title = "Image Size";
             //TitleColor = SysColor.FromArgb(200, FrmBindingGraphs.C_COLOR_IMAGE);
 
-            m_op_in = InputOptions.Add("", typeof(Image), true);
+            m_op_in = InputOptions.Add(string.Empty, typeof(Image), true);
             m_op_width_out = OutputOptions.Add("Width", typeof(int), false);
             m_op_height_out = OutputOptions.Add("Height", typeof(int), false);
 

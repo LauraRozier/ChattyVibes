@@ -207,7 +207,7 @@ namespace ChattyVibes.Nodes.GraphicsNode.ColorNode
 
             m_ctrl_btn_1 = new NodeColorButton
             {
-                Text = "",
+                Text = string.Empty,
                 BackColor = _color1,
                 DisplayRectangle = new Rectangle(80, 62, 50, 16)
             };
@@ -220,7 +220,7 @@ namespace ChattyVibes.Nodes.GraphicsNode.ColorNode
 
             m_ctrl_btn_2 = new NodeColorButton
             {
-                Text = "",
+                Text = string.Empty,
                 BackColor = _color2,
                 DisplayRectangle = new Rectangle(80, 82, 50, 16)
             };

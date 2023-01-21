@@ -5,8 +5,8 @@ namespace ChattyVibes.Nodes.StringNode
     [STNode("/String", "LauraRozier", "", "", "String append node")]
     internal sealed class StringAppendNode : StringNode
     {
-        private string _valA = "";
-        private string _valB = "";
+        private string _valA = string.Empty;
+        private string _valB = string.Empty;
 
         private STNodeOption m_op_inA;
         private STNodeOption m_op_inB;
@@ -19,11 +19,11 @@ namespace ChattyVibes.Nodes.StringNode
 
             m_op_inA = InputOptions.Add("A", typeof(string), true);
             m_op_inB = InputOptions.Add("B", typeof(string), true);
-            m_op_out = OutputOptions.Add("", typeof(string), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(string), false);
 
             m_op_inA.DataTransfer += new STNodeOptionEventHandler(m_in_num_DataTransfer);
             m_op_inB.DataTransfer += new STNodeOptionEventHandler(m_in_num_DataTransfer);
-            m_op_out.TransferData("");
+            m_op_out.TransferData(string.Empty);
         }
 
         private void m_in_num_DataTransfer(object sender, STNodeOptionEventArgs e)
@@ -38,9 +38,9 @@ namespace ChattyVibes.Nodes.StringNode
             else
             {
                 if (sender == m_op_inA)
-                    _valA = "";
+                    _valA = string.Empty;
                 else
-                    _valB = "";
+                    _valB = string.Empty;
             }
 
             string result = _valA + _valB;

@@ -5,7 +5,7 @@ namespace ChattyVibes.Nodes.BranchNode
     [STNode("/Branch", "LauraRozier", "", "", "String branch node")]
     internal sealed class StringBranchNode : BranchNode
     {
-        private string _val = "";
+        private string _val = string.Empty;
 
         protected override void OnCreate()
         {
@@ -24,7 +24,7 @@ namespace ChattyVibes.Nodes.BranchNode
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
                 _val = (string)e.TargetOption.Data;
             else
-                _val = "";
+                _val = string.Empty;
 
             HandleCondition();
         }

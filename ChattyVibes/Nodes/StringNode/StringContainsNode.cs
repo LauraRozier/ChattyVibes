@@ -6,8 +6,8 @@ namespace ChattyVibes.Nodes.StringNode
     [STNode("/String", "LauraRozier", "", "", "String contains node")]
     internal sealed class StringContainsNode : StringNode
     {
-        private string _haystack = "";
-        private string _needle = "";
+        private string _haystack = string.Empty;
+        private string _needle = string.Empty;
         [STNodeProperty("Needle", "The sub-text to find")]
         public string Needle
         {
@@ -46,7 +46,7 @@ namespace ChattyVibes.Nodes.StringNode
 
             m_op_haystack_in = InputOptions.Add("Haystack", typeof(string), true);
             m_op_needle_in = InputOptions.Add("Needle", typeof(string), true);
-            m_op_sensitive_in = InputOptions.Add("", typeof(bool), true);
+            m_op_sensitive_in = InputOptions.Add(string.Empty, typeof(bool), true);
             m_op_out = OutputOptions.Add("False", typeof(bool), false);
 
             m_ctrl_checkbox = new NodeCheckBox
@@ -82,9 +82,9 @@ namespace ChattyVibes.Nodes.StringNode
             else
             {
                 if (sender == m_op_haystack_in)
-                    _haystack = "";
+                    _haystack = string.Empty;
                 else if (sender == m_op_needle_in)
-                    _needle = "";
+                    _needle = string.Empty;
             }
 
             ProcessResult();

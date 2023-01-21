@@ -30,7 +30,7 @@ namespace ChattyVibes.Nodes.EnumNode
             base.OnCreate();
             Title = "CommercialLength";
 
-            m_op_out = OutputOptions.Add("", typeof(CommercialLength), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(CommercialLength), false);
 
             m_op_out.TransferData(_value);
 

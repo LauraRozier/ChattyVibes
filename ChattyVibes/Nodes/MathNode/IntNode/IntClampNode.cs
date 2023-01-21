@@ -39,10 +39,10 @@ namespace ChattyVibes.Nodes.MathNode.IntNode
             base.OnCreate();
             Title = "Int Clamp";
 
-            m_in_num = InputOptions.Add("", typeof(int), true);
+            m_in_num = InputOptions.Add(string.Empty, typeof(int), true);
             m_in_min = InputOptions.Add("Min", typeof(int), true);
             m_in_max = InputOptions.Add("Max", typeof(int), true);
-            m_out = OutputOptions.Add("", typeof(int), false);
+            m_out = OutputOptions.Add(string.Empty, typeof(int), false);
 
             m_in_num.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_in_min.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);

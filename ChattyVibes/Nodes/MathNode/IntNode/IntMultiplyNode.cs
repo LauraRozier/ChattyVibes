@@ -18,9 +18,9 @@ namespace ChattyVibes.Nodes.MathNode.IntNode
             base.OnCreate();
             Title = "Int Multiply";
 
-            m_in_A = InputOptions.Add("", typeof(int), true);
-            m_in_B = InputOptions.Add("", typeof(int), true);
-            m_out = OutputOptions.Add("", typeof(int), false);
+            m_in_A = InputOptions.Add(string.Empty, typeof(int), true);
+            m_in_B = InputOptions.Add(string.Empty, typeof(int), true);
+            m_out = OutputOptions.Add(string.Empty, typeof(int), false);
 
             m_in_A.DataTransfer += new STNodeOptionEventHandler(m_in_num_DataTransfer);
             m_in_B.DataTransfer += new STNodeOptionEventHandler(m_in_num_DataTransfer);

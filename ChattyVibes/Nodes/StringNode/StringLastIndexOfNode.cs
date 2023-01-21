@@ -5,8 +5,8 @@ namespace ChattyVibes.Nodes.StringNode
     [STNode("/String", "LauraRozier", "", "", "String last index of node")]
     internal sealed class StringLastIndexOfNode : StringNode
     {
-        private string _haystack = "";
-        private string _needle = "";
+        private string _haystack = string.Empty;
+        private string _needle = string.Empty;
 
         private STNodeOption m_op_haystack_in;
         private STNodeOption m_op_needle_in;
@@ -38,9 +38,9 @@ namespace ChattyVibes.Nodes.StringNode
             else
             {
                 if (sender == m_op_haystack_in)
-                    _haystack = "";
+                    _haystack = string.Empty;
                 else
-                    _needle = "";
+                    _needle = string.Empty;
             }
 
             int result = _haystack.LastIndexOf(_needle);

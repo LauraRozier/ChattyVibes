@@ -16,7 +16,7 @@ namespace ChattyVibes.Nodes.NumberNode.UIntNode
             Title = "UInt Display";
 
             m_op_in = InputOptions.Add("0", typeof(uint), true);
-            m_op_out = OutputOptions.Add("", typeof(uint), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(uint), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_op_out.TransferData(_value);

@@ -35,7 +35,7 @@ namespace ChattyVibes.Nodes.GraphicsNode.ColorNode
 
             m_ctrl_btn = new NodeColorButton
             {
-                Text = "",
+                Text = string.Empty,
                 BackColor = _color,
                 DisplayRectangle = new Rectangle(5, 5, 50, 16)
             };

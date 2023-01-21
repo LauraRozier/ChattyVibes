@@ -30,7 +30,7 @@ namespace ChattyVibes.Nodes.EnumNode
             base.OnCreate();
             Title = "SubscriptionPlan";
 
-            m_op_out = OutputOptions.Add("", typeof(SubscriptionPlan), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(SubscriptionPlan), false);
 
             m_op_out.TransferData(_value);
 

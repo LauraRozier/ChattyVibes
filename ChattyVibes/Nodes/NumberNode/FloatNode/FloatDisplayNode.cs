@@ -17,7 +17,7 @@ namespace ChattyVibes.Nodes.NumberNode.FloatNode
             Title = "Float Display";
 
             m_op_in = InputOptions.Add("0", typeof(float), true);
-            m_op_out = OutputOptions.Add("", typeof(float), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(float), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_op_out.TransferData(_value);

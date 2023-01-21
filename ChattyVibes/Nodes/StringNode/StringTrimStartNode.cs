@@ -5,7 +5,7 @@ namespace ChattyVibes.Nodes.StringNode
     [STNode("/String", "LauraRozier", "", "", "String trim start node")]
     internal sealed class StringTrimStartNode : StringNode
     {
-        private string _value = "";
+        private string _value = string.Empty;
 
         private STNodeOption m_op_in;
         private STNodeOption m_op_out;
@@ -15,8 +15,8 @@ namespace ChattyVibes.Nodes.StringNode
             base.OnCreate();
             Title = "String Trim Start";
 
-            m_op_in = InputOptions.Add("", typeof(string), true);
-            m_op_out = OutputOptions.Add("", typeof(string), false);
+            m_op_in = InputOptions.Add(string.Empty, typeof(string), true);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(string), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_op_out.TransferData(_value);
@@ -27,7 +27,7 @@ namespace ChattyVibes.Nodes.StringNode
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
                 _value = ((string)e.TargetOption.Data).TrimStart();
             else
-                _value = "";
+                _value = string.Empty;
 
             SetOptionText(m_op_in, _value);
             m_op_out.TransferData(_value);

@@ -27,9 +27,9 @@ namespace ChattyVibes.Nodes.BranchNode
             TitleColor = Color.FromArgb(200, Constants.C_COLOR_BRANCH);
 
             m_op_condition_in = InputOptions.Add("Condition", typeof(bool), true);
-            m_op_in = InputOptions.Add("", _type, true);
-            m_op_true_out = OutputOptions.Add("", _type, false);
-            m_op_false_out = OutputOptions.Add("", _type, false);
+            m_op_in = InputOptions.Add(string.Empty, _type, true);
+            m_op_true_out = OutputOptions.Add(string.Empty, _type, false);
+            m_op_false_out = OutputOptions.Add(string.Empty, _type, false);
 
             m_op_condition_in.DataTransfer += new STNodeOptionEventHandler(m_in_condition_DataTransfer);
         }

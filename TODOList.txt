@@ -41,12 +41,13 @@ Done:
 - Node lib scrollbar
 - String Compare
 - String Equals
+- Minimize app button
+- Maximize app button
 
 WiP:
 - Array
 - List
 - Dictionary
-- Char
 - Fix DPI scaling
 
 ToDo:
@@ -62,8 +63,6 @@ Look into:
 - Suggestion box on line drag
 - RMB on canvas for Suggestion box
 - Implicit type conversions / Fluidity between numeric types
-- Minimize app button
-- Maximize app button
 - Form resizing
 - Save splitter pos on resize
 - Random bad performance when placing new nodes

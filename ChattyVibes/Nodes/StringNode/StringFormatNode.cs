@@ -9,7 +9,7 @@ namespace ChattyVibes.Nodes.StringNode
     [STNode("/String", "LauraRozier", "", "", "String format node")]
     internal sealed class StringFormatNode : StringNode
     {
-        private string _format = "";
+        private string _format = string.Empty;
 
         private STNodeOption m_op_format_in;
         private STNodeOption m_op_out;
@@ -24,7 +24,7 @@ namespace ChattyVibes.Nodes.StringNode
             m_op_out = OutputOptions.Add("Output", typeof(string), false);
 
             m_op_format_in.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
-            m_op_out.TransferData("");
+            m_op_out.TransferData(string.Empty);
             AddInput();
         }
 
@@ -33,16 +33,16 @@ namespace ChattyVibes.Nodes.StringNode
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
                 _format = (string)e.TargetOption.Data;
             else
-                _format = "";
+                _format = string.Empty;
 
             SendFormattedData();
         }
 
         private void SendFormattedData()
         {
-            if (_format == "")
+            if (_format == string.Empty)
             {
-                m_op_out.TransferData("");
+                m_op_out.TransferData(string.Empty);
                 return;
             }
 

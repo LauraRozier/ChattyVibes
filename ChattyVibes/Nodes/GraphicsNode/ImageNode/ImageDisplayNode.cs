@@ -18,7 +18,7 @@ namespace ChattyVibes.Nodes.GraphicsNode.ImageNode
             //TitleColor = Color.FromArgb(200, FrmBindingGraphs.C_COLOR_IMAGE);
             Title = "Image Display";
 
-            m_op_img_in = InputOptions.Add("", typeof(Image), true);
+            m_op_img_in = InputOptions.Add(string.Empty, typeof(Image), true);
 
             m_op_img_in.DataTransfer += new STNodeOptionEventHandler(m_op_img_in_DataTransfer);
         }

@@ -19,9 +19,9 @@ namespace ChattyVibes.Nodes.MathNode.UIntNode
             base.OnCreate();
             Title = "UInt Divide";
 
-            m_in_A = InputOptions.Add("", typeof(uint), true);
-            m_in_B = InputOptions.Add("", typeof(uint), true);
-            m_out = OutputOptions.Add("", typeof(float), false);
+            m_in_A = InputOptions.Add(string.Empty, typeof(uint), true);
+            m_in_B = InputOptions.Add(string.Empty, typeof(uint), true);
+            m_out = OutputOptions.Add(string.Empty, typeof(float), false);
 
             m_in_A.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_in_B.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);

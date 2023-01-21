@@ -17,7 +17,7 @@ namespace ChattyVibes.Nodes.LogicNode
             TitleColor = Color.FromArgb(200, Constants.C_COLOR_LOGIC);
             Title = "Logic NOT";
 
-            m_op_in = InputOptions.Add("", typeof(bool), true);
+            m_op_in = InputOptions.Add(string.Empty, typeof(bool), true);
             m_op_out = OutputOptions.Add(_value ? "True" : "False", typeof(bool), false);
 
             m_op_in.DataTransfer += new STNodeOptionEventHandler(m_op_bool_in_DataTransfer);

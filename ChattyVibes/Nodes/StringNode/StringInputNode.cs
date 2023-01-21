@@ -7,7 +7,7 @@ namespace ChattyVibes.Nodes.StringNode
     {
         private STNodeOption m_op_out;
 
-        private string _value = "";
+        private string _value = string.Empty;
         [STNodeProperty("Value", "The input value")]
         public string Value
         {
@@ -25,7 +25,7 @@ namespace ChattyVibes.Nodes.StringNode
             base.OnCreate();
             Title = "String";
 
-            m_op_out = OutputOptions.Add("", typeof(string), false);
+            m_op_out = OutputOptions.Add(string.Empty, typeof(string), false);
 
             m_op_out.TransferData(_value);
         }

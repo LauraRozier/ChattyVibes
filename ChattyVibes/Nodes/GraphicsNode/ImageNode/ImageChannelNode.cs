@@ -18,7 +18,7 @@ namespace ChattyVibes.Nodes.GraphicsNode.ImageNode
             base.OnCreate();
             Title = "Image Channel";
 
-            m_in_img_in = InputOptions.Add("", typeof(Image), true);
+            m_in_img_in = InputOptions.Add(string.Empty, typeof(Image), true);
             m_out_img_r = OutputOptions.Add("R", typeof(Image), false);
             m_out_img_g = OutputOptions.Add("G", typeof(Image), false);
             m_out_img_b = OutputOptions.Add("B", typeof(Image), false);

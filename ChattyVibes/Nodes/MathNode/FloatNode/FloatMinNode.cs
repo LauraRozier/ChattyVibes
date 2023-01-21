@@ -41,7 +41,7 @@ namespace ChattyVibes.Nodes.MathNode.FloatNode
 
             m_in_A = InputOptions.Add("A", typeof(float), true);
             m_in_B = InputOptions.Add("B", typeof(float), true);
-            m_out = OutputOptions.Add("", typeof(float), false);
+            m_out = OutputOptions.Add("0", typeof(float), false);
 
             m_in_A.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
             m_in_B.DataTransfer += new STNodeOptionEventHandler(m_in_DataTransfer);
