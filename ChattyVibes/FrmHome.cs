@@ -1,13 +1,16 @@
-﻿using System;
+﻿using Buttplug.Client;
+using Buttplug.Core;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ChattyVibes
 {
     public partial class FrmHome : ChildForm
     {
-        /* Unused battery code
-        private Thread _batteryWorker;
-        */
+        private volatile bool _shouldStop = false;
+        private Thread _worker;
 
         public FrmHome()
         {
@@ -28,20 +31,18 @@ namespace ChattyVibes
             tbHostname.Text = MainFrm._conf.ButtplugHostname;
             tbPort.Value    = MainFrm._conf.ButtplugPort;
 
-            /* Unused battery code
-            _batteryWorker = new Thread(new ThreadStart(HandleBatteries)) { IsBackground = true };
-            _batteryWorker.Start();
-            */
+            _worker = new Thread(new ThreadStart(HandleBatteries)) { IsBackground = true };
+            _worker.Start();
 
             UpdateGUI();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            /* Unused battery code
-            _batteryWorker.Abort();
-            _batteryWorker.Join(5000);
-            */
+            _shouldStop = true;
+
+            while (_worker.IsAlive)
+                Thread.Sleep(10);
 
             Config.Save(MainFrm._conf);
             base.OnFormClosing(e);
@@ -133,12 +134,11 @@ namespace ChattyVibes
             }
         }
 
-        /* Unused battery code
         private void HandleBatteries()
         {
-            while (true)
+            try
             {
-                try
+                while (!_shouldStop)
                 {
                     if (MainForm.PlugState != ConnectionState.Connected)
                     {
@@ -175,12 +175,12 @@ namespace ChattyVibes
                     }));
 
                     for (int i = 0; i < 300; i++)
-                        Thread.Sleep(100); // Every 30 seconds is plenty fast enough
+                        if (!_shouldStop)
+                            Thread.Sleep(100); // Every 30 seconds is plenty fast enough
                 }
-                catch (ThreadAbortException) { return; }
             }
+            catch (ThreadAbortException) { return; }
         }
-        */
 
         private void TbUsername_TextChanged(object sender, EventArgs e)
         {
