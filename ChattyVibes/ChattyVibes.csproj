@@ -316,6 +316,14 @@
     <Compile Include="Nodes\ArrayNode\FloatArrayForEachNode.cs" />
     <Compile Include="Nodes\ArrayNode\UIntArrayForEachNode.cs" />
     <Compile Include="Nodes\ArrayNode\IntArrayForEachNode.cs" />
+    <Compile Include="Nodes\BranchNode\EnumChoiseNode.cs" />
+    <Compile Include="Nodes\BranchNode\FloatChoiseNode.cs" />
+    <Compile Include="Nodes\BranchNode\IntChoiseNode.cs" />
+    <Compile Include="Nodes\BranchNode\UIntChoiseNode.cs" />
+    <Compile Include="Nodes\BranchNode\StringChoiseNode.cs" />
+    <Compile Include="Nodes\BranchNode\DateTimeChoiseNode.cs" />
+    <Compile Include="Nodes\BranchNode\BoolChoiseNode.cs" />
+    <Compile Include="Nodes\BranchNode\ChoiseNode.cs" />
     <Compile Include="Nodes\DictNode\DictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\FloatDictForEachNode.cs" />
     <Compile Include="Nodes\DictNode\StringDictForEachNode.cs" />
