@@ -11,15 +11,15 @@ Allows you to connect your Twitch stream to your Intiface *smile*
 2. Click "Start Server" within Iniface to start the websocket server we will use for communications.  
    <img src="https://user-images.githubusercontent.com/12035362/184536927-b6abc293-0f51-4e33-81d6-8b88560182b1.png" width="500">
 3. Start ChattyVibes
-4. Verify the Intiface config in the "Configuration" tab.
-5. Click"Connect Buttplug" within ChattyVibes to connect to the Intiface websocket.  
-   <img src="https://user-images.githubusercontent.com/12035362/184537147-db2c75bc-162f-48dc-bcbf-898c54ff2e7e.png" width="750">
-6. Verify the Twitch config in the "Configuration" tab.
-7. Click "Connect Twitch"within ChattyVibes to authorize the app and to connect to the Twitch API.
-8. When properly set up your toys will vibrate at 25% for 1 second and send one single message to your Twitch channel.  
-   ![](https://user-images.githubusercontent.com/12035362/184537444-d41e4845-1bed-407c-bef7-6d1adc517e13.png)
-9. You can now configure all your bindings in the "Bindings" tab  
-   <img src="https://user-images.githubusercontent.com/12035362/184537562-466966f2-9fec-4214-9939-3edd421ce8a5.png" width="750">
+4. Verify the Intiface config in the "Home" tab.
+5. Click "Connect Intiface" within ChattyVibes to connect to the Intiface websocket.  
+   <img src="https://user-images.githubusercontent.com/12035362/213869270-f354c917-f759-48c7-b749-12216ac6b29e.png" width="750">
+6. Verify the Twitch config in the "Home" tab.
+7. Click "Connect Twitch" within ChattyVibes to authorize the app and to connect to the Twitch API.
+8. When properly set up your UI will tell you that both are connected.  
+   ![image](https://user-images.githubusercontent.com/12035362/213869392-9213e006-cac8-46da-8478-3fb0719e9f29.png)
+9. You can now configure your bindings in the "Binding Graphs" tab  
+   <img src="https://user-images.githubusercontent.com/12035362/213870884-c3fefdfc-51fa-4b78-8216-56a98a74d33b.png" width="750">
 10. Happy streamin' ^_^
 
 ## Misc
