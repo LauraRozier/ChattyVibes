@@ -1,4 +1,4 @@
-﻿using Buttplug;
+﻿using Buttplug.Client;
 using ST.Library.UI.NodeEditor;
 using System.Threading.Tasks;
 
@@ -112,16 +112,16 @@ namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
 
         private async Task SendCommand(ButtplugClientDevice device, object data)
         {
-            if (!device.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.LinearCmd))
+            if (device.LinearAttributes.Count <= 0)
                 return;
 
             MsgData dataObj = (MsgData)data;
 
             for (int i = 0; i < dataObj.StrokeCount; i++)
             {
-                await device.SendLinearCmd(dataObj.DownTime, dataObj.DownPos);
+                await device.LinearAsync(dataObj.DownTime, dataObj.DownPos);
                 await Task.Delay((int)dataObj.DownTime + C_DIR_CHANGE_DELAY);
-                await device.SendLinearCmd(dataObj.UpTime, dataObj.UpPos);
+                await device.LinearAsync(dataObj.UpTime, dataObj.UpPos);
                 await Task.Delay((int)dataObj.UpTime + C_DIR_CHANGE_DELAY);
             }
         }

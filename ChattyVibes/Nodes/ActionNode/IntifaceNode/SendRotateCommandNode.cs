@@ -1,4 +1,4 @@
-﻿using Buttplug;
+﻿using Buttplug.Client;
 using ST.Library.UI.NodeEditor;
 using System.Threading.Tasks;
 
@@ -82,14 +82,14 @@ namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
 
         private async Task SendCommand(ButtplugClientDevice device, object data)
         {
-            if (!device.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.RotateCmd))
+            if (device.RotateAttributes.Count <= 0)
                 return;
 
             MsgData dataObj = (MsgData)data;
 
-            await device.SendRotateCmd(dataObj.Level, dataObj.Clockwise);
+            await device.RotateAsync(dataObj.Level, dataObj.Clockwise);
             await Task.Delay(dataObj.Duration);
-            await device.SendRotateCmd(0, dataObj.Clockwise);
+            await device.RotateAsync(0, dataObj.Clockwise);
         }
 
         protected override void OnCreate()

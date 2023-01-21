@@ -1,7 +1,6 @@
-﻿using Buttplug;
+﻿using Buttplug.Client;
 using ChattyVibes.Events;
 using ST.Library.UI.NodeEditor;
-using static Buttplug.ServerMessage.Types;
 
 namespace ChattyVibes.Nodes.EventNode.TwitchNode
 {
@@ -48,12 +47,12 @@ namespace ChattyVibes.Nodes.EventNode.TwitchNode
         {
             m_op_index_out.TransferData(e.Device.Index);
             m_op_name_out.TransferData(e.Device.Name);
-            m_op_can_vibrate_out.TransferData(e.Device.AllowedMessages.ContainsKey(MessageAttributeType.VibrateCmd));
-            m_op_can_rotate_out.TransferData(e.Device.AllowedMessages.ContainsKey(MessageAttributeType.RotateCmd));
-            m_op_can_linear_out.TransferData(e.Device.AllowedMessages.ContainsKey(MessageAttributeType.LinearCmd));
-            m_op_can_stop_out.TransferData(e.Device.AllowedMessages.ContainsKey(MessageAttributeType.StopDeviceCmd));
-            m_op_can_batterylevel_out.TransferData(e.Device.AllowedMessages.ContainsKey(MessageAttributeType.BatteryLevelCmd));
-            m_op_can_rssilevel_out.TransferData(e.Device.AllowedMessages.ContainsKey(MessageAttributeType.RssilevelCmd));
+            m_op_can_vibrate_out.TransferData(e.Device.VibrateAttributes.Count > 0);
+            m_op_can_rotate_out.TransferData(e.Device.RotateAttributes.Count > 0);
+            m_op_can_linear_out.TransferData(e.Device.LinearAttributes.Count > 0);
+            m_op_can_stop_out.TransferData(true);
+            m_op_can_batterylevel_out.TransferData(e.Device.HasBattery);
+            m_op_can_rssilevel_out.TransferData(false);
 
             Trigger();
         }

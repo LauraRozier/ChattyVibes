@@ -1,4 +1,4 @@
-﻿using Buttplug;
+﻿using Buttplug.Client;
 using ST.Library.UI.NodeEditor;
 using System.Threading.Tasks;
 
@@ -64,14 +64,14 @@ namespace ChattyVibes.Nodes.ActionNode.IntifaceNode
 
         private async Task SendCommand(ButtplugClientDevice device, object data)
         {
-            if (!device.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.VibrateCmd))
+            if (device.VibrateAttributes.Count <= 0)
                 return;
 
             MsgData dataObj = (MsgData)data;
 
-            await device.SendVibrateCmd(dataObj.Level);
+            await device.VibrateAsync(dataObj.Level);
             await Task.Delay(dataObj.Duration);
-            await device.SendVibrateCmd(0);
+            await device.VibrateAsync(0);
         }
 
         protected override void OnCreate()

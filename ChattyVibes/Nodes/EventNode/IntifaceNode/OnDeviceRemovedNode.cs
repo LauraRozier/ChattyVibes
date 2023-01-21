@@ -1,4 +1,4 @@
-﻿using Buttplug;
+﻿using Buttplug.Client;
 using ChattyVibes.Events;
 using ST.Library.UI.NodeEditor;
 

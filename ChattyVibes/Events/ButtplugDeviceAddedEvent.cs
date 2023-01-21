@@ -1,4 +1,4 @@
-﻿using Buttplug;
+﻿using Buttplug.Client;
 using System;
 
 namespace ChattyVibes.Events

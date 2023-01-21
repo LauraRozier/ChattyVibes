@@ -1,4 +1,6 @@
-﻿using Buttplug;
+﻿using Buttplug.Client;
+using Buttplug.Core;
+using Buttplug.Client.Connectors.WebsocketConnector;
 using ChattyVibes.Events;
 using ChattyVibes.Queues;
 using System;
@@ -36,6 +38,7 @@ namespace ChattyVibes
         internal volatile static ConnectionState PlugState = ConnectionState.NotConnected;
         private ButtplugClient _plugClient = null;
         internal ButtplugClientDevice[] PlugDevices { get { return _plugClient.Devices; } }
+        private volatile bool _isScanning = false;
 
         internal volatile static ConnectionState ChatState = ConnectionState.NotConnected;
         private WebSocketClient _socketClient = null;
@@ -108,15 +111,10 @@ namespace ChattyVibes
         {
             var result = new DeviceBattery { Name = $"{aToy.Index} - {aToy.Name}" };
 
-            if (aToy.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.BatteryLevelCmd))
+            if (aToy.HasBattery)
             {
-                double level = await aToy.SendBatteryLevelCmd();
+                double level = await aToy.BatteryAsync();
                 result.Level = $"{level:P0}";
-            }
-            else if (aToy.AllowedMessages.ContainsKey(ServerMessage.Types.MessageAttributeType.RssilevelCmd))
-            {
-                int level = await aToy.SendRSSIBatteryLevelCmd();
-                result.Level = $"{100 + level}";
             }
             else
             {
@@ -132,8 +130,6 @@ namespace ChattyVibes
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
-            ButtplugFFILog.LogMessage += ButtplugFFILog_LogMessage;
-            ButtplugFFILog.SetLogOptions(ButtplugLogLevel.Info, false);
             _plugClient = new ButtplugClient("ChattyVibes v" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
             _plugClient.ErrorReceived += PlugClient_ErrorReceived;
             _plugClient.ServerDisconnect += PlugClient_ServerDisconnect;
@@ -201,9 +197,10 @@ namespace ChattyVibes
 
             try
             {
-                await _plugClient.ConnectAsync(new ButtplugWebsocketConnectorOptions(new Uri($"ws://{_conf.ButtplugHostname}:{_conf.ButtplugPort}")));
+                var connector = new ButtplugWebsocketConnector(new Uri($"ws://{_conf.ButtplugHostname}:{_conf.ButtplugPort}/buttplug"));
+                await _plugClient.ConnectAsync(connector);
             }
-            catch (ButtplugConnectorException ex)
+            catch (ButtplugClientConnectorException ex)
             {
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Can't connect to Buttplug Server, exiting! - Message: {ex.Message}");
                 PlugState = ConnectionState.Error;
@@ -221,6 +218,7 @@ namespace ChattyVibes
             try
             {
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Connected, scanning for devices");
+                _isScanning = true;
                 await _plugClient.StartScanningAsync();
             }
             catch (ButtplugException ex)
@@ -228,6 +226,7 @@ namespace ChattyVibes
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.InnerException?.Message}");
                 PlugState = ConnectionState.Error;
                 await _plugClient.DisconnectAsync();
+                _isScanning = false;
                 return;
             }
 
@@ -236,8 +235,11 @@ namespace ChattyVibes
 
             await Task.Delay(5000);
 
-            if (_plugClient.IsScanning)
+            if (_isScanning)
+            {
                 await _plugClient.StopScanningAsync();
+                _isScanning = false;
+            }
 
             await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning done");
         }
@@ -250,30 +252,36 @@ namespace ChattyVibes
             if (_plugClient.Connected)
                 await _plugClient.DisconnectAsync();
 
+            _isScanning = false;
             PlugState = ConnectionState.NotConnected;
             UpdateGUI();
         }
 
         internal async Task RescanDevices()
         {
-            if (_plugClient == null || (!_plugClient.Connected) || _plugClient.IsScanning)
+            if (_plugClient == null || (!_plugClient.Connected) || _isScanning)
                 return;
 
             try
             {
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Rescanning devices");
+                _isScanning = true;
                 await _plugClient.StartScanningAsync();
             }
             catch (ButtplugException ex)
             {
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.Message}");
+                _isScanning = false;
                 return;
             }
 
             await Task.Delay(5000);
 
-            if (_plugClient.IsScanning)
+            if (_isScanning)
+            {
                 await _plugClient.StopScanningAsync();
+                _isScanning = false;
+            }
         }
 
         internal async Task ConnectTwitch()
@@ -678,9 +686,6 @@ namespace ChattyVibes
         /*
          * Buttplug.io actions
          */
-        private async void ButtplugFFILog_LogMessage(object sender, string e) =>
-            await LogMsg($"{e}");
-
         private async void PlugClient_ErrorReceived(object sender, ButtplugExceptionEventArgs e) =>
             await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Error received from the server.  Message: {e.Exception.Message}");
 
@@ -698,22 +703,15 @@ namespace ChattyVibes
             });
         }
 
-        private async void PlugClient_ScanningFinished(object sender, EventArgs e) =>
+        private async void PlugClient_ScanningFinished(object sender, EventArgs e)
+        {
             await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Finished scanning for devices");
+            _isScanning = false;
+        }
 
         private async void PlugClient_DeviceAdded(object sender, DeviceAddedEventArgs e)
         {
-            string logMsg = $"\r\n{DateTime.UtcNow:o} - Buttplug: New device \"{e.Device.Name}\" (idx {e.Device.Index}) supports these messages:";
-
-            foreach (var msgInfo in e.Device.AllowedMessages)
-            {
-                logMsg += $"\r\n  - {msgInfo.Key}";
-
-                if (msgInfo.Value.FeatureCount != 0)
-                    logMsg += $"\r\n    - Features: {msgInfo.Value.FeatureCount}";
-            }
-
-            await LogMsg(logMsg);
+            await LogMsg($"\r\n{DateTime.UtcNow:o} - Buttplug: New device \"{e.Device.Name}\" (idx {e.Device.Index}) supports these messages:");
             ButtplugQueues.Add(e.Device.Index, new ButtplugDeviceQueue(e.Device));
             EventFactory.Enqueue(EventType.ButtplugDeviceAdded, sender, e);
         }
