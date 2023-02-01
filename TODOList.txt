@@ -43,6 +43,7 @@ Done:
 - String Equals
 - Minimize app button
 - Maximize app button
+- Fixed Exception when disconnecting Intiface during scan
 
 WiP:
 - Array

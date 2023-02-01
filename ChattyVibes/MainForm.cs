@@ -38,14 +38,14 @@ namespace ChattyVibes
         internal volatile static ConnectionState PlugState = ConnectionState.NotConnected;
         private ButtplugClient _plugClient = null;
         internal ButtplugClientDevice[] PlugDevices { get { return _plugClient.Devices; } }
-        private volatile bool _isScanning = false;
+        internal volatile bool IsScanning = false;
 
         internal volatile static ConnectionState ChatState = ConnectionState.NotConnected;
         private WebSocketClient _socketClient = null;
         private TwitchClient _chatClient = null;
 
-        private readonly static Color IdleBtnColor = Color.FromArgb(24, 30, 54);
-        private readonly static Color SelectedBtnColor = Color.FromArgb(46, 51, 73);
+        private readonly static Color CIdleBtnColor = Color.FromArgb(24, 30, 54);
+        private readonly static Color CSelectedBtnColor = Color.FromArgb(46, 51, 73);
 
         internal readonly List<string> LogMessages = new List<string>();
 
@@ -89,16 +89,16 @@ namespace ChattyVibes
             pnlNavInd.Height = btn.Height;
             pnlNavInd.Top = btn.Top;
             pnlNavInd.Left = btn.Left;
-            btn.BackColor = SelectedBtnColor;
+            btn.BackColor = CSelectedBtnColor;
 
             if (btn != btnHome)
-                btnHome.BackColor = IdleBtnColor;
+                btnHome.BackColor = CIdleBtnColor;
 
             if (btn != btnBindingGraph)
-                btnBindingGraph.BackColor = IdleBtnColor;
+                btnBindingGraph.BackColor = CIdleBtnColor;
 
             if (btn != btnLog)
-                btnLog.BackColor = IdleBtnColor;
+                btnLog.BackColor = CIdleBtnColor;
         }
 
         private void UpdateGUI()
@@ -175,16 +175,19 @@ namespace ChattyVibes
 
             if (_socketClient != null)
             {
-                if (_socketClient.IsConnected)
-                    _socketClient.Close();
-
                 _socketClient.Dispose();
                 _socketClient = null;
             }
 
             if (_plugClient != null && _plugClient.Connected)
             {
-                _plugClient.DisconnectAsync().Wait();
+                if (IsScanning)
+                {
+                    await _plugClient.StopScanningAsync();
+                    IsScanning = false;
+                }
+
+                await _plugClient.DisconnectAsync();
                 _plugClient = null;
             }
         }
@@ -218,7 +221,7 @@ namespace ChattyVibes
             try
             {
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Connected, scanning for devices");
-                _isScanning = true;
+                IsScanning = true;
                 await _plugClient.StartScanningAsync();
             }
             catch (ButtplugException ex)
@@ -226,7 +229,7 @@ namespace ChattyVibes
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.InnerException?.Message}");
                 PlugState = ConnectionState.Error;
                 await _plugClient.DisconnectAsync();
-                _isScanning = false;
+                IsScanning = false;
                 return;
             }
 
@@ -235,10 +238,11 @@ namespace ChattyVibes
 
             await Task.Delay(5000);
 
-            if (_isScanning)
+            if (IsScanning)
             {
                 await _plugClient.StopScanningAsync();
-                _isScanning = false;
+                IsScanning = false;
+                UpdateGUI();
             }
 
             await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning done");
@@ -249,38 +253,47 @@ namespace ChattyVibes
             PlugState = ConnectionState.Disconnecting;
             UpdateGUI();
 
-            if (_plugClient.Connected)
-                await _plugClient.DisconnectAsync();
+            if (_plugClient != null && _plugClient.Connected)
+            {
+                if (IsScanning)
+                {
+                    await _plugClient.StopScanningAsync();
+                    IsScanning = false;
+                }
 
-            _isScanning = false;
+                await _plugClient.DisconnectAsync();
+            }
+
             PlugState = ConnectionState.NotConnected;
             UpdateGUI();
         }
 
         internal async Task RescanDevices()
         {
-            if (_plugClient == null || (!_plugClient.Connected) || _isScanning)
+            if (_plugClient == null || (!_plugClient.Connected) || IsScanning)
                 return;
 
             try
             {
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Rescanning devices");
-                _isScanning = true;
+                IsScanning = true;
+                UpdateGUI();
                 await _plugClient.StartScanningAsync();
             }
             catch (ButtplugException ex)
             {
                 await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Scanning failed - Message: {ex.Message}");
-                _isScanning = false;
+                IsScanning = false;
                 return;
             }
 
             await Task.Delay(5000);
 
-            if (_isScanning)
+            if (IsScanning)
             {
                 await _plugClient.StopScanningAsync();
-                _isScanning = false;
+                IsScanning = false;
+                UpdateGUI();
             }
         }
 
@@ -706,7 +719,7 @@ namespace ChattyVibes
         private async void PlugClient_ScanningFinished(object sender, EventArgs e)
         {
             await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Finished scanning for devices");
-            _isScanning = false;
+            IsScanning = false;
         }
 
         private async void PlugClient_DeviceAdded(object sender, DeviceAddedEventArgs e)

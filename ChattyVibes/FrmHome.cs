@@ -111,7 +111,7 @@ namespace ChattyVibes
                     {
                         btnConnectIntiface.Enabled = false;
                         btnDisconnectIntiface.Enabled = true;
-                        BtnRescanDevices.Enabled = true;
+                        BtnRescanDevices.Enabled = !MainFrm.IsScanning;
                         lblIntifaceStatus.Text = "Connected";
                         break;
                     }
