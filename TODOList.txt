@@ -44,6 +44,10 @@ Done:
 - Minimize app button
 - Maximize app button
 - Fixed Exception when disconnecting Intiface during scan
+- String Split
+- String Join
+- Char Node
+- Char to String Node
 
 WiP:
 - Array
@@ -53,7 +57,6 @@ WiP:
 
 ToDo:
 - Flow-based +x counters
-- String Split
 
 Future:
 - Smoother zoom

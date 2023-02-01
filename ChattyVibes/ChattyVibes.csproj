@@ -393,6 +393,10 @@
     <Compile Include="Nodes\MathNode\UIntNode\UIntSubtractNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntClampNode.cs" />
     <Compile Include="Nodes\MathNode\UIntNode\UIntCompareNode.cs" />
+    <Compile Include="Nodes\StringNode\CharToStringNode.cs" />
+    <Compile Include="Nodes\StringNode\CharInputNode.cs" />
+    <Compile Include="Nodes\StringNode\StringJoinNode.cs" />
+    <Compile Include="Nodes\StringNode\StringSplitNode.cs" />
     <Compile Include="Nodes\StringNode\StringEqualsNode.cs" />
     <Compile Include="Nodes\StringNode\StringCompareNode.cs" />
     <Compile Include="Nodes\UtilNode\PassthroughNode.cs" />
