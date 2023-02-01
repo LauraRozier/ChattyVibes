@@ -175,8 +175,10 @@ namespace ChattyVibes
                     }));
 
                     for (int i = 0; i < 300; i++)
+                    {
                         if (!_shouldStop)
                             Thread.Sleep(100); // Every 30 seconds is plenty fast enough
+                    }
                 }
             }
             catch (ThreadAbortException) { return; }
