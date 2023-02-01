@@ -51,7 +51,11 @@ namespace ChattyVibes.Nodes.StringNode
                     _new = string.Empty;
             }
 
-            string result = _str.Replace(_old, _new);
+            string result = string.Empty;
+
+            if (!(string.IsNullOrEmpty(_str) || string.IsNullOrEmpty(_old) || string.IsNullOrEmpty(_new)))
+                result = _str.Replace(_old, _new);
+
             SetOptionText(m_op_out, result);
             m_op_out.TransferData(result);
         }
