@@ -1,19 +1,18 @@
 ﻿using ST.Library.UI.NodeEditor;
-using System;
 
 namespace ChattyVibes.Nodes.BranchNode
 {
-    [STNode("/Branch", "LauraRozier", "", "", "DateTime choise node")]
-    internal sealed class DateTimeChoiseNode : ChoiseNode
+    [STNode("/Branch", "LauraRozier", "", "", "Flow choice node")]
+    internal sealed class FlowChoiceNode : ChoiceNode
     {
-        private DateTime _tval = default(DateTime);
-        private DateTime _fval = default(DateTime);
+        private object _tval = null;
+        private object _fval = null;
 
         protected override void OnCreate()
         {
-            _type = typeof(DateTime);
+            _type = typeof(object);
             base.OnCreate();
-            Title = "DateTime Choise";
+            Title = "Flow Choice";
             AutoSize = false;
             Width = 152;
             Height = 80;
@@ -24,19 +23,19 @@ namespace ChattyVibes.Nodes.BranchNode
 
         private void m_in_DataTransfer(object sender, STNodeOptionEventArgs e)
         {
-            if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
+            if (e.Status == ConnectionStatus.Connected)
             {
                 if (sender == m_op_true_in)
-                    _tval = (DateTime)e.TargetOption.Data;
+                    _tval = e.TargetOption.Data;
                 else
-                    _fval = (DateTime)e.TargetOption.Data;
+                    _fval = e.TargetOption.Data;
             }
             else
             {
                 if (sender == m_op_true_in)
-                    _tval = default(DateTime);
+                    _tval = null;
                 else
-                    _fval = default(DateTime);
+                    _fval = null;
             }
 
             HandleCondition();

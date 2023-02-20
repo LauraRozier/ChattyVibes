@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace ChattyVibes.Nodes.BranchNode
 {
-    internal abstract class ChoiseNode : STNode
+    internal abstract class ChoiceNode : STNode
     {
         protected Type _type;
         protected bool _condition = false;

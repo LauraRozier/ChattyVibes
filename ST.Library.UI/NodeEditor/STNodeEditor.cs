@@ -2050,6 +2050,9 @@ namespace ST.Library.UI.NodeEditor
                 sb.Replace(".UInt.", ".UIntNode.");
                 sb.Replace(".ButtplugNode.", ".IntifaceNode.");
 
+                // Fix typos
+                sb.Replace("Choise", "Choice");
+
                 string patchedName = sb.ToString();
                 //ChattyVibes.Nodes.UtilNode.CommentNode
                 //ChattyVibes.Nodes.UtilNode.CommentNode

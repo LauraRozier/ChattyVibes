@@ -1,19 +1,18 @@
 ﻿using ST.Library.UI.NodeEditor;
-using System;
 
 namespace ChattyVibes.Nodes.BranchNode
 {
-    [STNode("/Branch", "LauraRozier", "", "", "Enum choise node")]
-    internal sealed class EnumChoiseNode : ChoiseNode
+    [STNode("/Branch", "LauraRozier", "", "", "Int choice node")]
+    internal sealed class IntChoiceNode : ChoiceNode
     {
-        private Enum _tval = null;
-        private Enum _fval = null;
+        private int _tval = 0;
+        private int _fval = 0;
 
         protected override void OnCreate()
         {
-            _type = typeof(Enum);
+            _type = typeof(int);
             base.OnCreate();
-            Title = "Enum Choise";
+            Title = "Int Choice";
             AutoSize = false;
             Width = 152;
             Height = 80;
@@ -27,16 +26,16 @@ namespace ChattyVibes.Nodes.BranchNode
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
             {
                 if (sender == m_op_true_in)
-                    _tval = (Enum)e.TargetOption.Data;
+                    _tval = (int)e.TargetOption.Data;
                 else
-                    _fval = (Enum)e.TargetOption.Data;
+                    _fval = (int)e.TargetOption.Data;
             }
             else
             {
                 if (sender == m_op_true_in)
-                    _tval = null;
+                    _tval = 0;
                 else
-                    _fval = null;
+                    _fval = 0;
             }
 
             HandleCondition();

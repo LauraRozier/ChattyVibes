@@ -2,17 +2,17 @@
 
 namespace ChattyVibes.Nodes.BranchNode
 {
-    [STNode("/Branch", "LauraRozier", "", "", "Int choise node")]
-    internal sealed class IntChoiseNode : ChoiseNode
+    [STNode("/Branch", "LauraRozier", "", "", "Boolean choice node")]
+    internal sealed class BoolChoiceNode : ChoiceNode
     {
-        private int _tval = 0;
-        private int _fval = 0;
+        private bool _tval = false;
+        private bool _fval = false;
 
         protected override void OnCreate()
         {
-            _type = typeof(int);
+            _type = typeof(bool);
             base.OnCreate();
-            Title = "Int Choise";
+            Title = "Bool Choice";
             AutoSize = false;
             Width = 152;
             Height = 80;
@@ -26,16 +26,16 @@ namespace ChattyVibes.Nodes.BranchNode
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
             {
                 if (sender == m_op_true_in)
-                    _tval = (int)e.TargetOption.Data;
+                    _tval = (bool)e.TargetOption.Data;
                 else
-                    _fval = (int)e.TargetOption.Data;
+                    _fval = (bool)e.TargetOption.Data;
             }
             else
             {
                 if (sender == m_op_true_in)
-                    _tval = 0;
+                    _tval = false;
                 else
-                    _fval = 0;
+                    _fval = false;
             }
 
             HandleCondition();

@@ -2,17 +2,17 @@
 
 namespace ChattyVibes.Nodes.BranchNode
 {
-    [STNode("/Branch", "LauraRozier", "", "", "Float choise node")]
-    internal sealed class FloatChoiseNode : ChoiseNode
+    [STNode("/Branch", "LauraRozier", "", "", "UInt choice node")]
+    internal sealed class UIntChoiceNode : ChoiceNode
     {
-        private float _tval = 0.0f;
-        private float _fval = 0.0f;
+        private uint _tval = 0u;
+        private uint _fval = 0u;
 
         protected override void OnCreate()
         {
-            _type = typeof(float);
+            _type = typeof(uint);
             base.OnCreate();
-            Title = "Float Choise";
+            Title = "UInt Choice";
             AutoSize = false;
             Width = 152;
             Height = 80;
@@ -26,16 +26,16 @@ namespace ChattyVibes.Nodes.BranchNode
             if (e.Status == ConnectionStatus.Connected && e.TargetOption.Data != null)
             {
                 if (sender == m_op_true_in)
-                    _tval = (float)e.TargetOption.Data;
+                    _tval = (uint)e.TargetOption.Data;
                 else
-                    _fval = (float)e.TargetOption.Data;
+                    _fval = (uint)e.TargetOption.Data;
             }
             else
             {
                 if (sender == m_op_true_in)
-                    _tval = 0.0f;
+                    _tval = 0u;
                 else
-                    _fval = 0.0f;
+                    _fval = 0u;
             }
 
             HandleCondition();
