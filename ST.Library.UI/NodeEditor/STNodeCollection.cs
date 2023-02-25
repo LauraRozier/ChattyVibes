@@ -8,13 +8,10 @@ namespace ST.Library.UI.NodeEditor
         private int _Count;
         public int Count { get { return _Count; } }
         private STNode[] m_nodes;
-        private STNodeEditor m_owner;
+        private readonly STNodeEditor m_owner;
 
         internal STNodeCollection(STNodeEditor owner) {
-            if (owner == null)
-                throw new ArgumentNullException("owner cannot be empty");
-
-            m_owner = owner;
+            m_owner = owner ?? throw new ArgumentNullException("owner cannot be empty");
             m_nodes = new STNode[4];
         }
 
@@ -206,7 +203,7 @@ namespace ST.Library.UI.NodeEditor
         /// <summary>
         /// Confirm whether the space is sufficient, if the space is insufficient, expand the capacity
         /// </summary>
-        /// <param name="elements">The number of elements/param>
+        /// <param name="elements">The number of elements</param>
         private void EnsureSpace(int elements) {
             if (elements + _Count > m_nodes.Length) {
                 STNode[] arrTemp = new STNode[Math.Max(m_nodes.Length * 2, elements + _Count)];
