@@ -73,7 +73,7 @@ namespace ChattyVibes.Nodes.ActionNode.TwitchNode
         protected override void OnCreate()
         {
             base.OnCreate();
-            Title = "Start Commercial Chat";
+            Title = "Start Commercial";
 
             m_op_channel_in = InputOptions.Add("Channel", typeof(string), false);
             m_op_duration_in = InputOptions.Add(string.Empty, typeof(CommercialLength), false);
