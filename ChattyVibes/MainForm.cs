@@ -336,7 +336,7 @@ namespace ChattyVibes
                 "?response_type=token" +
                 $"&client_id={CTwitchClientId}" +
                 $"&redirect_uri={CTwitchRedirectUrl}" +
-                $"&scope={HttpUtility.UrlEncode("chat:read chat:edit channel:read:subscriptions whispers:read channel:read:redemptions channel:read:hype_train channel:read:goals")}" +
+                $"&scope=chat%3Aread%20chat%3Aedit%20channel%3Aread%3Asubscriptions%20whispers%3Aread%20channel%3Aread%3Aredemptions%20channel%3Aread%3Ahype_train%20channel%3Aread%3Agoals" +
                 $"&state={CTwitchAuthStateVerify}" +
                 "&force_verify=true"
             );
