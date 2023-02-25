@@ -22,6 +22,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
+using System.Windows.Interop;
 
 namespace ChattyVibes
 {
@@ -589,15 +590,22 @@ namespace ChattyVibes
 
         internal async Task LogMsg(string aMsg)
         {
-            Invoke(new MethodInvoker(() => {
-                if (LogMessages.Count >= 1024)
-                    LogMessages.RemoveRange(0, (LogMessages.Count - 1024) + 1);
+            void PerformLogMsg()
+            {
+                if (LogMessages.Count >= 512)
+                    LogMessages.RemoveAt(0);
 
                 LogMessages.Add(aMsg);
 
                 if (pnlForm.Controls.Count > 0 && pnlForm.Controls[0] is FrmLog log)
                     log.AddLogMsg(aMsg);
-            }));
+            }
+
+            if (InvokeRequired)
+                Invoke(new MethodInvoker(PerformLogMsg));
+            else
+                PerformLogMsg();
+
             await Task.Delay(1);
         }
 
@@ -707,13 +715,24 @@ namespace ChattyVibes
             await LogMsg($"{DateTime.UtcNow:o} - Buttplug: Disconnected from the server");
             PlugState = ConnectionState.NotConnected;
 
-            Invoke((MethodInvoker)async delegate {
+            if (InvokeRequired)
+            {
+                Invoke((MethodInvoker)async delegate {
+                    foreach (var item in ButtplugQueues)
+                        await item.Value.Cleanup();
+
+                    ButtplugQueues.Clear();
+                    UpdateGUI();
+                });
+            }
+            else
+            {
                 foreach (var item in ButtplugQueues)
                     await item.Value.Cleanup();
 
                 ButtplugQueues.Clear();
                 UpdateGUI();
-            });
+            }
         }
 
         private async void PlugClient_ScanningFinished(object sender, EventArgs e)

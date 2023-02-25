@@ -160,7 +160,8 @@ namespace ChattyVibes
                         }
                     }
 
-                    lvDevices.Invoke(new MethodInvoker(() => {
+                    void PerformHandleBateries()
+                    {
                         lvDevices.BeginUpdate();
                         lvDevices.Items.Clear();
 
@@ -172,7 +173,12 @@ namespace ChattyVibes
                         }
 
                         lvDevices.EndUpdate();
-                    }));
+                    }
+
+                    if (lvDevices.InvokeRequired)
+                        lvDevices.Invoke(new MethodInvoker(PerformHandleBateries));
+                    else
+                        PerformHandleBateries();
 
                     for (int i = 0; i < 300; i++)
                     {
